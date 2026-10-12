@@ -1,0 +1,1741 @@
+{
+  "$schema": "../pool.schema.json",
+  "poolName": "Monitoring, Streaming & Security Analytics",
+  "description": "SAA-C03 revision questions on CloudWatch, EventBridge, Kinesis, CloudTrail, observability tooling, Inspector, Macie, Security Hub, Audit Manager and OpenSearch at mixed difficulty.",
+  "category": "Analytics & Monitoring",
+  "version": 1,
+  "questions": [
+    {
+      "id": "logs-retention-setting",
+      "prompt": "A policy requires application logs in CloudWatch Logs to be kept for 5 years and then removed automatically. What is the simplest solution?",
+      "choices": [
+        "Configure Event History for 5 years",
+        "Run a Lambda function to delete old log streams each night",
+        "Set the log group's retention period to 5 years",
+        "Set the retention on each individual log stream"
+      ],
+      "correctChoice": "Set the log group's retention period to 5 years",
+      "explanation": "Retention is configured per log group between 1 day and 10 years, or never expire. CloudWatch Logs then deletes expired events automatically.",
+      "difficulty": "Medium",
+      "tags": [
+        "CloudWatch Logs",
+        "Compliance"
+      ]
+    },
+    {
+      "id": "kds-hot-shard",
+      "prompt": "An IoT stream with 20 shards uses the device type (only 3 distinct values) as the partition key. Some shards are throttled while others are idle. What is the best fix?",
+      "choices": [
+        "Add more shards, since the load is concentrated on too few of them",
+        "Use a higher-cardinality partition key such as the device ID",
+        "Increase the retention period so throttled records are kept longer",
+        "Switch the producers to the AWS SDK instead of the KPL"
+      ],
+      "correctChoice": "Use a higher-cardinality partition key such as the device ID",
+      "explanation": "Partition keys are hashed to pick a shard, so 3 keys can use at most 3 shards. More shards would not spread the load until the keys are more varied.",
+      "difficulty": "Hard",
+      "tags": [
+        "Kinesis",
+        "Data Streams",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "prometheus-pushgateway",
+      "prompt": "Short-lived batch jobs finish before Prometheus's next scrape and their metrics are lost. What should be used?",
+      "choices": [
+        "A longer scrape interval so jobs are scraped less often",
+        "Anomaly detection alarms on the batch jobs' metrics",
+        "A Kinesis Video Stream that carries the job metrics",
+        "An intermediary push gateway that the jobs push metrics to"
+      ],
+      "correctChoice": "An intermediary push gateway that the jobs push metrics to",
+      "explanation": "Prometheus pulls metrics over HTTP, and pushing is supported via an intermediary gateway, which suits short-lived jobs.",
+      "difficulty": "Hard",
+      "tags": [
+        "Prometheus",
+        "Observability"
+      ]
+    },
+    {
+      "id": "logs-insights-multi-group",
+      "prompt": "An analyst needs to query logs from 30 different log groups during an incident. What is the simplest approach?",
+      "choices": [
+        "Run 30 separate queries and combine the results manually",
+        "Export all 30 groups to S3 and query them with Athena",
+        "Merge the 30 groups into one log group first",
+        "Select all 30 log groups in a single Logs Insights query"
+      ],
+      "correctChoice": "Select all 30 log groups in a single Logs Insights query",
+      "explanation": "A single Logs Insights query can span up to 50 log groups.",
+      "difficulty": "Medium",
+      "tags": [
+        "CloudWatch Logs",
+        "Logs Insights"
+      ]
+    },
+    {
+      "id": "firehose-parquet-minimal-ops",
+      "prompt": "Clickstream events must reach S3 within minutes as Parquet files, with minimal administration, no custom consumers and no need for replay. Which design is best?",
+      "choices": [
+        "Amazon Data Firehose with format conversion using a Glue table, delivering to S3",
+        "Managed Service for Apache Flink writing to EC2 disks",
+        "Kinesis Data Streams with a custom KCL application that writes Parquet",
+        "Kinesis Data Streams in provisioned mode with enhanced fan-out"
+      ],
+      "correctChoice": "Amazon Data Firehose with format conversion using a Glue table, delivering to S3",
+      "explanation": "Firehose is serverless, delivers directly to S3 and converts to Parquet. The Data Streams options add shards or consumer code with no requirement for them.",
+      "difficulty": "Hard",
+      "tags": [
+        "Kinesis",
+        "Firehose",
+        "S3"
+      ]
+    },
+    {
+      "id": "cloudtrail-purpose",
+      "prompt": "Which service records who made which API call in an AWS account, when, and from where?",
+      "choices": [
+        "Amazon Macie",
+        "Amazon Inspector",
+        "Amazon CloudWatch Metrics",
+        "AWS CloudTrail"
+      ],
+      "correctChoice": "AWS CloudTrail",
+      "explanation": "CloudTrail records account activity and API calls for governance, compliance and auditing.",
+      "difficulty": "Easy",
+      "tags": [
+        "CloudTrail",
+        "Governance"
+      ]
+    },
+    {
+      "id": "eb-schema-registry",
+      "prompt": "Developers want typed programming objects that represent the events on their EventBridge bus. Which feature helps?",
+      "choices": [
+        "Composite alarms",
+        "Input transformers",
+        "Partner event sources",
+        "Schema Registry code bindings"
+      ],
+      "correctChoice": "Schema Registry code bindings",
+      "explanation": "Schema Registry manages schemas for events and lets developers download code bindings that wrap the schema in programming objects.",
+      "difficulty": "Medium",
+      "tags": [
+        "EventBridge",
+        "Schema Registry"
+      ]
+    },
+    {
+      "id": "audit-manager-purpose",
+      "prompt": "Which service helps continually audit AWS usage with prebuilt control frameworks such as PCI and HIPAA to simplify compliance assessments?",
+      "choices": [
+        "AWS Audit Manager",
+        "Amazon Data Firehose",
+        "Amazon Macie",
+        "Amazon Inspector"
+      ],
+      "correctChoice": "AWS Audit Manager",
+      "explanation": "Audit Manager provides framework and control libraries and collects evidence for assessments.",
+      "difficulty": "Easy",
+      "tags": [
+        "Audit Manager",
+        "Compliance"
+      ]
+    },
+    {
+      "id": "amp-managed-prometheus",
+      "prompt": "A team runs self-managed Prometheus for container metrics and wants to keep PromQL and Grafana dashboards while removing server operations. Which approach fits?",
+      "choices": [
+        "Amazon Data Firehose delivering the metrics to S3",
+        "Amazon Managed Service for Prometheus with Amazon Managed Grafana",
+        "Amazon Macie with EventBridge rules for each container",
+        "AWS Audit Manager with a custom control framework"
+      ],
+      "correctChoice": "Amazon Managed Service for Prometheus with Amazon Managed Grafana",
+      "explanation": "AMP is a fully managed Prometheus-compatible service, and Managed Grafana can visualise its data.",
+      "difficulty": "Hard",
+      "tags": [
+        "Prometheus",
+        "AMP",
+        "Grafana"
+      ]
+    },
+    {
+      "id": "contributor-insights",
+      "prompt": "An operations team wants to identify the top contributors, such as the IP addresses producing the most errors, affecting a system. Which feature fits?",
+      "choices": [
+        "CloudWatch Contributor Insights",
+        "CloudWatch Synthetics canary scripts",
+        "CloudWatch dashboards with graph widgets",
+        "Composite alarms across many metrics"
+      ],
+      "correctChoice": "CloudWatch Contributor Insights",
+      "explanation": "Contributor Insights shows the top contributors affecting system performance.",
+      "difficulty": "Medium",
+      "tags": [
+        "CloudWatch",
+        "Contributor Insights"
+      ]
+    },
+    {
+      "id": "macie-purpose",
+      "prompt": "Which service uses machine learning and pattern matching to discover sensitive data such as PII in Amazon S3?",
+      "choices": [
+        "Amazon Macie",
+        "Amazon Inspector",
+        "AWS Security Hub",
+        "Amazon OpenSearch Service"
+      ],
+      "correctChoice": "Amazon Macie",
+      "explanation": "Macie discovers sensitive data in S3 and also evaluates S3 buckets for security and access-control issues.",
+      "difficulty": "Easy",
+      "tags": [
+        "Macie",
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "ec2-detailed-monitoring",
+      "prompt": "A team needs EC2 instance metrics at 1-minute granularity. What should they enable?",
+      "choices": [
+        "CloudWatch Logs Insights queries",
+        "AWS X-Ray tracing on the application",
+        "Detailed monitoring on the instances",
+        "A CloudWatch dashboard widget"
+      ],
+      "correctChoice": "Detailed monitoring on the instances",
+      "explanation": "Detailed monitoring brings EC2 metric intervals down from 5 minutes to 1 minute. Dashboards only visualise existing metrics and do not change their frequency.",
+      "difficulty": "Easy",
+      "tags": [
+        "CloudWatch",
+        "EC2",
+        "Metrics"
+      ]
+    },
+    {
+      "id": "securityhub-purpose",
+      "prompt": "Which service provides a security score showing an account's posture against enabled standards of security controls?",
+      "choices": [
+        "Amazon Kinesis Data Streams",
+        "AWS Security Hub (CSPM)",
+        "Amazon EventBridge",
+        "Amazon Macie"
+      ],
+      "correctChoice": "AWS Security Hub (CSPM)",
+      "explanation": "Security Hub CSPM evaluates resources against standards (collections of controls) and produces a security score.",
+      "difficulty": "Easy",
+      "tags": [
+        "Security Hub",
+        "Security"
+      ]
+    },
+    {
+      "id": "macie-finding-types",
+      "prompt": "Macie reports that an S3 bucket has just become publicly accessible. Which category of finding is this?",
+      "choices": [
+        "A CloudTrail Insights event",
+        "A policy finding",
+        "An Inspector package finding",
+        "A sensitive data finding"
+      ],
+      "correctChoice": "A policy finding",
+      "explanation": "Macie produces policy findings for bucket security and access issues, and sensitive data findings for sensitive content found in objects.",
+      "difficulty": "Medium",
+      "tags": [
+        "Macie",
+        "S3"
+      ]
+    },
+    {
+      "id": "cw-dashboards",
+      "prompt": "Which CloudWatch feature lets a team display metrics as customisable graphs on a single page?",
+      "choices": [
+        "Contributor Insights",
+        "Logs Insights",
+        "Dashboards",
+        "Synthetics"
+      ],
+      "correctChoice": "Dashboards",
+      "explanation": "CloudWatch dashboards visualise metrics using graphs and other widgets. Logs Insights queries logs, and Synthetics runs scripted health checks.",
+      "difficulty": "Easy",
+      "tags": [
+        "CloudWatch",
+        "Dashboards"
+      ]
+    },
+    {
+      "id": "kds-default-retention",
+      "prompt": "What is the default data retention period of a Kinesis data stream?",
+      "choices": [
+        "1 hour",
+        "365 days",
+        "24 hours",
+        "7 days"
+      ],
+      "correctChoice": "24 hours",
+      "explanation": "The default is 24 hours. It can be extended up to 365 days.",
+      "difficulty": "Easy",
+      "tags": [
+        "Kinesis",
+        "Data Streams"
+      ]
+    },
+    {
+      "id": "inspector-agentless",
+      "prompt": "Some EC2 instances do not have the SSM agent installed. How can Inspector still scan their packages for vulnerabilities?",
+      "choices": [
+        "By enabling EC2 detailed monitoring",
+        "By streaming instance logs to Firehose",
+        "It cannot; the CloudWatch agent is mandatory",
+        "By using agentless scanning based on EBS snapshots"
+      ],
+      "correctChoice": "By using agentless scanning based on EBS snapshots",
+      "explanation": "Inspector's EC2 package scanning can use the SSM agent or be agentless via EBS snapshots.",
+      "difficulty": "Medium",
+      "tags": [
+        "Inspector",
+        "EC2"
+      ]
+    },
+    {
+      "id": "distributed-tracing-slow-call",
+      "prompt": "Latency is high for requests crossing six services, but each service's metrics and logs look normal on their own. How can the team find which downstream call adds the delay?",
+      "choices": [
+        "Increase log retention on every service and search older logs",
+        "Create composite alarms that combine each service's alarms",
+        "Instrument the services for distributed tracing and inspect the spans of a slow trace",
+        "Enable detailed monitoring on all of the underlying instances"
+      ],
+      "correctChoice": "Instrument the services for distributed tracing and inspect the spans of a slow trace",
+      "explanation": "A trace is the path of a request made of spans, each with an operation name, start time and duration. Spans show where time is spent across services.",
+      "difficulty": "Hard",
+      "tags": [
+        "Tracing",
+        "Observability",
+        "X-Ray"
+      ]
+    },
+    {
+      "id": "kds-agent",
+      "prompt": "Application servers write log files to disk. Which option sends new file data to Kinesis without code changes?",
+      "choices": [
+        "Amazon Kinesis Client Library",
+        "Kinesis Video Streams",
+        "AWS Audit Manager",
+        "Amazon Kinesis Agent"
+      ],
+      "correctChoice": "Amazon Kinesis Agent",
+      "explanation": "The Kinesis Agent is a standalone application that monitors files matching a pattern and sends changes to Kinesis.",
+      "difficulty": "Medium",
+      "tags": [
+        "Kinesis",
+        "Data Streams",
+        "Producers"
+      ]
+    },
+    {
+      "id": "detailed-monitoring-scaling",
+      "prompt": "An Auto Scaling group scales on a CPU alarm, but scaling reacts too slowly because default EC2 metrics arrive every 5 minutes. The team wants a faster reaction with minimal overhead. What should they do?",
+      "choices": [
+        "Switch the alarm to anomaly detection",
+        "Enable detailed monitoring on the group's instances",
+        "Install the CloudWatch agent to publish CPU every second",
+        "Create a composite alarm over the existing alarm"
+      ],
+      "correctChoice": "Enable detailed monitoring on the group's instances",
+      "explanation": "Detailed monitoring brings default EC2 metrics to 1-minute intervals with no extra software. Composite alarms and anomaly detection do not speed up data delivery.",
+      "difficulty": "Hard",
+      "tags": [
+        "CloudWatch",
+        "EC2",
+        "Auto Scaling"
+      ]
+    },
+    {
+      "id": "kinesis-realtime",
+      "prompt": "An application must collect and process a continuous stream of stock price updates in real time. Which service is the best fit?",
+      "choices": [
+        "Amazon Kinesis Data Streams",
+        "Amazon S3 Glacier for archival storage",
+        "AWS Audit Manager for compliance evidence",
+        "Amazon Inspector for vulnerability scanning"
+      ],
+      "correctChoice": "Amazon Kinesis Data Streams",
+      "explanation": "Kinesis is the real-time streaming data service. Data Streams collects and stores streaming records for custom processing.",
+      "difficulty": "Easy",
+      "tags": [
+        "Kinesis",
+        "Data Streams"
+      ]
+    },
+    {
+      "id": "container-insights",
+      "prompt": "Which CloudWatch feature collects and summarises metrics and logs from containerised applications and microservices?",
+      "choices": [
+        "ServiceLens",
+        "Synthetics",
+        "Container Insights",
+        "Contributor Insights"
+      ],
+      "correctChoice": "Container Insights",
+      "explanation": "Container Insights collects, aggregates and summarises metrics and logs from containerised applications.",
+      "difficulty": "Medium",
+      "tags": [
+        "CloudWatch",
+        "Container Insights"
+      ]
+    },
+    {
+      "id": "kds-kpl",
+      "prompt": "A producer sends many records per second and must use compute efficiently and scale. Which Kinesis producer option is designed for this?",
+      "choices": [
+        "Amazon Data Firehose destination",
+        "AWS SDK PutRecord calls for each record",
+        "Amazon Kinesis Client Library (KCL)",
+        "Amazon Kinesis Producer Library (KPL)"
+      ],
+      "correctChoice": "Amazon Kinesis Producer Library (KPL)",
+      "explanation": "The KPL is for high-volume, efficient publishing to a data stream. The SDK is simple but does not scale well, and the KCL is a consumer library.",
+      "difficulty": "Medium",
+      "tags": [
+        "Kinesis",
+        "Data Streams",
+        "Producers"
+      ]
+    },
+    {
+      "id": "insights-vs-athena",
+      "prompt": "During an incident, engineers must interactively query the last few hours of logs from 20 services, each in its own log group, with minimal setup. Which option best meets this?",
+      "choices": [
+        "Export each log group to S3 and analyse the files with Athena",
+        "Enable CloudTrail Event History on the log groups",
+        "CloudWatch Logs Insights queries across the log groups",
+        "Stream the logs to Kinesis Video Streams"
+      ],
+      "correctChoice": "CloudWatch Logs Insights queries across the log groups",
+      "explanation": "Logs Insights queries log data in place with robust filtering and less effort than exporting to S3 and using Athena. Export plus Athena is suited to long-term or batch analysis.",
+      "difficulty": "Hard",
+      "tags": [
+        "CloudWatch Logs",
+        "Logs Insights",
+        "Athena"
+      ]
+    },
+    {
+      "id": "eb-pattern-prefix-numeric",
+      "prompt": "A rule should fire only for S3 object-created events where the key starts with 'invoices/' and the object size exceeds 1 MB. What is the best way to implement this filtering?",
+      "choices": [
+        "Match all S3 events and filter inside the Lambda target",
+        "A schedule expression using a rate",
+        "An input transformer that discards non-matching events",
+        "An event pattern combining prefix and numeric matching"
+      ],
+      "correctChoice": "An event pattern combining prefix and numeric matching",
+      "explanation": "Event patterns filter on content using prefix, numeric and other matching types, which can be combined. Filtering in the target wastes invocations, and input transformers shape the payload but do not decide whether a rule matches.",
+      "difficulty": "Hard",
+      "tags": [
+        "EventBridge",
+        "Event patterns"
+      ]
+    },
+    {
+      "id": "eb-saas-routing",
+      "prompt": "A company wants events from a SaaS provider and from AWS services routed by content to a Lambda function and an SQS queue. Producers must not know the consumers, and consumers must not poll a source. Which solution fits?",
+      "choices": [
+        "A Kinesis data stream with consumers that poll its shards",
+        "One CloudWatch alarm per event type, each invoking a consumer",
+        "Firehose delivering to S3, with S3 notifications to consumers",
+        "An EventBridge event bus with a partner event source and rules using event patterns"
+      ],
+      "correctChoice": "An EventBridge event bus with a partner event source and rules using event patterns",
+      "explanation": "EventBridge connects separate systems by pushing matching events to targets, based on rules, without the consumer polling. It supports partner event sources.",
+      "difficulty": "Hard",
+      "tags": [
+        "EventBridge",
+        "SaaS"
+      ]
+    },
+    {
+      "id": "logs-kms-control",
+      "prompt": "A policy requires log data in CloudWatch Logs to be encrypted at rest with a key the company controls and can disable. What should the architect do?",
+      "choices": [
+        "Export logs to S3 first because only S3 supports KMS",
+        "Associate a customer managed KMS key with the log group",
+        "Enable CloudTrail Event History on the log group",
+        "Rely on the default encryption because it is under the company's control"
+      ],
+      "correctChoice": "Associate a customer managed KMS key with the log group",
+      "explanation": "CloudWatch Logs is always encrypted at rest, but only a customer managed KMS key gives the company control over the key policy and the ability to disable it.",
+      "difficulty": "Hard",
+      "tags": [
+        "CloudWatch Logs",
+        "KMS",
+        "Security"
+      ]
+    },
+    {
+      "id": "securityhub-standards",
+      "prompt": "In Security Hub CSPM, what is a 'standard'?",
+      "choices": [
+        "A framework of audit evidence that Macie collects from S3 buckets",
+        "A set of EC2 hardening benchmarks run by the CloudWatch agent",
+        "A Kinesis data stream that carries security events between accounts",
+        "A collection of security controls, most of which are evaluated using AWS Config rules"
+      ],
+      "correctChoice": "A collection of security controls, most of which are evaluated using AWS Config rules",
+      "explanation": "Security Hub CSPM lets you enable standards, each a collection of controls. The results feed a security score.",
+      "difficulty": "Medium",
+      "tags": [
+        "Security Hub",
+        "Config"
+      ]
+    },
+    {
+      "id": "firehose-lambda-contract",
+      "prompt": "A Lambda function transforms records for a Firehose delivery stream, but Firehose treats the output as invalid. What must each returned record contain?",
+      "choices": [
+        "Only the transformed data, because Firehose tracks order itself",
+        "The original record ID, a result status, and the transformed data",
+        "A new partition key and a sequence number set by the function",
+        "The Glue table ARN and the destination prefix for each record"
+      ],
+      "correctChoice": "The original record ID, a result status, and the transformed data",
+      "explanation": "A Firehose transformation Lambda must return the record ID, a result and the data for each record so Firehose can match outputs to inputs.",
+      "difficulty": "Hard",
+      "tags": [
+        "Kinesis",
+        "Firehose",
+        "Lambda",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "kvs-purpose",
+      "prompt": "Which service is designed to ingest and process real-time streaming video, for example for machine learning analysis?",
+      "choices": [
+        "Amazon Data Firehose",
+        "Amazon Kinesis Video Streams",
+        "Amazon Kinesis Data Streams",
+        "Amazon OpenSearch Service"
+      ],
+      "correctChoice": "Amazon Kinesis Video Streams",
+      "explanation": "Kinesis Video Streams is the video-specific member of the Kinesis family and can feed ML consumers.",
+      "difficulty": "Easy",
+      "tags": [
+        "Kinesis",
+        "Video Streams"
+      ]
+    },
+    {
+      "id": "agent-no-data",
+      "prompt": "The CloudWatch agent is installed on a new EC2 instance and running, but no custom metrics or logs appear in CloudWatch. What is the most likely cause?",
+      "choices": [
+        "The instance has no IAM role, or its role lacks CloudWatch permissions",
+        "Detailed monitoring has not been enabled on the instance",
+        "The instance has not been assigned an Elastic IP address",
+        "The log group's retention period has not been configured"
+      ],
+      "correctChoice": "The instance has no IAM role, or its role lacks CloudWatch permissions",
+      "explanation": "The agent uses the instance's IAM role to call CloudWatch. Detailed monitoring and retention settings do not stop the agent from publishing.",
+      "difficulty": "Hard",
+      "tags": [
+        "CloudWatch",
+        "EC2",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "prometheus-billing-accuracy",
+      "prompt": "A team proposes Prometheus to meter each API request for per-request customer billing. Why is this a poor fit?",
+      "choices": [
+        "Prometheus cannot store metrics as time series data at all",
+        "Prometheus has no query language for analysing collected data",
+        "Prometheus can only ingest data that originates from CloudTrail",
+        "Prometheus data is not detailed and complete enough when 100% accuracy is required"
+      ],
+      "correctChoice": "Prometheus data is not detailed and complete enough when 100% accuracy is required",
+      "explanation": "Prometheus values reliability and visibility of system health over exact accuracy, so billing needs another system that captures every request.",
+      "difficulty": "Hard",
+      "tags": [
+        "Prometheus",
+        "Observability"
+      ]
+    },
+    {
+      "id": "eb-schedule-utc",
+      "prompt": "In which time zone are EventBridge scheduled rule expressions evaluated?",
+      "choices": [
+        "The target resource's local time",
+        "UTC",
+        "The account owner's local time",
+        "The Region's local time"
+      ],
+      "correctChoice": "UTC",
+      "explanation": "Scheduled events in EventBridge rules use UTC with a minimum precision of 1 minute.",
+      "difficulty": "Easy",
+      "tags": [
+        "EventBridge",
+        "Scheduling"
+      ]
+    },
+    {
+      "id": "kds-provisioned-steady",
+      "prompt": "A stream carries a steady, well-understood load around the clock. The team is comfortable managing shard counts and wants the most cost-appropriate capacity mode. Which should they choose?",
+      "choices": [
+        "Provisioned mode, paying per shard",
+        "Enhanced fan-out mode",
+        "On-demand mode, because it removes all cost variability",
+        "Dynamic partitioning mode"
+      ],
+      "correctChoice": "Provisioned mode, paying per shard",
+      "explanation": "Provisioned mode suits predictable workloads and is billed per shard. On-demand mode is intended for unpredictable workloads and bills on data ingested and retrieved.",
+      "difficulty": "Hard",
+      "tags": [
+        "Kinesis",
+        "Data Streams",
+        "Cost"
+      ]
+    },
+    {
+      "id": "firehose-purpose",
+      "prompt": "Which service loads streaming data into destinations such as S3 and Redshift without the user managing shards or consumers?",
+      "choices": [
+        "Kinesis Data Streams with provisioned shards",
+        "AWS Audit Manager",
+        "Amazon EventBridge Schema Registry",
+        "Amazon Data Firehose"
+      ],
+      "correctChoice": "Amazon Data Firehose",
+      "explanation": "Amazon Data Firehose is the serverless, simpler streaming option with direct integration to destinations such as S3, Redshift and Splunk.",
+      "difficulty": "Easy",
+      "tags": [
+        "Kinesis",
+        "Firehose"
+      ]
+    },
+    {
+      "id": "cloudtrail-14-months",
+      "prompt": "A trail that delivers only to S3 has been running for 3 years. Auditors need SQL queries over API activity from 14 months ago with low operational overhead. What should be used?",
+      "choices": [
+        "Look up the events in CloudTrail Event History",
+        "Review the history in Amazon Macie findings",
+        "Query the logs with CloudWatch Logs Insights",
+        "Query the trail's S3 log files with Amazon Athena"
+      ],
+      "correctChoice": "Query the trail's S3 log files with Amazon Athena",
+      "explanation": "Event History only covers 90 days. Trail logs in S3 persist, and Athena can query them efficiently.",
+      "difficulty": "Hard",
+      "tags": [
+        "CloudTrail",
+        "Athena",
+        "S3"
+      ]
+    },
+    {
+      "id": "kds-ordering-key",
+      "prompt": "An application must process each device's records in order. How should the producer set the partition key?",
+      "choices": [
+        "Use a random value for each record to spread load evenly",
+        "Use the device ID, so a device's records go to the same shard",
+        "Use one constant value for all records in the stream",
+        "Use the record's ingestion timestamp as the partition key"
+      ],
+      "correctChoice": "Use the device ID, so a device's records go to the same shard",
+      "explanation": "Records with the same partition key map to the same shard, and sequence numbers within the shard preserve order for that key.",
+      "difficulty": "Medium",
+      "tags": [
+        "Kinesis",
+        "Data Streams"
+      ]
+    },
+    {
+      "id": "kds-efo-throttling",
+      "prompt": "A 6-shard stream is fully used for ingestion (6 MB/s). Three consumers each read all the data with default shared throughput and are throttled. The team does not want to add shards or change producers. What should they do?",
+      "choices": [
+        "Use the AWS SDK for simple reads in each consumer",
+        "Register the consumers for enhanced fan-out",
+        "Use partition keys with more cardinality",
+        "Increase the retention period"
+      ],
+      "correctChoice": "Register the consumers for enhanced fan-out",
+      "explanation": "Shared read throughput is 2 MB/s per shard across all consumers: 12 MB/s total against 18 MB/s needed. Enhanced fan-out gives each consumer dedicated 2 MB/s per shard.",
+      "difficulty": "Hard",
+      "tags": [
+        "Kinesis",
+        "Data Streams",
+        "Enhanced fan-out"
+      ]
+    },
+    {
+      "id": "audit-manager-evidence",
+      "prompt": "Auditors want itemised evidence mapped to controls from a compliance framework (for example HIPAA), collected continuously and compiled into an assessment report. Which service best meets this?",
+      "choices": [
+        "Amazon Macie",
+        "Amazon Inspector",
+        "AWS Security Hub CSPM, which provides a security score",
+        "AWS Audit Manager"
+      ],
+      "correctChoice": "AWS Audit Manager",
+      "explanation": "Audit Manager provides itemised assessments and evidence against frameworks. Security Hub focuses on posture scoring against standards.",
+      "difficulty": "Hard",
+      "tags": [
+        "Audit Manager",
+        "Compliance"
+      ]
+    },
+    {
+      "id": "otel-collector",
+      "prompt": "What is the main benefit of using an OpenTelemetry Collector?",
+      "choices": [
+        "It stores all logs, metrics and traces for ten years automatically",
+        "It replaces CloudTrail for auditing API calls across an account",
+        "One vendor-agnostic agent receives, processes and exports telemetry, removing the need for multiple agents",
+        "It converts every metric an application publishes into a trace"
+      ],
+      "correctChoice": "One vendor-agnostic agent receives, processes and exports telemetry, removing the need for multiple agents",
+      "explanation": "A Collector is a vendor-agnostic way to receive, process and export telemetry data, so teams do not need to run and maintain multiple agents.",
+      "difficulty": "Medium",
+      "tags": [
+        "OpenTelemetry",
+        "Observability"
+      ]
+    },
+    {
+      "id": "firehose-vs-kds",
+      "prompt": "Which statement correctly distinguishes Amazon Data Firehose from Kinesis Data Streams?",
+      "choices": [
+        "Firehose delivers data to a destination and does not retain it for consumers to replay",
+        "Firehose requires the customer to provision and manage shards",
+        "Firehose supports many independent custom consumer applications",
+        "Firehose retains data for up to 365 days so consumers can replay it"
+      ],
+      "correctChoice": "Firehose delivers data to a destination and does not retain it for consumers to replay",
+      "explanation": "Firehose is serverless with a single delivery destination and data disappears once consumed. Data Streams stores records, supports custom consumers and allows replay within retention.",
+      "difficulty": "Medium",
+      "tags": [
+        "Kinesis",
+        "Firehose",
+        "Data Streams"
+      ]
+    },
+    {
+      "id": "cloudtrail-to-cwl",
+      "prompt": "A security team wants to search API activity with Logs Insights and alarm on specific API calls. What should they configure?",
+      "choices": [
+        "Increase Event History retention",
+        "Enable detailed monitoring on the account",
+        "Use Kinesis Video Streams",
+        "Send the trail's events to CloudWatch Logs"
+      ],
+      "correctChoice": "Send the trail's events to CloudWatch Logs",
+      "explanation": "CloudTrail is commonly forwarded to CloudWatch Logs so that log analysis and alarms can be applied to API activity.",
+      "difficulty": "Medium",
+      "tags": [
+        "CloudTrail",
+        "CloudWatch Logs"
+      ]
+    },
+    {
+      "id": "firehose-parquet",
+      "prompt": "Streaming JSON records must be stored in S3 as Parquet for analytics. Which approach requires the least custom code?",
+      "choices": [
+        "Amazon Data Firehose with record format conversion using an AWS Glue table",
+        "A custom KCL consumer application that writes Parquet files to S3",
+        "A CloudWatch Logs subscription that invokes a Lambda function per batch",
+        "Amazon Macie scanning the destination bucket after delivery"
+      ],
+      "correctChoice": "Amazon Data Firehose with record format conversion using an AWS Glue table",
+      "explanation": "Firehose can convert incoming data to Parquet or ORC using a Glue table definition and deliver it to S3.",
+      "difficulty": "Medium",
+      "tags": [
+        "Kinesis",
+        "Firehose",
+        "S3"
+      ]
+    },
+    {
+      "id": "agent-install-ssm",
+      "prompt": "An architect must install the CloudWatch agent on many SSM-managed EC2 instances without logging in to each one. What is the most efficient approach?",
+      "choices": [
+        "Use Systems Manager Run Command with the AWS-ConfigureAWSPackage document and the AmazonCloudWatchAgent package",
+        "Connect to each instance with EC2 Instance Connect and install it by hand",
+        "Create a CloudWatch Logs subscription filter on each instance's log group",
+        "Schedule an EventBridge rule that installs the agent on each instance"
+      ],
+      "correctChoice": "Use Systems Manager Run Command with the AWS-ConfigureAWSPackage document and the AmazonCloudWatchAgent package",
+      "explanation": "Run Command with AWS-ConfigureAWSPackage installs the agent remotely at scale. The instances still need an IAM role that allows the agent to send data.",
+      "difficulty": "Medium",
+      "tags": [
+        "CloudWatch",
+        "Systems Manager",
+        "EC2"
+      ]
+    },
+    {
+      "id": "flink-purpose",
+      "prompt": "Which service runs queries and analytics on data flowing through a real-time stream using SQL, Java, Scala or Python?",
+      "choices": [
+        "Amazon Macie, which classifies sensitive data in S3 buckets",
+        "AWS CloudTrail Lake, which queries audit events using SQL",
+        "Amazon Managed Service for Apache Flink",
+        "Amazon Inspector, which scans workloads for vulnerabilities"
+      ],
+      "correctChoice": "Amazon Managed Service for Apache Flink",
+      "explanation": "Managed Service for Apache Flink (formerly Kinesis Data Analytics) analyses streaming data as it arrives.",
+      "difficulty": "Easy",
+      "tags": [
+        "Kinesis",
+        "Apache Flink"
+      ]
+    },
+    {
+      "id": "ec2-basic-interval",
+      "prompt": "With basic monitoring, how often does an EC2 instance publish its default metrics to CloudWatch?",
+      "choices": [
+        "Every 1 minute",
+        "Every 15 minutes",
+        "Every 10 seconds",
+        "Every 5 minutes"
+      ],
+      "correctChoice": "Every 5 minutes",
+      "explanation": "EC2 basic monitoring publishes at 5-minute intervals. Detailed monitoring reduces this to 1 minute.",
+      "difficulty": "Easy",
+      "tags": [
+        "CloudWatch",
+        "EC2",
+        "Metrics"
+      ]
+    },
+    {
+      "id": "opensearch-serverless-logs",
+      "prompt": "A team wants ELK-style full-text search and log analytics with highly variable load, and does not want to size or manage cluster capacity. What is the best choice?",
+      "choices": [
+        "Amazon OpenSearch Serverless",
+        "CloudWatch Logs Insights only",
+        "Amazon Macie",
+        "A provisioned OpenSearch cluster sized for peak load"
+      ],
+      "correctChoice": "Amazon OpenSearch Serverless",
+      "explanation": "OpenSearch can be deployed serverless, which automatically provisions and scales compute. A provisioned cluster requires capacity planning.",
+      "difficulty": "Hard",
+      "tags": [
+        "OpenSearch",
+        "Logs"
+      ]
+    },
+    {
+      "id": "alarm-action-asg",
+      "prompt": "Which of the following can a CloudWatch metric alarm trigger directly when it enters the ALARM state?",
+      "choices": [
+        "Changing an RDS instance class",
+        "Creating an S3 bucket",
+        "An EC2 Auto Scaling scaling policy",
+        "Resizing an EBS volume"
+      ],
+      "correctChoice": "An EC2 Auto Scaling scaling policy",
+      "explanation": "Metric alarm actions include SNS notifications, Auto Scaling actions and EC2 actions. Other changes need an indirect mechanism such as a Lambda function.",
+      "difficulty": "Easy",
+      "tags": [
+        "CloudWatch",
+        "Alarms",
+        "Auto Scaling"
+      ]
+    },
+    {
+      "id": "eb-input-part",
+      "prompt": "A Lambda target should receive only the 'detail' object of each matched event. Which 'Configure input' option is appropriate?",
+      "choices": [
+        "Matched event",
+        "Part of the matched event, using $.detail",
+        "Input transformer with the reserved variable aws.events.event",
+        "Constant (JSON text)"
+      ],
+      "correctChoice": "Part of the matched event, using $.detail",
+      "explanation": "Part of matched event passes only the selected portion of the event. Matched event passes everything and constant sends fixed text regardless of the event.",
+      "difficulty": "Medium",
+      "tags": [
+        "EventBridge",
+        "Rules"
+      ]
+    },
+    {
+      "id": "agent-memory-metric",
+      "prompt": "Which EC2 metric is NOT collected by default and requires the CloudWatch agent?",
+      "choices": [
+        "CPU utilisation",
+        "Network in/out",
+        "Status check failed",
+        "Memory utilisation"
+      ],
+      "correctChoice": "Memory utilisation",
+      "explanation": "CPU, network and status checks are visible to the hypervisor and published by default. Memory, swap, disk space and page file usage are inside the guest OS, so the CloudWatch agent is needed.",
+      "difficulty": "Easy",
+      "tags": [
+        "CloudWatch",
+        "EC2",
+        "Metrics"
+      ]
+    },
+    {
+      "id": "logs-encryption",
+      "prompt": "Which statement about encryption in CloudWatch Logs is correct?",
+      "choices": [
+        "Log data is stored unencrypted unless the log group is exported to S3",
+        "Only AWS managed keys are supported for CloudWatch Logs",
+        "Log data is encrypted at rest by default, and a customer managed KMS key can optionally be used",
+        "Encryption at rest requires the CloudWatch agent to be installed"
+      ],
+      "correctChoice": "Log data is encrypted at rest by default, and a customer managed KMS key can optionally be used",
+      "explanation": "CloudWatch Logs encrypts data at rest by default. You can associate your own customer managed key from KMS for additional control.",
+      "difficulty": "Easy",
+      "tags": [
+        "CloudWatch Logs",
+        "KMS",
+        "Security"
+      ]
+    },
+    {
+      "id": "logs-insights-timeout",
+      "prompt": "A Logs Insights query over a very long time range and many log groups stops after about an hour without completing. What explains this and what should the team do?",
+      "choices": [
+        "Query results expire after 7 days, so re-enable retention",
+        "Insights cannot query logs older than the 90-day Event History",
+        "Queries time out after 60 minutes, so narrow the time range or log groups",
+        "Insights can only query one log group, so merge them first"
+      ],
+      "correctChoice": "Queries time out after 60 minutes, so narrow the time range or log groups",
+      "explanation": "A Logs Insights query times out after 60 minutes. A single query can span up to 50 log groups, so narrowing the scope is the fix.",
+      "difficulty": "Hard",
+      "tags": [
+        "CloudWatch Logs",
+        "Logs Insights",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "firehose-destinations",
+      "prompt": "Which of these is a supported delivery destination for Amazon Data Firehose?",
+      "choices": [
+        "Splunk",
+        "Amazon EBS",
+        "Amazon DynamoDB",
+        "Amazon EFS"
+      ],
+      "correctChoice": "Splunk",
+      "explanation": "Firehose delivers to S3, Redshift, OpenSearch, HTTP endpoints and third parties such as Splunk. It does not write directly to DynamoDB, EFS or EBS.",
+      "difficulty": "Medium",
+      "tags": [
+        "Kinesis",
+        "Firehose"
+      ]
+    },
+    {
+      "id": "kds-on-demand-fit",
+      "prompt": "Which Kinesis Data Streams capacity mode suits an unpredictable workload and removes the need to manage shards?",
+      "choices": [
+        "Provisioned mode",
+        "Dynamic partitioning mode",
+        "On-demand mode",
+        "Enhanced fan-out mode"
+      ],
+      "correctChoice": "On-demand mode",
+      "explanation": "On-demand mode scales automatically and charges for data ingested and retrieved. Provisioned mode requires the customer to manage shards.",
+      "difficulty": "Easy",
+      "tags": [
+        "Kinesis",
+        "Data Streams"
+      ]
+    },
+    {
+      "id": "eb-cloudtrail-api-events",
+      "prompt": "How can an EventBridge rule react to API calls on an AWS service that does not emit its own EventBridge events?",
+      "choices": [
+        "Use a Kinesis Video Stream to capture API calls from the service",
+        "Use CloudTrail, which lets EventBridge match API call events from the service",
+        "Use the EventBridge Schema Registry to subscribe to the service's calls",
+        "Use an anomaly detection alarm on the service's metrics"
+      ],
+      "correctChoice": "Use CloudTrail, which lets EventBridge match API call events from the service",
+      "explanation": "Not every service emits native events, so CloudTrail is used to allow EventBridge to track changes made by API calls. API call events larger than 256 KB are not supported.",
+      "difficulty": "Medium",
+      "tags": [
+        "EventBridge",
+        "CloudTrail"
+      ]
+    },
+    {
+      "id": "amg-visualise-amp",
+      "prompt": "A team stores metrics in Amazon Managed Service for Prometheus and wants managed dashboards to query and visualise them. Which service should they use?",
+      "choices": [
+        "Amazon OpenSearch Service",
+        "AWS Audit Manager",
+        "Amazon Managed Grafana",
+        "Amazon Macie"
+      ],
+      "correctChoice": "Amazon Managed Grafana",
+      "explanation": "Amazon Managed Service for Grafana can query, correlate and visualise metrics, logs and traces, including data in AMP.",
+      "difficulty": "Medium",
+      "tags": [
+        "Prometheus",
+        "Grafana"
+      ]
+    },
+    {
+      "id": "inspector-purpose",
+      "prompt": "Which service automatically and continually scans EC2 instances, ECR container images and Lambda functions for software vulnerabilities?",
+      "choices": [
+        "AWS CloudTrail",
+        "Amazon Macie",
+        "Amazon Inspector",
+        "AWS Audit Manager"
+      ],
+      "correctChoice": "Amazon Inspector",
+      "explanation": "Inspector is a vulnerability management service that finds CVEs and unintended network exposure and produces findings with a risk score.",
+      "difficulty": "Easy",
+      "tags": [
+        "Inspector",
+        "Security"
+      ]
+    },
+    {
+      "id": "kds-shard-sizing",
+      "prompt": "A provisioned Kinesis data stream must ingest an evenly distributed 4 MB/s of data at about 2,000 records per second. What is the minimum number of shards?",
+      "choices": [
+        "2",
+        "8",
+        "4",
+        "16"
+      ],
+      "correctChoice": "4",
+      "explanation": "Each shard supports up to 1 MB/s or 1,000 records/s for writes. 4 MB/s needs 4 shards, and 2,000 records/s alone would need only 2, so the throughput limit decides.",
+      "difficulty": "Medium",
+      "tags": [
+        "Kinesis",
+        "Data Streams"
+      ]
+    },
+    {
+      "id": "high-resolution-metric",
+      "prompt": "An application must publish custom metrics at 1-second granularity. What should the architect use?",
+      "choices": [
+        "EC2 detailed monitoring",
+        "Standard-resolution custom metrics",
+        "EC2 basic monitoring",
+        "High-resolution custom metrics"
+      ],
+      "correctChoice": "High-resolution custom metrics",
+      "explanation": "Standard custom metrics have a 1-minute resolution. High-resolution custom metrics support intervals from 1 second up. Detailed monitoring only applies to default EC2 metrics at 1 minute.",
+      "difficulty": "Easy",
+      "tags": [
+        "CloudWatch",
+        "Metrics"
+      ]
+    },
+    {
+      "id": "eb-partner-source",
+      "prompt": "How can events from a third-party SaaS provider be delivered into EventBridge?",
+      "choices": [
+        "Through a CloudWatch Logs subscription filter",
+        "Through the Kinesis Agent",
+        "Through an SQS dead-letter queue",
+        "Through a partner event source integrated with an event bus"
+      ],
+      "correctChoice": "Through a partner event source integrated with an event bus",
+      "explanation": "EventBridge supports partner (SaaS) event sources, so events from integrated providers flow into an event bus where rules can route them.",
+      "difficulty": "Easy",
+      "tags": [
+        "EventBridge",
+        "SaaS"
+      ]
+    },
+    {
+      "id": "logs-stream-opensearch",
+      "prompt": "A team wants to search and visualise CloudWatch Logs data using an ELK-style stack. What should they do?",
+      "choices": [
+        "Enable CloudTrail Event History",
+        "Enable detailed monitoring",
+        "Stream the log group to Amazon OpenSearch Service",
+        "Switch the log group to Kinesis Video Streams"
+      ],
+      "correctChoice": "Stream the log group to Amazon OpenSearch Service",
+      "explanation": "CloudWatch Logs can stream to OpenSearch Service, which supports ELK-style search and analytics.",
+      "difficulty": "Medium",
+      "tags": [
+        "CloudWatch Logs",
+        "OpenSearch"
+      ]
+    },
+    {
+      "id": "alarm-insufficient-data",
+      "prompt": "A CloudWatch alarm has just been created and its metric has not yet delivered enough data points. In which state is the alarm?",
+      "choices": [
+        "INSUFFICIENT_DATA",
+        "OK, because no breach has occurred",
+        "ALARM, because data is missing",
+        "PENDING, until the first evaluation"
+      ],
+      "correctChoice": "INSUFFICIENT_DATA",
+      "explanation": "Alarms have three states: OK, ALARM and INSUFFICIENT_DATA. INSUFFICIENT_DATA means there is not enough data to determine the state.",
+      "difficulty": "Easy",
+      "tags": [
+        "CloudWatch",
+        "Alarms"
+      ]
+    },
+    {
+      "id": "kds-extend-retention",
+      "prompt": "Consumers of a Kinesis data stream may be offline for up to 5 days and must still read everything they missed. What should the architect change?",
+      "choices": [
+        "Add more shards",
+        "Enable enhanced fan-out",
+        "Switch to Amazon Data Firehose",
+        "Increase the stream's retention period"
+      ],
+      "correctChoice": "Increase the stream's retention period",
+      "explanation": "Default retention is 24 hours and can be extended up to 365 days. Shards and fan-out affect throughput, not how long data is kept.",
+      "difficulty": "Medium",
+      "tags": [
+        "Kinesis",
+        "Data Streams"
+      ]
+    },
+    {
+      "id": "eb-ec2-state-change",
+      "prompt": "A company wants a Lambda function to run whenever an EC2 instance changes state, with no polling. Which design fits?",
+      "choices": [
+        "A Kinesis data stream fed by the CloudWatch agent",
+        "A Lambda function polling the EC2 API every minute",
+        "A CloudWatch alarm on the CPUUtilization metric",
+        "An EventBridge rule with an event pattern for EC2 state-change events and the function as target"
+      ],
+      "correctChoice": "An EventBridge rule with an event pattern for EC2 state-change events and the function as target",
+      "explanation": "AWS services emit events to EventBridge. Rules with event patterns push matching events straight to targets, so consumers do not poll.",
+      "difficulty": "Medium",
+      "tags": [
+        "EventBridge",
+        "EC2"
+      ]
+    },
+    {
+      "id": "signal-metric",
+      "prompt": "Which observability signal is a number that represents one facet of a system, measured over time (for example, CPU utilisation)?",
+      "choices": [
+        "Trace",
+        "Log",
+        "Event",
+        "Metric"
+      ],
+      "correctChoice": "Metric",
+      "explanation": "A metric is a time-ordered series of data points for one measurable aspect of a system. Logs are timestamped text records of events, and traces follow a request across services.",
+      "difficulty": "Easy",
+      "tags": [
+        "Observability",
+        "CloudWatch"
+      ]
+    },
+    {
+      "id": "agent-iam-role",
+      "prompt": "What must be attached to an EC2 instance so the CloudWatch agent can send metrics and logs to CloudWatch?",
+      "choices": [
+        "A security group rule allowing inbound CloudWatch traffic",
+        "A key pair dedicated to the agent",
+        "An Elastic IP address",
+        "An IAM role with the required CloudWatch permissions"
+      ],
+      "correctChoice": "An IAM role with the required CloudWatch permissions",
+      "explanation": "The agent calls CloudWatch APIs using the instance's IAM role credentials. Security groups do not grant API permissions and the agent initiates outbound calls.",
+      "difficulty": "Easy",
+      "tags": [
+        "CloudWatch",
+        "EC2",
+        "IAM"
+      ]
+    },
+    {
+      "id": "composite-alarm-noise",
+      "prompt": "An operations team receives many separate notifications from related alarms during one incident and wants a single, less noisy alarm. Which feature should they use?",
+      "choices": [
+        "Anomaly detection applied to each of the individual alarms",
+        "Detailed monitoring enabled on every monitored resource",
+        "A CloudWatch dashboard that shows all of the alarms together",
+        "A composite alarm that combines the states of the other alarms"
+      ],
+      "correctChoice": "A composite alarm that combines the states of the other alarms",
+      "explanation": "Composite alarms watch other alarms and combine them using rule expressions to reduce alarm noise.",
+      "difficulty": "Medium",
+      "tags": [
+        "CloudWatch",
+        "Alarms"
+      ]
+    },
+    {
+      "id": "firehose-dynamic-partitioning",
+      "prompt": "Streaming events must land in S3 grouped under prefixes based on a field in each record, such as customer_id, to speed up analytics. Which feature does this?",
+      "choices": [
+        "EventBridge input transformer",
+        "Firehose dynamic partitioning",
+        "Kinesis Data Streams enhanced fan-out",
+        "Firehose buffering hints"
+      ],
+      "correctChoice": "Firehose dynamic partitioning",
+      "explanation": "Dynamic partitioning groups data by keys in the records and delivers it to S3 prefixes. Keys can be parsed with a JQ expression or Lambda function.",
+      "difficulty": "Medium",
+      "tags": [
+        "Kinesis",
+        "Firehose",
+        "S3"
+      ]
+    },
+    {
+      "id": "cw-events-renamed",
+      "prompt": "Amazon CloudWatch Events has since evolved into which service?",
+      "choices": [
+        "Amazon Kinesis Data Streams",
+        "AWS CloudTrail",
+        "Amazon SNS",
+        "Amazon EventBridge"
+      ],
+      "correctChoice": "Amazon EventBridge",
+      "explanation": "CloudWatch Events is now Amazon EventBridge, a serverless event bus with rules that route events to targets.",
+      "difficulty": "Easy",
+      "tags": [
+        "EventBridge",
+        "CloudWatch"
+      ]
+    },
+    {
+      "id": "log-retention-default",
+      "prompt": "What is the default retention setting for a new CloudWatch Logs log group?",
+      "choices": [
+        "Seven days, then events are deleted",
+        "Thirty days, then events are deleted",
+        "Logs never expire",
+        "Ninety days, then events are deleted"
+      ],
+      "correctChoice": "Logs never expire",
+      "explanation": "Log groups keep data indefinitely by default. Retention can be set from 1 day up to 10 years to control cost and meet compliance needs.",
+      "difficulty": "Easy",
+      "tags": [
+        "CloudWatch Logs"
+      ]
+    },
+    {
+      "id": "opensearch-purpose",
+      "prompt": "Which AWS service is a managed search and analytics engine commonly used for full-text search and log analytics (the ELK-style stack)?",
+      "choices": [
+        "Amazon OpenSearch Service",
+        "Amazon Macie",
+        "AWS CloudTrail",
+        "Amazon EventBridge"
+      ],
+      "correctChoice": "Amazon OpenSearch Service",
+      "explanation": "OpenSearch Service makes it easy to deploy, operate and scale OpenSearch for full-text search and log analytics.",
+      "difficulty": "Easy",
+      "tags": [
+        "OpenSearch",
+        "Search"
+      ]
+    },
+    {
+      "id": "synthetics-canary",
+      "prompt": "A team wants scripted checks that regularly test a web application's endpoints to detect failures before users do. Which feature fits?",
+      "choices": [
+        "CloudWatch Contributor Insights",
+        "AWS CloudTrail Event History",
+        "CloudWatch Synthetics",
+        "CloudWatch Logs Insights"
+      ],
+      "correctChoice": "CloudWatch Synthetics",
+      "explanation": "Synthetics tests web applications to check their health.",
+      "difficulty": "Medium",
+      "tags": [
+        "CloudWatch",
+        "Synthetics"
+      ]
+    },
+    {
+      "id": "ec2-status-checks",
+      "prompt": "Which two types of status check are reported for an EC2 instance?",
+      "choices": [
+        "Storage status and billing status",
+        "System status (underlying hypervisor/host) and instance status",
+        "Security group status and NACL status",
+        "CPU status and memory status"
+      ],
+      "correctChoice": "System status (underlying hypervisor/host) and instance status",
+      "explanation": "Status checks cover the underlying hypervisor and the EC2 instance itself, and are published by default.",
+      "difficulty": "Medium",
+      "tags": [
+        "CloudWatch",
+        "EC2"
+      ]
+    },
+    {
+      "id": "securityhub-needs-config",
+      "prompt": "Security Hub CSPM standards are enabled, but most controls show no results. What should the team check first?",
+      "choices": [
+        "Whether the CloudTrail Event History has been extended",
+        "Whether Amazon Macie is enabled",
+        "Whether AWS Config is enabled and recording resources",
+        "Whether Kinesis Data Streams has enough shards"
+      ],
+      "correctChoice": "Whether AWS Config is enabled and recording resources",
+      "explanation": "Most Security Hub CSPM controls are evaluated using AWS Config rules, so Config must be enabled.",
+      "difficulty": "Hard",
+      "tags": [
+        "Security Hub",
+        "Config",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "eb-input-transformer",
+      "prompt": "A rule matches EC2 state-change events and targets an SNS topic. The message must read like 'Instance i-123 is now stopped' using fields from the event. Which 'Configure input' option should be used?",
+      "choices": [
+        "Matched event, which passes the entire event unchanged",
+        "Part of matched event using $.detail, which passes one object",
+        "Constant (JSON text), which sends the same static content",
+        "Input transformer mapping event fields to variables inserted into a template"
+      ],
+      "correctChoice": "Input transformer mapping event fields to variables inserted into a template",
+      "explanation": "An input transformer maps fields to variables and inserts them into a string or JSON. Constant text cannot include event values, and the other options pass raw event content.",
+      "difficulty": "Hard",
+      "tags": [
+        "EventBridge",
+        "Rules"
+      ]
+    },
+    {
+      "id": "eb-pattern-prefix",
+      "prompt": "An EventBridge rule must match only events whose object key begins with 'images/'. Which event-pattern matching type should be used?",
+      "choices": [
+        "IP address matching",
+        "Prefix matching",
+        "Exists matching",
+        "Anything-but matching"
+      ],
+      "correctChoice": "Prefix matching",
+      "explanation": "Prefix matching compares the start of a field value. Anything-but excludes values and exists checks only for the presence of a field.",
+      "difficulty": "Medium",
+      "tags": [
+        "EventBridge",
+        "Event patterns"
+      ]
+    },
+    {
+      "id": "kds-partition-key",
+      "prompt": "In Kinesis Data Streams, what determines which shard a record is written to?",
+      "choices": [
+        "The stream's retention period",
+        "The consumer reading the record",
+        "The record's sequence number",
+        "The record's partition key"
+      ],
+      "correctChoice": "The record's partition key",
+      "explanation": "The partition key is hashed with MD5, and the hash maps the record to a shard. Sequence numbers are assigned by the stream after the record is written.",
+      "difficulty": "Easy",
+      "tags": [
+        "Kinesis",
+        "Data Streams"
+      ]
+    },
+    {
+      "id": "kds-switch-capacity-mode",
+      "prompt": "A provisioned Kinesis data stream faces increasingly unpredictable traffic surges and the team no longer wants to manage shards. What is the best course of action?",
+      "choices": [
+        "Raise the retention period to absorb the surges",
+        "Create a new stream and migrate all producers and consumers",
+        "Replace the stream with Kinesis Video Streams",
+        "Switch the existing stream to on-demand capacity mode"
+      ],
+      "correctChoice": "Switch the existing stream to on-demand capacity mode",
+      "explanation": "A stream can switch between provisioned and on-demand capacity modes (with a limit on how often per 24 hours). On-demand scales automatically for unpredictable workloads.",
+      "difficulty": "Hard",
+      "tags": [
+        "Kinesis",
+        "Data Streams"
+      ]
+    },
+    {
+      "id": "alarm-anomaly-detection",
+      "prompt": "A metric rises sharply every weekday at 9 am. A static-threshold alarm fires on every normal spike. Which alarm threshold type reduces these false alarms?",
+      "choices": [
+        "A lower static threshold set below the normal 9 am peak",
+        "A composite alarm with an OR rule over the other alarms",
+        "Anomaly detection, which uses an expected band of values",
+        "A high-resolution custom metric published every second"
+      ],
+      "correctChoice": "Anomaly detection, which uses an expected band of values",
+      "explanation": "Anomaly detection learns the normal pattern and alarms when the metric leaves the expected band. It suits metrics with expected fluctuation.",
+      "difficulty": "Medium",
+      "tags": [
+        "CloudWatch",
+        "Alarms"
+      ]
+    },
+    {
+      "id": "cloudtrail-event-history",
+      "prompt": "For how long is CloudTrail activity available in Event History by default?",
+      "choices": [
+        "90 days",
+        "24 hours",
+        "30 days",
+        "1 year"
+      ],
+      "correctChoice": "90 days",
+      "explanation": "CloudTrail is on by default and Event History keeps the last 90 days. Longer retention needs a trail.",
+      "difficulty": "Easy",
+      "tags": [
+        "CloudTrail"
+      ]
+    },
+    {
+      "id": "inspector-multi-target",
+      "prompt": "A company wants continual vulnerability (CVE) scanning of EC2 instances, container images in ECR and Lambda functions, with risk-scored findings and minimal management. Which service should they use?",
+      "choices": [
+        "AWS Audit Manager",
+        "AWS Security Hub CSPM alone",
+        "Amazon Inspector",
+        "Amazon Macie"
+      ],
+      "correctChoice": "Amazon Inspector",
+      "explanation": "Inspector scans EC2, ECR and Lambda for software vulnerabilities and unintended network exposure. Macie targets sensitive data in S3, Security Hub aggregates posture, and Audit Manager collects compliance evidence.",
+      "difficulty": "Hard",
+      "tags": [
+        "Inspector",
+        "Security"
+      ]
+    },
+    {
+      "id": "inspector-cis-ssm",
+      "prompt": "A team runs Inspector CIS benchmark scans against EC2 operating systems, but several instances are not scanned. What is the most likely reason?",
+      "choices": [
+        "They have no Elastic IP address",
+        "Those instances are not managed by Systems Manager",
+        "Their CloudWatch log groups have no retention set",
+        "Detailed monitoring is not enabled on them"
+      ],
+      "correctChoice": "Those instances are not managed by Systems Manager",
+      "explanation": "Inspector's CIS scans require SSM-managed instances.",
+      "difficulty": "Hard",
+      "tags": [
+        "Inspector",
+        "EC2",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "eb-cron-lambda",
+      "prompt": "A team wants to invoke a Lambda function every 15 minutes without managing any servers. Which approach fits?",
+      "choices": [
+        "An EventBridge rule with a schedule (rate) expression targeting the function",
+        "An EC2 instance running a cron job that invokes the function",
+        "A CloudWatch Logs subscription filter on the function's log group",
+        "A Kinesis Data Streams shard that triggers the function each interval"
+      ],
+      "correctChoice": "An EventBridge rule with a schedule (rate) expression targeting the function",
+      "explanation": "EventBridge scheduled rules act as serverless cron jobs and support cron and rate expressions.",
+      "difficulty": "Easy",
+      "tags": [
+        "EventBridge",
+        "Lambda"
+      ]
+    },
+    {
+      "id": "alarm-datapoints-to-alarm",
+      "prompt": "An alarm should enter the ALARM state only if CPU breaches the threshold in at least 3 of the most recent 5 periods. Which settings achieve this?",
+      "choices": [
+        "Evaluation periods = 3, datapoints to alarm = 5",
+        "Evaluation periods = 5, datapoints to alarm = 5",
+        "Evaluation periods = 5, datapoints to alarm = 3",
+        "Evaluation periods = 3, datapoints to alarm = 3"
+      ],
+      "correctChoice": "Evaluation periods = 5, datapoints to alarm = 3",
+      "explanation": "Evaluation periods is the number of recent periods examined, and datapoints to alarm is how many of them must breach. 'M out of N' means datapoints = M and evaluation periods = N.",
+      "difficulty": "Medium",
+      "tags": [
+        "CloudWatch",
+        "Alarms"
+      ]
+    },
+    {
+      "id": "eb-multi-target",
+      "prompt": "A matching event must be delivered to both a Lambda function and an SQS queue. How can this be configured in EventBridge?",
+      "choices": [
+        "Create two separate event buses",
+        "Chain the Lambda function to forward the event to the queue",
+        "Add both as targets of a single rule",
+        "This requires SNS because rules support one target only"
+      ],
+      "correctChoice": "Add both as targets of a single rule",
+      "explanation": "A single EventBridge rule can have multiple targets (up to 5), and the event is delivered to each of them.",
+      "difficulty": "Easy",
+      "tags": [
+        "EventBridge"
+      ]
+    },
+    {
+      "id": "logs-insights-purpose",
+      "prompt": "Which feature allows interactive searching and analysis of CloudWatch log data without first exporting it to S3?",
+      "choices": [
+        "Amazon Macie",
+        "AWS Audit Manager",
+        "AWS CloudTrail Event History",
+        "CloudWatch Logs Insights"
+      ],
+      "correctChoice": "CloudWatch Logs Insights",
+      "explanation": "Logs Insights queries log groups in place with its own query language, avoiding an export to S3 and a separate Athena analysis.",
+      "difficulty": "Easy",
+      "tags": [
+        "CloudWatch Logs",
+        "Logs Insights"
+      ]
+    },
+    {
+      "id": "game-leaderboard-archive",
+      "prompt": "Game events must update a real-time leaderboard within seconds using custom logic, and the raw events must also be archived to S3 with no administration. Which architecture fits?",
+      "choices": [
+        "Send events to Firehose and compute the leaderboard inside its S3 destination",
+        "Write events directly to S3 and poll the bucket every minute",
+        "Send events to Kinesis Data Streams, process them for the leaderboard, and add Firehose as a second consumer that delivers to S3",
+        "Send events to CloudWatch Logs and run Logs Insights for the leaderboard"
+      ],
+      "correctChoice": "Send events to Kinesis Data Streams, process them for the leaderboard, and add Firehose as a second consumer that delivers to S3",
+      "explanation": "Data Streams offers real-time custom processing and can feed multiple consumers, including Firehose for delivery to S3. Firehose alone has a single destination and no custom consumer.",
+      "difficulty": "Hard",
+      "tags": [
+        "Kinesis",
+        "Data Streams",
+        "Firehose"
+      ]
+    },
+    {
+      "id": "adot-multi-backend",
+      "prompt": "Microservices run on EKS and Lambda. The team wants vendor-neutral instrumentation that sends traces to X-Ray and metrics to Amazon Managed Service for Prometheus, without multiple agents. Which should they use?",
+      "choices": [
+        "AWS Distro for OpenTelemetry (ADOT)",
+        "An EventBridge rule per service",
+        "The Kinesis Agent",
+        "The CloudWatch agent on every node"
+      ],
+      "correctChoice": "AWS Distro for OpenTelemetry (ADOT)",
+      "explanation": "ADOT is the AWS-supported OpenTelemetry distribution and sends correlated metrics, logs and traces to multiple backends, including X-Ray and AMP.",
+      "difficulty": "Hard",
+      "tags": [
+        "ADOT",
+        "OpenTelemetry",
+        "Observability"
+      ]
+    },
+    {
+      "id": "alarm-seasonal-anomaly",
+      "prompt": "A shop's request count has large, predictable daily and weekly peaks. A static threshold either misses off-peak problems or fires during normal peaks. The team wants alerts only when traffic deviates from its normal pattern. What should they do?",
+      "choices": [
+        "Use a composite alarm combining CPU and request count",
+        "Set the static threshold at the highest peak ever observed",
+        "Publish the metric at 1-second resolution",
+        "Use an anomaly detection alarm so the threshold is a band around expected values"
+      ],
+      "correctChoice": "Use an anomaly detection alarm so the threshold is a band around expected values",
+      "explanation": "Anomaly detection models expected fluctuation and alarms outside the band. A single static value cannot fit both peaks and troughs, and resolution or composite alarms do not address that.",
+      "difficulty": "Hard",
+      "tags": [
+        "CloudWatch",
+        "Alarms"
+      ]
+    },
+    {
+      "id": "firehose-dyn-partition-irreversible",
+      "prompt": "Dynamic partitioning was enabled on an existing Firehose delivery stream, and the team now wants it disabled. What must they do?",
+      "choices": [
+        "Turn it off from the delivery stream's configuration at any time",
+        "Switch the delivery stream to on-demand capacity mode",
+        "Create a new delivery stream without dynamic partitioning, as it cannot be turned off once enabled",
+        "Delete the Glue table that the delivery stream references"
+      ],
+      "correctChoice": "Create a new delivery stream without dynamic partitioning, as it cannot be turned off once enabled",
+      "explanation": "Dynamic partitioning cannot be turned off once enabled on a delivery stream.",
+      "difficulty": "Hard",
+      "tags": [
+        "Kinesis",
+        "Firehose"
+      ]
+    },
+    {
+      "id": "signal-trace",
+      "prompt": "A team wants to see the history of a single request as it travels through several internal services. Which observability signal provides this?",
+      "choices": [
+        "Alarm",
+        "Log group",
+        "Trace",
+        "Metric"
+      ],
+      "correctChoice": "Trace",
+      "explanation": "A trace is the path of a request through multiple services, made up of spans. Metrics show aggregate numbers over time and do not follow individual requests.",
+      "difficulty": "Easy",
+      "tags": [
+        "Observability",
+        "Tracing"
+      ]
+    },
+    {
+      "id": "asg-scale-on-memory",
+      "prompt": "An Auto Scaling group must add instances when average memory utilisation exceeds 75%. The team wants the least operational effort. What should they do?",
+      "choices": [
+        "Create an alarm on the default EC2 MemoryUtilization metric",
+        "Enable detailed monitoring and alarm on the memory metric it adds",
+        "Run a scheduled Lambda that polls each instance over SSH and sets desired capacity",
+        "Install the CloudWatch agent (for example via SSM) with an instance IAM role to publish memory metrics, then create an alarm that triggers a scaling policy"
+      ],
+      "correctChoice": "Install the CloudWatch agent (for example via SSM) with an instance IAM role to publish memory metrics, then create an alarm that triggers a scaling policy",
+      "explanation": "Memory is a guest-OS metric that is not published by default, and detailed monitoring only changes the interval of default metrics. The agent publishes memory data, and an alarm can trigger an Auto Scaling action directly.",
+      "difficulty": "Hard",
+      "tags": [
+        "CloudWatch",
+        "Auto Scaling",
+        "EC2"
+      ]
+    },
+    {
+      "id": "kds-multi-consumer-replay",
+      "prompt": "Two teams must process the same clickstream independently with low latency, and one team must be able to reprocess the last 3 days of data. Which service fits?",
+      "choices": [
+        "Kinesis Video Streams",
+        "EventBridge Schema Registry",
+        "Kinesis Data Streams with extended retention and a consumer per team",
+        "Amazon Data Firehose delivering to a single destination"
+      ],
+      "correctChoice": "Kinesis Data Streams with extended retention and a consumer per team",
+      "explanation": "Data Streams supports multiple custom consumers and retains records for replay. Firehose has a single destination and no retention for replay.",
+      "difficulty": "Hard",
+      "tags": [
+        "Kinesis",
+        "Data Streams",
+        "Firehose"
+      ]
+    },
+    {
+      "id": "eb-cloudtrail-256kb",
+      "prompt": "An EventBridge rule on CloudTrail API call events fires for most calls but never for some calls with very large payloads. What is the likely cause?",
+      "choices": [
+        "AWS API call events larger than 256 KB are not supported",
+        "Scheduled expressions only use UTC",
+        "A rule can have only one target",
+        "The default event bus does not receive CloudTrail events"
+      ],
+      "correctChoice": "AWS API call events larger than 256 KB are not supported",
+      "explanation": "EventBridge does not support CloudTrail API call events larger than 256 KB. The other options do not explain missing events for large payloads only.",
+      "difficulty": "Hard",
+      "tags": [
+        "EventBridge",
+        "CloudTrail",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "logs-ingestion-time",
+      "prompt": "In a Logs Insights query, which discovered field shows when CloudWatch Logs received an event, as opposed to the time recorded in the event itself?",
+      "choices": [
+        "@timestamp",
+        "@ingestionTime",
+        "@message",
+        "@logStream"
+      ],
+      "correctChoice": "@ingestionTime",
+      "explanation": "@ingestionTime is when the event was received by CloudWatch Logs. @timestamp is the event time, @logStream names the stream and @message is the raw event.",
+      "difficulty": "Medium",
+      "tags": [
+        "CloudWatch Logs",
+        "Logs Insights"
+      ]
+    },
+    {
+      "id": "macie-pii-public",
+      "prompt": "A company must detect PII in S3 objects and buckets that become publicly accessible, and send alerts into its existing event-driven workflow. Which solution fits?",
+      "choices": [
+        "Enable CloudTrail Event History to find PII",
+        "Enable Macie and route its findings through EventBridge",
+        "Rely on Security Hub CSPM alone to locate PII in objects",
+        "Enable Inspector and route its findings through EventBridge"
+      ],
+      "correctChoice": "Enable Macie and route its findings through EventBridge",
+      "explanation": "Macie finds sensitive data and monitors S3 bucket access, and its findings can go to EventBridge and Security Hub. Inspector scans compute workloads, not S3 contents.",
+      "difficulty": "Hard",
+      "tags": [
+        "Macie",
+        "S3",
+        "EventBridge"
+      ]
+    },
+    {
+      "id": "composite-vs-ec2-action",
+      "prompt": "Three metric alarms (CPU, connections, latency) each page the on-call team separately. The team wants one page when latency AND (CPU OR connections) are in ALARM. A separate metric alarm that reboots an instance via an EC2 action must keep working. What is the best design?",
+      "choices": [
+        "Replace the reboot metric alarm with a composite alarm that has both SNS and EC2 actions",
+        "Create a composite alarm for the single notification and keep the metric alarm for the EC2 action",
+        "Add anomaly detection to each alarm and remove the notifications",
+        "Raise datapoints to alarm on every alarm to the maximum"
+      ],
+      "correctChoice": "Create a composite alarm for the single notification and keep the metric alarm for the EC2 action",
+      "explanation": "Composite alarms combine alarm states with AND/OR/NOT logic to reduce noise, but cannot perform EC2 or Auto Scaling actions. The reboot action must stay on a metric alarm.",
+      "difficulty": "Hard",
+      "tags": [
+        "CloudWatch",
+        "Alarms"
+      ]
+    },
+    {
+      "id": "flink-sql-analytics",
+      "prompt": "A company wants rolling one-minute aggregations computed on a live stream using SQL, with results available in near real time. Which service is appropriate?",
+      "choices": [
+        "Amazon Managed Service for Apache Flink",
+        "Amazon Data Firehose with S3 as destination",
+        "AWS Audit Manager",
+        "Amazon Macie"
+      ],
+      "correctChoice": "Amazon Managed Service for Apache Flink",
+      "explanation": "Managed Service for Apache Flink runs queries against data flowing through a stream and supports SQL, Java, Scala and Python.",
+      "difficulty": "Medium",
+      "tags": [
+        "Kinesis",
+        "Apache Flink"
+      ]
+    },
+    {
+      "id": "cloudtrail-trail-s3",
+      "prompt": "How can a company keep CloudTrail records for longer than 90 days?",
+      "choices": [
+        "Create a trail that delivers events to an S3 bucket",
+        "Enable CloudWatch detailed monitoring",
+        "Enable Amazon Macie",
+        "Increase the Event History retention setting"
+      ],
+      "correctChoice": "Create a trail that delivers events to an S3 bucket",
+      "explanation": "Event History is fixed at 90 days. A trail delivers events to S3 for long-term storage, and Athena can be used to query them.",
+      "difficulty": "Easy",
+      "tags": [
+        "CloudTrail",
+        "S3"
+      ]
+    },
+    {
+      "id": "composite-alarm-limit",
+      "prompt": "Which action can a composite alarm NOT perform?",
+      "choices": [
+        "Publish to an SNS topic",
+        "Reboot an EC2 instance using an EC2 action",
+        "Invoke a Lambda function",
+        "Create a Systems Manager OpsItem"
+      ],
+      "correctChoice": "Reboot an EC2 instance using an EC2 action",
+      "explanation": "Composite alarms can notify through SNS, invoke Lambda and take Systems Manager actions. Unlike metric alarms, they cannot perform EC2 or Auto Scaling actions.",
+      "difficulty": "Medium",
+      "tags": [
+        "CloudWatch",
+        "Alarms"
+      ]
+    }
+  ]
+}

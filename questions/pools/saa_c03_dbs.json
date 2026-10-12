@@ -1,0 +1,1758 @@
+{
+  "$schema": "../pool.schema.json",
+  "poolName": "Databases & Data Analytics (Mixed Difficulty)",
+  "description": "SAA-C03 revision questions on ElastiCache, MemoryDB, RDS, Aurora, DynamoDB, DocumentDB, Keyspaces, Neptune, DMS, Redshift, Athena, Glue and Lake Formation at Easy, Medium and Hard difficulty.",
+  "category": "Databases",
+  "version": 1,
+  "questions": [
+    {
+      "id": "ec-cache-purpose",
+      "prompt": "A read-heavy web application repeatedly queries an RDS database for rarely changing product data, and page loads are slow. Which addition most directly improves response times and reduces database load?",
+      "choices": [
+        "Move the product data into a Redshift cluster to speed up queries",
+        "Place an ElastiCache cluster in front of the database to cache frequent query results",
+        "Increase the RDS automated backup retention period to 35 days",
+        "Enable Multi-AZ on the RDS instance so that the standby serves the reads"
+      ],
+      "correctChoice": "Place an ElastiCache cluster in front of the database to cache frequent query results",
+      "explanation": "ElastiCache is an in-memory cache that serves repeated reads quickly and takes load off the database. A Multi-AZ standby is not readable, and Redshift is for analytics.",
+      "difficulty": "Easy",
+      "tags": [
+        "ElastiCache",
+        "Caching"
+      ]
+    },
+    {
+      "id": "ec-vpc-access",
+      "prompt": "Where must an application run to connect to a standard (node-based) ElastiCache cluster?",
+      "choices": [
+        "Anywhere on the internet, using the cluster's public endpoint",
+        "Inside the VPC that hosts the cluster, because it is not exposed to the public internet",
+        "Only in a different VPC from the cluster, connected through an internet gateway",
+        "Only on EC2 instances in the same Availability Zone as the cluster"
+      ],
+      "correctChoice": "Inside the VPC that hosts the cluster, because it is not exposed to the public internet",
+      "explanation": "ElastiCache is accessed from resources in the same VPC (or privately connected networks) to keep latency low. Serverless caches can optionally expose a public endpoint, but standard clusters do not.",
+      "difficulty": "Easy",
+      "tags": [
+        "ElastiCache",
+        "Networking"
+      ]
+    },
+    {
+      "id": "memorydb-primary-db",
+      "prompt": "Which in-memory AWS service provides the data durability required to be used as a primary database rather than only as a cache?",
+      "choices": [
+        "Amazon ElastiCache Global Datastore",
+        "Amazon ElastiCache for Memcached",
+        "Amazon DynamoDB Accelerator (DAX)",
+        "Amazon MemoryDB"
+      ],
+      "correctChoice": "Amazon MemoryDB",
+      "explanation": "MemoryDB is Valkey/Redis OSS-compatible and durably stores data, so it can be the system of record. ElastiCache is intended as a cache and its in-memory data is treated as volatile.",
+      "difficulty": "Easy",
+      "tags": [
+        "MemoryDB",
+        "ElastiCache"
+      ]
+    },
+    {
+      "id": "rs-olap-selection",
+      "prompt": "A company must run complex analytical SQL queries over petabytes of data gathered from several sources. Which service is purpose-built for this?",
+      "choices": [
+        "Amazon Redshift",
+        "Amazon DynamoDB",
+        "Amazon ElastiCache",
+        "Amazon RDS for MySQL"
+      ],
+      "correctChoice": "Amazon Redshift",
+      "explanation": "Redshift is a petabyte-scale columnar data warehouse built for OLAP queries. RDS and DynamoDB are built for transactional workloads, and ElastiCache is a cache.",
+      "difficulty": "Easy",
+      "tags": [
+        "Redshift",
+        "Service selection"
+      ]
+    },
+    {
+      "id": "oltp-vs-olap",
+      "prompt": "Which workload is a typical example of OLAP rather than OLTP?",
+      "choices": [
+        "Adding and removing items in a customer's shopping cart during checkout",
+        "Recording a single bank deposit against one customer's account",
+        "A report that aggregates millions of historical orders from several sources",
+        "Updating one user's delivery address in a profile table"
+      ],
+      "correctChoice": "A report that aggregates millions of historical orders from several sources",
+      "explanation": "OLAP uses long, complex queries over large datasets and is suited to a data warehouse. OLTP is many short, fast transactions suited to a database.",
+      "difficulty": "Easy",
+      "tags": [
+        "Redshift",
+        "OLTP",
+        "OLAP"
+      ]
+    },
+    {
+      "id": "rs-columnar-benefit",
+      "prompt": "Why does Amazon Redshift's columnar storage suit analytical queries?",
+      "choices": [
+        "Each row is stored as one block, so whole records are retrieved quickly for single-item lookups",
+        "Queries read only the columns they need, which reduces disk I/O, and similar values in a column compress well",
+        "Every table is copied to every node, so joins never need network transfer",
+        "All data is held in memory, so no disk is used"
+      ],
+      "correctChoice": "Queries read only the columns they need, which reduces disk I/O, and similar values in a column compress well",
+      "explanation": "Columnar storage lets Redshift scan just the referenced columns and compress them efficiently, reducing I/O for analytical queries.",
+      "difficulty": "Easy",
+      "tags": [
+        "Redshift",
+        "Performance"
+      ]
+    },
+    {
+      "id": "rs-backups-s3",
+      "prompt": "Where does Amazon Redshift keep the backup copy of a cluster's data?",
+      "choices": [
+        "Amazon EFS",
+        "Amazon S3",
+        "An EBS volume in the customer's account",
+        "The leader node's local SSD"
+      ],
+      "correctChoice": "Amazon S3",
+      "explanation": "Redshift keeps the original data, a replica on the compute nodes and a backup copy in S3. Snapshots can also be copied asynchronously to another Region.",
+      "difficulty": "Easy",
+      "tags": [
+        "Redshift",
+        "Backup"
+      ]
+    },
+    {
+      "id": "athena-serverless-sql",
+      "prompt": "A team wants to run ad hoc SQL queries directly against log files in Amazon S3, with no servers to manage and payment only for usage. Which service fits best?",
+      "choices": [
+        "A persistent Amazon EMR cluster",
+        "Amazon Athena",
+        "Amazon RDS for PostgreSQL",
+        "A provisioned Amazon Redshift cluster"
+      ],
+      "correctChoice": "Amazon Athena",
+      "explanation": "Athena is a serverless interactive query service for data in S3 and charges for usage, so there is nothing to provision.",
+      "difficulty": "Easy",
+      "tags": [
+        "Athena",
+        "Service selection"
+      ]
+    },
+    {
+      "id": "athena-serde",
+      "prompt": "In Amazon Athena, what is used to parse data in formats such as CSV, JSON, Parquet and ORC when reading a table's files?",
+      "choices": [
+        "A data source that groups the available databases",
+        "A workgroup that holds saved queries",
+        "A SerDe (serialiser/deserialiser) library",
+        "A DML statement such as INSERT or UPDATE"
+      ],
+      "correctChoice": "A SerDe (serialiser/deserialiser) library",
+      "explanation": "SerDe libraries tell Athena how to read and write each data format. Workgroups, DML and data sources serve different purposes.",
+      "difficulty": "Easy",
+      "tags": [
+        "Athena",
+        "Data formats"
+      ]
+    },
+    {
+      "id": "glue-serverless-etl",
+      "prompt": "Which AWS service is a serverless data integration service used to discover, prepare, transform and load data between sources and data lakes?",
+      "choices": [
+        "AWS Data Exchange",
+        "AWS Glue",
+        "AWS Lake Formation",
+        "Amazon Athena"
+      ],
+      "correctChoice": "AWS Glue",
+      "explanation": "Glue provides serverless ETL/ELT jobs, discovery and a central Data Catalog. Lake Formation governs access, Data Exchange supplies third-party data and Athena queries it.",
+      "difficulty": "Easy",
+      "tags": [
+        "Glue",
+        "ETL"
+      ]
+    },
+    {
+      "id": "glue-crawler-role",
+      "prompt": "What does an AWS Glue crawler do?",
+      "choices": [
+        "Runs SQL queries against S3 data and writes the results to a bucket",
+        "Copies the source data into S3, converting it to Parquet on the way",
+        "Scans a data source to infer its schema and creates table definitions in the Data Catalog",
+        "Enforces column-level permissions on tables in the data lake"
+      ],
+      "correctChoice": "Scans a data source to infer its schema and creates table definitions in the Data Catalog",
+      "explanation": "A crawler infers schema from a source and populates Glue tables, which Athena, EMR and Redshift Spectrum can then use.",
+      "difficulty": "Easy",
+      "tags": [
+        "Glue",
+        "Data Catalog"
+      ]
+    },
+    {
+      "id": "glue-studio-visual",
+      "prompt": "Which AWS Glue capability lets engineers build ETL pipelines visually by connecting source, transform and target nodes?",
+      "choices": [
+        "AWS Glue Studio",
+        "Amazon Athena workgroups",
+        "AWS Glue crawler",
+        "AWS Glue Data Catalog"
+      ],
+      "correctChoice": "AWS Glue Studio",
+      "explanation": "Glue Studio provides a visual interface for pipelines and can generate a script from the visual design.",
+      "difficulty": "Easy",
+      "tags": [
+        "Glue",
+        "ETL"
+      ]
+    },
+    {
+      "id": "lf-glue-shared-catalog",
+      "prompt": "Which metadata store do AWS Lake Formation and AWS Glue share?",
+      "choices": [
+        "An Athena workgroup",
+        "The AWS Glue Data Catalog",
+        "An S3 Inventory report",
+        "An Amazon Redshift leader node"
+      ],
+      "correctChoice": "The AWS Glue Data Catalog",
+      "explanation": "Lake Formation manages permissions on catalogued data and uses the same Glue Data Catalog that Glue and Athena use.",
+      "difficulty": "Easy",
+      "tags": [
+        "Lake Formation",
+        "Glue"
+      ]
+    },
+    {
+      "id": "data-exchange-purpose",
+      "prompt": "A company wants to subscribe to third-party datasets, such as market data, and use them in its analytics. Which service provides this?",
+      "choices": [
+        "AWS Glue",
+        "AWS Data Exchange",
+        "Amazon Athena",
+        "AWS Lake Formation"
+      ],
+      "correctChoice": "AWS Data Exchange",
+      "explanation": "AWS Data Exchange is a catalogue of third-party datasets available free, by upfront purchase or by subscription.",
+      "difficulty": "Easy",
+      "tags": [
+        "Data Exchange",
+        "Service selection"
+      ]
+    },
+    {
+      "id": "data-lake-definition",
+      "prompt": "Which statement best describes a data lake?",
+      "choices": [
+        "A central repository for large quantities of unstructured and semi-structured data, held as objects or files",
+        "A database of vertices and edges that models relationships between entities",
+        "A relational database that is tuned for large numbers of short, concurrent transactions",
+        "An in-memory data store that caches the results of frequent queries for fast reads"
+      ],
+      "correctChoice": "A central repository for large quantities of unstructured and semi-structured data, held as objects or files",
+      "explanation": "Data lakes collect raw data in object or file storage, which is then transformed and distributed to analytics tools.",
+      "difficulty": "Easy",
+      "tags": [
+        "Data lake",
+        "Concepts"
+      ]
+    },
+    {
+      "id": "rds-multiaz-ha",
+      "prompt": "A company wants its RDS for MySQL production database to recover automatically from an Availability Zone outage with no manual action. Which feature should it enable?",
+      "choices": [
+        "A larger DB instance class",
+        "Multi-AZ deployment",
+        "Automated backups with 35-day retention",
+        "A read replica in the same Availability Zone"
+      ],
+      "correctChoice": "Multi-AZ deployment",
+      "explanation": "Multi-AZ keeps a synchronised standby in another AZ and automatically fails over to it. Backups and bigger instances do not provide automatic AZ failover.",
+      "difficulty": "Easy",
+      "tags": [
+        "RDS",
+        "Multi-AZ",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "rds-read-replica-offload",
+      "prompt": "Heavy reporting queries are slowing the primary RDS for PostgreSQL instance. What is the simplest way to offload them?",
+      "choices": [
+        "Run the reports against the Multi-AZ standby",
+        "Turn on automated backups",
+        "Create a read replica and run the reports against it",
+        "Increase the backup retention period"
+      ],
+      "correctChoice": "Create a read replica and run the reports against it",
+      "explanation": "Read replicas are readable copies that offload read traffic. The standby in a Multi-AZ DB instance deployment cannot serve queries.",
+      "difficulty": "Easy",
+      "tags": [
+        "RDS",
+        "Read replicas",
+        "Performance"
+      ]
+    },
+    {
+      "id": "rds-subnet-group-azs",
+      "prompt": "What must an RDS DB subnet group contain?",
+      "choices": [
+        "Subnets in at least two Availability Zones in the Region",
+        "Subnets in at least three Regions",
+        "Subnets that all sit in a single Availability Zone",
+        "Exactly one public subnet"
+      ],
+      "correctChoice": "Subnets in at least two Availability Zones in the Region",
+      "explanation": "A DB subnet group must cover at least two AZs so RDS can place instances and standbys across AZs.",
+      "difficulty": "Easy",
+      "tags": [
+        "RDS",
+        "Networking"
+      ]
+    },
+    {
+      "id": "rds-iam-auth-basic",
+      "prompt": "An application on EC2 must connect to an RDS for MySQL database without storing a database password in code. Which approach meets this?",
+      "choices": [
+        "Use IAM database authentication and connect with a short-lived authentication token",
+        "Store the master user password in the instance's user data",
+        "Put the master user password in an environment variable",
+        "Allow the EC2 instance's role in the DB security group"
+      ],
+      "correctChoice": "Use IAM database authentication and connect with a short-lived authentication token",
+      "explanation": "IAM database authentication lets an IAM user or role generate an auth token (valid for 15 minutes) instead of a password. It works with MySQL, MariaDB and PostgreSQL.",
+      "difficulty": "Easy",
+      "tags": [
+        "RDS",
+        "IAM",
+        "Security"
+      ]
+    },
+    {
+      "id": "rds-burstable-class",
+      "prompt": "Which RDS instance class family is the most cost-effective for a dev/test database with a low baseline CPU requirement and occasional spikes?",
+      "choices": [
+        "Memory optimised (db.x)",
+        "Memory optimised (db.r)",
+        "General purpose (db.m)",
+        "Burstable performance (db.t)"
+      ],
+      "correctChoice": "Burstable performance (db.t)",
+      "explanation": "Burstable db.t classes provide a low baseline with the ability to burst, at lower cost than other families.",
+      "difficulty": "Easy",
+      "tags": [
+        "RDS",
+        "Cost"
+      ]
+    },
+    {
+      "id": "aurora-overview",
+      "prompt": "Which AWS relational database offering is compatible with MySQL and PostgreSQL and automatically spreads its storage across three Availability Zones?",
+      "choices": [
+        "Amazon DynamoDB",
+        "Amazon DocumentDB",
+        "Amazon Redshift",
+        "Amazon Aurora"
+      ],
+      "correctChoice": "Amazon Aurora",
+      "explanation": "Aurora is a fully managed MySQL/PostgreSQL-compatible relational database with a distributed, self-healing storage layer across three AZs.",
+      "difficulty": "Easy",
+      "tags": [
+        "Aurora",
+        "Service selection"
+      ]
+    },
+    {
+      "id": "aurora-storage-growth",
+      "prompt": "How does Amazon Aurora storage grow as the data set increases?",
+      "choices": [
+        "It grows only when more Aurora Replicas are added",
+        "It grows only by moving to a larger instance class",
+        "It scales automatically in 10 GB increments up to the engine's maximum",
+        "It must be pre-provisioned and resized with downtime"
+      ],
+      "correctChoice": "It scales automatically in 10 GB increments up to the engine's maximum",
+      "explanation": "Aurora storage auto-scales (up to 64 TB or 128 TB depending on engine version), so no capacity needs to be provisioned.",
+      "difficulty": "Easy",
+      "tags": [
+        "Aurora",
+        "Storage"
+      ]
+    },
+    {
+      "id": "docdb-mongodb-compat",
+      "prompt": "Which AWS service is a managed, MongoDB-compatible document database?",
+      "choices": [
+        "Amazon Keyspaces",
+        "Amazon Redshift",
+        "Amazon Neptune",
+        "Amazon DocumentDB"
+      ],
+      "correctChoice": "Amazon DocumentDB",
+      "explanation": "DocumentDB is a NoSQL document database that is compatible with MongoDB.",
+      "difficulty": "Easy",
+      "tags": [
+        "DocumentDB",
+        "Service selection"
+      ]
+    },
+    {
+      "id": "ddb-overview",
+      "prompt": "Which AWS service is a fully managed NoSQL key-value and document database that scales without server management?",
+      "choices": [
+        "Amazon Redshift",
+        "Amazon Neptune",
+        "Amazon DynamoDB",
+        "Amazon Aurora"
+      ],
+      "correctChoice": "Amazon DynamoDB",
+      "explanation": "DynamoDB is a serverless key-value/document store with built-in durability, security, backup and multi-AZ storage.",
+      "difficulty": "Easy",
+      "tags": [
+        "DynamoDB",
+        "Service selection"
+      ]
+    },
+    {
+      "id": "ddb-on-demand-mode",
+      "prompt": "A new application has unknown and unpredictable traffic. Which DynamoDB capacity mode avoids capacity planning?",
+      "choices": [
+        "Provisioned, with a fixed number of partitions",
+        "Provisioned, with RCUs and WCUs set to the expected peak",
+        "On-demand, which charges per request",
+        "Provisioned, with strongly consistent reads only"
+      ],
+      "correctChoice": "On-demand, which charges per request",
+      "explanation": "On-demand mode needs no capacity planning and suits unpredictable workloads. Provisioned mode suits predictable traffic.",
+      "difficulty": "Easy",
+      "tags": [
+        "DynamoDB",
+        "Capacity"
+      ]
+    },
+    {
+      "id": "keyspaces-cassandra",
+      "prompt": "Which AWS service is a managed Apache Cassandra-compatible database queried with CQL?",
+      "choices": [
+        "Amazon Keyspaces",
+        "Amazon Neptune",
+        "Amazon DocumentDB",
+        "Amazon DynamoDB"
+      ],
+      "correctChoice": "Amazon Keyspaces",
+      "explanation": "Keyspaces runs Cassandra workloads and uses the Cassandra Query Language (CQL).",
+      "difficulty": "Easy",
+      "tags": [
+        "Keyspaces",
+        "Service selection"
+      ]
+    },
+    {
+      "id": "neptune-graph-use",
+      "prompt": "A fraud team wants to analyse relationships between accounts, devices and transactions. Which database type and service suit this?",
+      "choices": [
+        "A key-value store, Amazon DynamoDB",
+        "A data warehouse, Amazon Redshift",
+        "A graph database, Amazon Neptune",
+        "A wide-column store, Amazon Keyspaces"
+      ],
+      "correctChoice": "A graph database, Amazon Neptune",
+      "explanation": "Graph databases model vertices and edges, which suits fraud detection, recommendations and social graphs.",
+      "difficulty": "Easy",
+      "tags": [
+        "Neptune",
+        "Service selection"
+      ]
+    },
+    {
+      "id": "dms-purpose",
+      "prompt": "A company needs to migrate an on-premises database to AWS while the source database stays operational. Which service is designed for this?",
+      "choices": [
+        "AWS Database Migration Service (DMS)",
+        "AWS Glue, with crawlers and ETL jobs",
+        "AWS Lake Formation, with cross-account grants",
+        "AWS Data Exchange, with a data grant"
+      ],
+      "correctChoice": "AWS Database Migration Service (DMS)",
+      "explanation": "DMS migrates databases securely and supports many source and target engines.",
+      "difficulty": "Easy",
+      "tags": [
+        "DMS",
+        "Migration"
+      ]
+    },
+    {
+      "id": "qldb-end-of-support",
+      "prompt": "A proposed design uses Amazon QLDB for a new ledger application. What should the architect point out?",
+      "choices": [
+        "QLDB reached end of support on 31 July 2025 and is no longer available",
+        "QLDB requires a separately purchased commercial licence for production use",
+        "QLDB can be queried only by using SQL over a JDBC driver",
+        "QLDB is available in only a single AWS Region, which limits resilience"
+      ],
+      "correctChoice": "QLDB reached end of support on 31 July 2025 and is no longer available",
+      "explanation": "Amazon QLDB reached end of support on 31 July 2025, so it should not be used in new designs.",
+      "difficulty": "Easy",
+      "tags": [
+        "QLDB",
+        "Service selection"
+      ]
+    },
+    {
+      "id": "rds-pitr-basic",
+      "prompt": "A faulty deployment corrupted data at 14:07. The RDS for PostgreSQL instance has 7-day automated backup retention. How can the data be recovered to just before the fault?",
+      "choices": [
+        "Run a point-in-time restore over the existing instance, replacing it in place",
+        "Fail over the instance to another Availability Zone and read the older data",
+        "Run a point-in-time restore to just before 14:07, which creates a new DB instance",
+        "Promote the Multi-AZ standby, which holds a copy from before the fault"
+      ],
+      "correctChoice": "Run a point-in-time restore to just before 14:07, which creates a new DB instance",
+      "explanation": "Automated backups plus transaction logs support point-in-time recovery within the retention period. Restores always create a new instance.",
+      "difficulty": "Easy",
+      "tags": [
+        "RDS",
+        "Backup"
+      ]
+    },
+    {
+      "id": "ec-sorted-set-leaderboard",
+      "prompt": "A game needs a real-time leaderboard that keeps unique players ranked by score. Which ElastiCache feature suits this?",
+      "choices": [
+        "Redis OSS lists",
+        "Redis OSS (or Valkey) sorted sets",
+        "Memcached key/value strings",
+        "Redis OSS unordered sets"
+      ],
+      "correctChoice": "Redis OSS (or Valkey) sorted sets",
+      "explanation": "Sorted sets hold unique items ordered by an associated score. Sets are unordered, lists allow duplicates, and Memcached has only simple strings.",
+      "difficulty": "Easy",
+      "tags": [
+        "ElastiCache",
+        "Redis"
+      ]
+    },
+    {
+      "id": "rds-shared-responsibility",
+      "prompt": "Which task remains the customer's responsibility when using Amazon RDS?",
+      "choices": [
+        "Replacing failed server hardware",
+        "Designing schemas and indexes and tuning queries",
+        "Running automated backups",
+        "Patching the underlying host operating system"
+      ],
+      "correctChoice": "Designing schemas and indexes and tuning queries",
+      "explanation": "RDS is managed but not fully: AWS handles hardware, host patching and backups, while the customer handles database design and query performance.",
+      "difficulty": "Easy",
+      "tags": [
+        "RDS",
+        "Shared responsibility"
+      ]
+    },
+    {
+      "id": "rds-encryption-creation",
+      "prompt": "Can encryption at rest be enabled on an existing unencrypted RDS instance by modifying the instance?",
+      "choices": [
+        "Yes, by modifying the instance, which applies encryption with no downtime",
+        "No, and an existing database can never be moved to an encrypted instance",
+        "No; encryption is set at creation, so copy a snapshot with encryption on and restore it",
+        "Yes, but only on Multi-AZ instances, by modifying the standby first"
+      ],
+      "correctChoice": "No; encryption is set at creation, so copy a snapshot with encryption on and restore it",
+      "explanation": "RDS encryption is set at creation. The workaround is to snapshot the instance, copy the snapshot with encryption enabled and restore a new instance from it.",
+      "difficulty": "Easy",
+      "tags": [
+        "RDS",
+        "Encryption"
+      ]
+    },
+    {
+      "id": "ec-serverless-vs-standard",
+      "prompt": "A start-up's traffic to its cache is highly unpredictable and it wants no capacity management. Which ElastiCache option fits?",
+      "choices": [
+        "Standard (node-based) clusters billed on number and type of nodes",
+        "A Memcached cluster sized for peak load",
+        "Standard clusters with reserved nodes",
+        "ElastiCache Serverless, billed on data stored and ECPUs consumed"
+      ],
+      "correctChoice": "ElastiCache Serverless, billed on data stored and ECPUs consumed",
+      "explanation": "Serverless caches scale automatically and bill for usage. Standard clusters suit predictable workloads where nodes can be reserved to save money.",
+      "difficulty": "Medium",
+      "tags": [
+        "ElastiCache",
+        "Cost"
+      ]
+    },
+    {
+      "id": "ec-global-datastore",
+      "prompt": "An application serves users in two AWS Regions and needs the cache data replicated across Regions for low-latency local reads. What should be used?",
+      "choices": [
+        "ElastiCache Global Datastore",
+        "A larger node type in the primary Region",
+        "ElastiCache Multi-AZ replication within a single Region",
+        "ElastiCache deployed on AWS Outposts"
+      ],
+      "correctChoice": "ElastiCache Global Datastore",
+      "explanation": "Global Datastores replicate ElastiCache data across Regions. Multi-AZ protects only within one Region.",
+      "difficulty": "Medium",
+      "tags": [
+        "ElastiCache",
+        "Global",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "ec-rbac-redis",
+      "prompt": "Which feature, available from Redis 6.0, lets you define users with specific permissions on an ElastiCache for Redis cluster?",
+      "choices": [
+        "Parameter groups",
+        "Security groups",
+        "Role-based access control (RBAC)",
+        "Subnet groups"
+      ],
+      "correctChoice": "Role-based access control (RBAC)",
+      "explanation": "RBAC provides users and user groups with command and key permissions. Security groups only control network access.",
+      "difficulty": "Medium",
+      "tags": [
+        "ElastiCache",
+        "Security"
+      ]
+    },
+    {
+      "id": "rs-leader-compute-nodes",
+      "prompt": "Which statement about a multi-node Redshift cluster is correct?",
+      "choices": [
+        "Every node stores data and answers client queries, and all nodes are billed equally",
+        "The compute nodes manage client connections, and the leader node runs the queries",
+        "The leader node coordinates client connections and queries; only compute nodes are billed",
+        "The leader node stores all of the data, and the compute nodes only cache it"
+      ],
+      "correctChoice": "The leader node coordinates client connections and queries; only compute nodes are billed",
+      "explanation": "The leader node manages connections and query coordination, while compute nodes store data and run the queries. Billing covers compute node hours, not the leader node.",
+      "difficulty": "Medium",
+      "tags": [
+        "Redshift",
+        "Architecture",
+        "Cost"
+      ]
+    },
+    {
+      "id": "rs-ra3-independent-scaling",
+      "prompt": "A data warehouse's storage is growing much faster than its compute needs. Which Redshift node type lets storage and compute scale independently?",
+      "choices": [
+        "DS2 dense storage nodes",
+        "A single-node dc2.large cluster",
+        "DC2, which uses local SSD only",
+        "RA3, which uses managed storage"
+      ],
+      "correctChoice": "RA3, which uses managed storage",
+      "explanation": "RA3 nodes use managed storage (local SSD plus S3) so compute and storage scale independently. DC2 suits datasets under 1 TB and DS2 is no longer available.",
+      "difficulty": "Medium",
+      "tags": [
+        "Redshift",
+        "Node types"
+      ]
+    },
+    {
+      "id": "rs-az-default",
+      "prompt": "What is true of Amazon Redshift's Availability Zone resilience?",
+      "choices": [
+        "The leader node is replicated automatically to a second Region",
+        "A cluster is single-AZ by default, and Multi-AZ is available for RA3 provisioned clusters",
+        "Clusters always span three Availability Zones, as Aurora clusters do",
+        "Multi-AZ is available only for DC2 clusters, which use local SSD storage"
+      ],
+      "correctChoice": "A cluster is single-AZ by default, and Multi-AZ is available for RA3 provisioned clusters",
+      "explanation": "Redshift is single-AZ unless Multi-AZ is configured, which is supported on RA3 provisioned clusters.",
+      "difficulty": "Medium",
+      "tags": [
+        "Redshift",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "rs-consolidate-sources",
+      "prompt": "A company wants data from EMR, S3 and DynamoDB continuously copied into one place so a custom BI tool can run complex SQL over all of it. Which target is best?",
+      "choices": [
+        "Amazon DynamoDB, queried with scans",
+        "Amazon Redshift",
+        "Amazon RDS for MySQL",
+        "Amazon ElastiCache"
+      ],
+      "correctChoice": "Amazon Redshift",
+      "explanation": "Redshift consolidates data from multiple sources into a data warehouse for complex analytical SQL and is reachable by third-party tools.",
+      "difficulty": "Medium",
+      "tags": [
+        "Redshift",
+        "Analytics"
+      ]
+    },
+    {
+      "id": "athena-parquet-partition",
+      "prompt": "Athena queries over large uncompressed CSV files are slow and costly because each query scans the whole data set. Which change reduces cost the most?",
+      "choices": [
+        "Convert the data to a columnar format such as Parquet and partition it",
+        "Enable S3 Transfer Acceleration on the bucket holding the files",
+        "Increase the Athena query concurrency limit so that scans finish sooner",
+        "Move the files to S3 Glacier Deep Archive to cut storage cost"
+      ],
+      "correctChoice": "Convert the data to a columnar format such as Parquet and partition it",
+      "explanation": "Athena charges by data scanned. Columnar, compressed formats and partitioning let queries read much less data.",
+      "difficulty": "Medium",
+      "tags": [
+        "Athena",
+        "Cost",
+        "Performance"
+      ]
+    },
+    {
+      "id": "glue-catalog-shared-metadata",
+      "prompt": "Athena, EMR and Redshift Spectrum must all query the same S3 data using one shared set of table definitions. Which approach is best?",
+      "choices": [
+        "Keep the schema in a DynamoDB table for each service",
+        "Embed the schema in the S3 bucket policy",
+        "Run a separate Hive metastore on EC2 for each service",
+        "Store the table definitions in the AWS Glue Data Catalog"
+      ],
+      "correctChoice": "Store the table definitions in the AWS Glue Data Catalog",
+      "explanation": "The Glue Data Catalog is a serverless, Hive Metastore-compatible catalogue that these services can all use.",
+      "difficulty": "Medium",
+      "tags": [
+        "Glue",
+        "Data Catalog",
+        "Athena"
+      ]
+    },
+    {
+      "id": "lf-augments-iam",
+      "prompt": "How does the AWS Lake Formation permissions model relate to IAM?",
+      "choices": [
+        "It applies only to Amazon Redshift clusters and their users",
+        "It replaces IAM entirely for every service in the account",
+        "It augments IAM with a database-style grant/revoke model for catalogued data",
+        "It controls network access to the data lake's endpoints"
+      ],
+      "correctChoice": "It augments IAM with a database-style grant/revoke model for catalogued data",
+      "explanation": "Lake Formation adds grant/revoke permissions on catalog resources and data (including column, row and cell controls) alongside IAM.",
+      "difficulty": "Medium",
+      "tags": [
+        "Lake Formation",
+        "Security"
+      ]
+    },
+    {
+      "id": "multiaz-standby-not-readable",
+      "prompt": "A team enabled a Multi-AZ DB instance deployment hoping to offload read traffic, but the standby cannot be queried. Why?",
+      "choices": [
+        "The standby exists only for failover and is not readable",
+        "The standby is readable only in a different Region",
+        "The standby is readable only after a manual promotion to a standalone instance",
+        "The standby is readable only over TLS"
+      ],
+      "correctChoice": "The standby exists only for failover and is not readable",
+      "explanation": "In a Multi-AZ DB instance deployment only the primary is active. Read replicas, or a Multi-AZ DB cluster with readable standbys, are needed to serve reads.",
+      "difficulty": "Medium",
+      "tags": [
+        "RDS",
+        "Multi-AZ",
+        "Read replicas"
+      ]
+    },
+    {
+      "id": "multiaz-vs-replica-replication",
+      "prompt": "Which comparison of Multi-AZ DB instance deployments and read replicas is correct?",
+      "choices": [
+        "Multi-AZ can span Regions, while read replicas must stay within a single AZ",
+        "Multi-AZ replicates asynchronously and scales reads; read replicas replicate synchronously",
+        "Both replicate synchronously, but only read replicas fail over automatically",
+        "Multi-AZ replicates synchronously and fails over automatically; read replicas are asynchronous and promoted manually"
+      ],
+      "correctChoice": "Multi-AZ replicates synchronously and fails over automatically; read replicas are asynchronous and promoted manually",
+      "explanation": "Multi-AZ is for durability and availability and always stays within one Region. Read replicas are asynchronous, for scaling reads, and promotion is manual.",
+      "difficulty": "Medium",
+      "tags": [
+        "RDS",
+        "Multi-AZ",
+        "Read replicas"
+      ]
+    },
+    {
+      "id": "rds-manual-snapshot-retention",
+      "prompt": "A compliance rule requires keeping a database backup for 7 years, even if the RDS instance is deleted. What should be used?",
+      "choices": [
+        "The Multi-AZ standby instance",
+        "A manual snapshot, which persists until it is deleted",
+        "A read replica kept running",
+        "Automated backups with the maximum retention period"
+      ],
+      "correctChoice": "A manual snapshot, which persists until it is deleted",
+      "explanation": "Automated backups are limited to 35 days and are tied to the instance. Manual snapshots exist independently of the instance.",
+      "difficulty": "Medium",
+      "tags": [
+        "RDS",
+        "Backup",
+        "Compliance"
+      ]
+    },
+    {
+      "id": "rds-proxy-lambda",
+      "prompt": "Hundreds of short-lived Lambda functions open connections to an RDS for MySQL database and exhaust its connection limit. Which solution needs the least change?",
+      "choices": [
+        "Increase the memory allocated to each Lambda function to speed up its connections",
+        "Add a read replica and direct the Lambda functions' connections to it",
+        "Enable Multi-AZ so that the standby accepts the extra connections",
+        "Place RDS Proxy between the functions and the database to pool connections"
+      ],
+      "correctChoice": "Place RDS Proxy between the functions and the database to pool connections",
+      "explanation": "RDS Proxy keeps a pool of open database connections and shares them, reducing connection overhead. It does not raise the database's maximum connections.",
+      "difficulty": "Medium",
+      "tags": [
+        "RDS",
+        "RDS Proxy",
+        "Lambda"
+      ]
+    },
+    {
+      "id": "rds-secrets-manager-rotation",
+      "prompt": "A company wants the RDS master user password rotated automatically and kept out of application configuration. Which approach fits?",
+      "choices": [
+        "Use the IAM user's access keys as the database password and rotate them",
+        "Put the password in Lambda environment variables and redeploy to rotate it",
+        "Store the password in an S3 object encrypted with KMS and rotate it by script",
+        "Let RDS manage the master password in Secrets Manager and have the app read the secret"
+      ],
+      "correctChoice": "Let RDS manage the master password in Secrets Manager and have the app read the secret",
+      "explanation": "RDS integrates with Secrets Manager to manage and rotate the master password (every 7 days by default). The application must be configured to retrieve it from the secret.",
+      "difficulty": "Medium",
+      "tags": [
+        "RDS",
+        "Secrets Manager",
+        "Security"
+      ]
+    },
+    {
+      "id": "rds-kerberos-ad",
+      "prompt": "Users of an RDS for SQL Server database must sign in with their corporate Active Directory credentials (single sign-on). What should be configured?",
+      "choices": [
+        "Kerberos authentication with AWS Directory Service for Microsoft Active Directory",
+        "IAM database authentication with tokens generated from each user's IAM identity",
+        "A parameter group that enforces a custom password policy on the database",
+        "Secrets Manager rotation of the master user password every few days"
+      ],
+      "correctChoice": "Kerberos authentication with AWS Directory Service for Microsoft Active Directory",
+      "explanation": "RDS supports Kerberos authentication integrated with AWS Managed Microsoft AD or on-premises AD. IAM database authentication is limited to MySQL, MariaDB and PostgreSQL.",
+      "difficulty": "Medium",
+      "tags": [
+        "RDS",
+        "Directory Service",
+        "Security"
+      ]
+    },
+    {
+      "id": "rds-storage-no-shrink",
+      "prompt": "An RDS instance has 5 TB allocated but only 500 GB used, and the team wants to cut storage cost. What is the correct approach?",
+      "choices": [
+        "Switch the storage type to magnetic so that unused space is released",
+        "Modify the instance to reduce its allocated storage during a maintenance window",
+        "Create a new instance with less storage and migrate, since storage cannot be decreased",
+        "Enable storage auto scaling so that RDS shrinks the volume to match the data"
+      ],
+      "correctChoice": "Create a new instance with less storage and migrate, since storage cannot be decreased",
+      "explanation": "RDS storage can be increased but not decreased.",
+      "difficulty": "Medium",
+      "tags": [
+        "RDS",
+        "Storage",
+        "Cost"
+      ]
+    },
+    {
+      "id": "rds-optimized-reads",
+      "prompt": "Queries with large sorts, hash aggregations and temporary tables are slow on an RDS database. Which feature helps?",
+      "choices": [
+        "A longer automated backup window, scheduled for off-peak hours",
+        "RDS Optimized Reads, using local NVMe SSD for temporary tables",
+        "A Multi-AZ standby, kept synchronised in a second Availability Zone",
+        "RDS Proxy, pooling the application's database connections"
+      ],
+      "correctChoice": "RDS Optimized Reads, using local NVMe SSD for temporary tables",
+      "explanation": "Optimized Reads uses NVMe-based SSD instead of EBS for temporary tables, speeding up sorts, hash aggregations, joins and CTEs. It is available only for specific instance class and engine version combinations.",
+      "difficulty": "Medium",
+      "tags": [
+        "RDS",
+        "Performance"
+      ]
+    },
+    {
+      "id": "rds-backup-io-multiaz",
+      "prompt": "A single-AZ production database shows brief I/O pauses during its nightly automated backup. Which change avoids this?",
+      "choices": [
+        "Add a read replica in the same Availability Zone to take the backups",
+        "Copy the automated backups to a different Region",
+        "Convert it to Multi-AZ so that backups are taken from the standby",
+        "Increase the backup retention period so that backups run less often"
+      ],
+      "correctChoice": "Convert it to Multi-AZ so that backups are taken from the standby",
+      "explanation": "Storage I/O may be suspended on a single-AZ instance during backups. In Multi-AZ DB instance deployments the backup is taken from the standby.",
+      "difficulty": "Medium",
+      "tags": [
+        "RDS",
+        "Backup",
+        "Multi-AZ"
+      ]
+    },
+    {
+      "id": "rds-failover-endpoint",
+      "prompt": "The primary of a Multi-AZ DB instance deployment fails. What happens to the application's connection configuration?",
+      "choices": [
+        "The application must be updated to use the standby's own endpoint",
+        "The application must switch to a read replica's endpoint",
+        "RDS promotes the standby and updates the DNS of the same endpoint, so no change is needed",
+        "An administrator must promote the standby manually in the console"
+      ],
+      "correctChoice": "RDS promotes the standby and updates the DNS of the same endpoint, so no change is needed",
+      "explanation": "Multi-AZ failover is automatic and repoints the instance's DNS name. By contrast, promoting a read replica requires manually updating application URLs.",
+      "difficulty": "Medium",
+      "tags": [
+        "RDS",
+        "Multi-AZ",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "aurora-replica-vs-standby",
+      "prompt": "How do Aurora Replicas differ from the standby in an RDS Multi-AZ DB instance deployment?",
+      "choices": [
+        "Aurora Replicas cannot be promoted to writer",
+        "Aurora Replicas replicate to another Region only",
+        "Aurora Replicas are used only for backups",
+        "Aurora Replicas serve read traffic and also act as failover targets"
+      ],
+      "correctChoice": "Aurora Replicas serve read traffic and also act as failover targets",
+      "explanation": "An Aurora cluster can have up to 15 readers that distribute reads and can be promoted automatically if the writer fails.",
+      "difficulty": "Medium",
+      "tags": [
+        "Aurora",
+        "Read replicas",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "aurora-serverless-v2-fit",
+      "prompt": "A SaaS application on Aurora MySQL has spiky, unpredictable load. The team wants capacity to adjust automatically within seconds and to pay only for what is consumed. What fits?",
+      "choices": [
+        "Aurora Serverless v2",
+        "An RDS Multi-AZ DB cluster",
+        "Aurora Global Database",
+        "A provisioned cluster with reserved instances"
+      ],
+      "correctChoice": "Aurora Serverless v2",
+      "explanation": "Serverless v2 scales in fine-grained ACU steps almost instantly and bills for resources consumed. Provisioned suits stable, predictable workloads.",
+      "difficulty": "Medium",
+      "tags": [
+        "Aurora",
+        "Serverless",
+        "Cost"
+      ]
+    },
+    {
+      "id": "aurora-global-db-fit",
+      "prompt": "Users in Europe and Asia need low-latency local reads from an Aurora MySQL database whose writes occur in us-east-1, with cross-Region replication typically under a second. What fits?",
+      "choices": [
+        "Aurora Global Database with secondary clusters in those Regions",
+        "Additional Aurora Replicas in the us-east-1 Region",
+        "A Multi-AZ deployment in the us-east-1 Region",
+        "A nightly DMS full load into a database in each Region"
+      ],
+      "correctChoice": "Aurora Global Database with secondary clusters in those Regions",
+      "explanation": "Global Database has one primary cluster for writes and up to 10 read-only secondary clusters in other Regions with typically sub-second replication.",
+      "difficulty": "Medium",
+      "tags": [
+        "Aurora",
+        "Global Database"
+      ]
+    },
+    {
+      "id": "aurora-data-api",
+      "prompt": "A serverless application wants to query an Aurora database over HTTPS without managing database connections or drivers. What should it use?",
+      "choices": [
+        "The RDS Data API",
+        "A bastion host with SSH tunnelling",
+        "IAM database authentication with a JDBC driver",
+        "A Kerberos ticket"
+      ],
+      "correctChoice": "The RDS Data API",
+      "explanation": "The Data API lets applications run SQL against Aurora using HTTP requests. It must be enabled on the cluster.",
+      "difficulty": "Medium",
+      "tags": [
+        "Aurora",
+        "Data API",
+        "Lambda"
+      ]
+    },
+    {
+      "id": "docdb-existing-mongo-app",
+      "prompt": "An application uses MongoDB drivers and queries. The team wants a managed AWS database with minimal code changes. Which should they choose?",
+      "choices": [
+        "Amazon Aurora PostgreSQL",
+        "Amazon DynamoDB",
+        "Amazon Keyspaces",
+        "Amazon DocumentDB"
+      ],
+      "correctChoice": "Amazon DocumentDB",
+      "explanation": "DocumentDB is MongoDB-compatible, so existing drivers and queries largely work. DynamoDB has a different API and data model. Not every MongoDB feature is supported, so compatibility should be checked.",
+      "difficulty": "Medium",
+      "tags": [
+        "DocumentDB",
+        "Migration"
+      ]
+    },
+    {
+      "id": "docdb-resilience",
+      "prompt": "Which description of Amazon DocumentDB's resilience is correct?",
+      "choices": [
+        "Replicas must be in the same Availability Zone as the primary instance",
+        "Backups are optional and can be disabled to reduce storage cost",
+        "Only a single instance is supported, so a failure requires a restore from backup",
+        "Storage grows automatically, failed instances restart, and up to 15 replicas act as failover targets"
+      ],
+      "correctChoice": "Storage grows automatically, failed instances restart, and up to 15 replicas act as failover targets",
+      "explanation": "DocumentDB monitors cluster health, restarts failed instances and fails over to replicas. Backups are always on with 1 to 35 days of retention.",
+      "difficulty": "Medium",
+      "tags": [
+        "DocumentDB",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "ddb-provisioned-steady",
+      "prompt": "A DynamoDB table has steady, predictable traffic and the team wants to minimise cost. Which capacity mode fits?",
+      "choices": [
+        "Provisioned mode with specified RCUs and WCUs",
+        "On-demand mode, with DAX in front of the table",
+        "Global tables, replicated across Regions",
+        "On-demand mode, billed per request"
+      ],
+      "correctChoice": "Provisioned mode with specified RCUs and WCUs",
+      "explanation": "Provisioned capacity suits predictable workloads. On-demand suits unpredictable ones and is billed per request.",
+      "difficulty": "Medium",
+      "tags": [
+        "DynamoDB",
+        "Capacity",
+        "Cost"
+      ]
+    },
+    {
+      "id": "ddb-consistency",
+      "prompt": "An application reads an item immediately after updating it and sometimes gets the old value. How can this be avoided?",
+      "choices": [
+        "Switch to eventually consistent reads to reduce replication delay",
+        "Add a global secondary index on the updated attribute",
+        "Increase the table's provisioned WCUs so writes finish sooner",
+        "Request strongly consistent reads, accepting slower reads"
+      ],
+      "correctChoice": "Request strongly consistent reads, accepting slower reads",
+      "explanation": "DynamoDB reads are eventually consistent by default and may return stale data. Strongly consistent reads wait until copies agree, at the cost of higher latency.",
+      "difficulty": "Medium",
+      "tags": [
+        "DynamoDB",
+        "Consistency"
+      ]
+    },
+    {
+      "id": "ddb-primary-key-immutable",
+      "prompt": "After launch, a team realises a DynamoDB table's partition key is a poor choice. What must they do?",
+      "choices": [
+        "Create a new table with the correct key and migrate the data, since keys cannot change",
+        "Add a sort key to the existing table to improve the distribution of items",
+        "Edit the table's primary key in the console and let DynamoDB repartition the data",
+        "Enable on-demand mode so that DynamoDB rebuilds the key automatically"
+      ],
+      "correctChoice": "Create a new table with the correct key and migrate the data, since keys cannot change",
+      "explanation": "The primary key is defined at table creation and cannot be changed later.",
+      "difficulty": "Medium",
+      "tags": [
+        "DynamoDB",
+        "Data modelling"
+      ]
+    },
+    {
+      "id": "ddb-query-vs-scan",
+      "prompt": "A 500 GB DynamoDB table with the composite key customerId + orderDate is scanned with a filter to find one customer's orders, which is slow and costly. What is the best fix?",
+      "choices": [
+        "Increase the number of parallel scan segments",
+        "Switch to strongly consistent scans",
+        "Add more partitions manually",
+        "Use a Query with customerId as the key condition"
+      ],
+      "correctChoice": "Use a Query with customerId as the key condition",
+      "explanation": "Scans read every item and filter afterwards. A Query targets the partition directly, and is far more efficient at scale.",
+      "difficulty": "Medium",
+      "tags": [
+        "DynamoDB",
+        "Performance"
+      ]
+    },
+    {
+      "id": "ddb-composite-key-design",
+      "prompt": "An application retrieves all of a customer's orders sorted by order date. Which DynamoDB primary key design fits best?",
+      "choices": [
+        "Partition key orderDate alone",
+        "Partition key customerId alone, with orders sorted by the application",
+        "Partition key orderStatus and sort key customerId",
+        "Partition key customerId and sort key orderDate"
+      ],
+      "correctChoice": "Partition key customerId and sort key orderDate",
+      "explanation": "A composite key stores a customer's items together, sorted by the sort key, and allows range queries. Dates should be stored as strings or numbers, since DynamoDB has no Date type.",
+      "difficulty": "Medium",
+      "tags": [
+        "DynamoDB",
+        "Data modelling"
+      ]
+    },
+    {
+      "id": "neptune-sparql-rdf",
+      "prompt": "A data set is modelled as RDF following the W3C specification. Which Neptune query language is designed for it?",
+      "choices": [
+        "MongoDB Query Language (MQL)",
+        "Cassandra Query Language (CQL)",
+        "Gremlin",
+        "SPARQL"
+      ],
+      "correctChoice": "SPARQL",
+      "explanation": "SPARQL is the RDF query language. Gremlin and openCypher are for property graphs.",
+      "difficulty": "Medium",
+      "tags": [
+        "Neptune",
+        "Query languages"
+      ]
+    },
+    {
+      "id": "neptune-vs-relational",
+      "prompt": "A social app's 'friends of friends of friends' queries need many joins and are very slow on a relational database. What is the best alternative?",
+      "choices": [
+        "An ElastiCache cluster in front of the relational database",
+        "Amazon Redshift, loaded with the friendship data",
+        "A graph database such as Amazon Neptune",
+        "A larger instance class for the relational database"
+      ],
+      "correctChoice": "A graph database such as Amazon Neptune",
+      "explanation": "Graph databases store relationships as edges, which makes multi-hop traversals efficient compared with repeated joins.",
+      "difficulty": "Medium",
+      "tags": [
+        "Neptune",
+        "Service selection"
+      ]
+    },
+    {
+      "id": "dms-heterogeneous",
+      "prompt": "A company is moving an on-premises Oracle database to Aurora PostgreSQL. Which approach is needed?",
+      "choices": [
+        "Convert the schema with an AWS schema conversion tool and migrate the data with DMS",
+        "Use native Oracle export and import into Aurora PostgreSQL",
+        "Use DMS alone, because it converts all schema and code objects automatically",
+        "Create an RDS read replica from the on-premises Oracle database"
+      ],
+      "correctChoice": "Convert the schema with an AWS schema conversion tool and migrate the data with DMS",
+      "explanation": "Between different engines the schema must be converted first, using AWS schema conversion, and DMS then moves the data.",
+      "difficulty": "Medium",
+      "tags": [
+        "DMS",
+        "Migration"
+      ]
+    },
+    {
+      "id": "memorydb-cart",
+      "prompt": "An e-commerce team keeps shopping carts in a Redis-compatible store. It needs microsecond reads, no data loss if a node fails, no separate durable database to keep in sync, and compatibility with existing Redis clients. Which is best?",
+      "choices": [
+        "ElastiCache for Memcached with nodes in multiple Availability Zones",
+        "Amazon MemoryDB",
+        "ElastiCache for Redis OSS in front of an RDS database that is the system of record",
+        "DynamoDB with DAX, rewriting the client code"
+      ],
+      "correctChoice": "Amazon MemoryDB",
+      "explanation": "MemoryDB is Redis-compatible and durable, so it works as the only datastore. ElastiCache would need a separate durable database, and DynamoDB needs client changes.",
+      "difficulty": "Hard",
+      "tags": [
+        "MemoryDB",
+        "ElastiCache",
+        "Service selection"
+      ]
+    },
+    {
+      "id": "ec-aurora-hot-data",
+      "prompt": "An Aurora MySQL cluster's readers run above 90% CPU because thousands of requests per second fetch the same 2 GB of product details, which change a few times a day. The team wants to cut database load and latency at the lowest cost and effort. What is best?",
+      "choices": [
+        "Move to a larger writer instance class so that it can serve more reads",
+        "Cache the product details in ElastiCache with a TTL and read from the cache first",
+        "Convert the cluster to an Aurora Global Database with a secondary Region",
+        "Add more Aurora Replicas to spread the repeated reads across more readers"
+      ],
+      "correctChoice": "Cache the product details in ElastiCache with a TTL and read from the cache first",
+      "explanation": "Highly repetitive reads of rarely changing data are ideal for an in-memory cache. Scaling readers or the writer adds cost and does not address the repeated reads.",
+      "difficulty": "Hard",
+      "tags": [
+        "ElastiCache",
+        "Aurora",
+        "Performance"
+      ]
+    },
+    {
+      "id": "rs-cross-region-dr",
+      "prompt": "A regulated company runs a Multi-AZ Redshift RA3 cluster. It must be able to restore the warehouse in another Region if the entire Region is unavailable, with minimal operational effort. What should it do?",
+      "choices": [
+        "Increase the snapshot retention period to 35 days",
+        "Configure automatic cross-Region snapshot copy",
+        "Rely on Multi-AZ, which already covers Region failure",
+        "Add a second leader node in another Region"
+      ],
+      "correctChoice": "Configure automatic cross-Region snapshot copy",
+      "explanation": "Multi-AZ protects against AZ failure only. Redshift can copy snapshots asynchronously to another Region, from which a cluster can be restored.",
+      "difficulty": "Hard",
+      "tags": [
+        "Redshift",
+        "Resilience",
+        "Backup"
+      ]
+    },
+    {
+      "id": "rs-dc2-to-ra3-multiaz",
+      "prompt": "A 600 GB warehouse runs on a single-AZ DC2 cluster. A new requirement says queries must continue during an Availability Zone outage without a manual restore. What is the best solution?",
+      "choices": [
+        "Add more DC2 compute nodes",
+        "Take frequent snapshots and restore into another AZ when needed",
+        "Move to an RA3 provisioned cluster with Multi-AZ enabled",
+        "Enable Multi-AZ on the existing DC2 cluster"
+      ],
+      "correctChoice": "Move to an RA3 provisioned cluster with Multi-AZ enabled",
+      "explanation": "Redshift Multi-AZ is supported for RA3 provisioned clusters. DC2 clusters are single-AZ, and restoring snapshots is manual and slower.",
+      "difficulty": "Hard",
+      "tags": [
+        "Redshift",
+        "Resilience",
+        "Node types"
+      ]
+    },
+    {
+      "id": "lf-column-row-athena",
+      "prompt": "Analysts query a data lake in S3 through Athena. Each regional team must see only its own region's rows and no PII columns, and the team wants to manage this centrally with grant/revoke. What is the best solution?",
+      "choices": [
+        "Attach IAM policies to each analyst that restrict which Athena queries they can run",
+        "Write S3 bucket policies per prefix and per team, restricting each team's access",
+        "Create a separate Redshift cluster per region and load each region's data into it",
+        "Register the data in Lake Formation and grant column- and row-level permissions"
+      ],
+      "correctChoice": "Register the data in Lake Formation and grant column- and row-level permissions",
+      "explanation": "Lake Formation enforces fine-grained permissions at column, row and cell level for data in S3 and integrates with Athena. Bucket policies and Athena IAM policies cannot filter by column or row.",
+      "difficulty": "Hard",
+      "tags": [
+        "Lake Formation",
+        "Athena",
+        "Security"
+      ]
+    },
+    {
+      "id": "lf-cross-account-share",
+      "prompt": "A data lake and its Glue Data Catalog are in account A. IAM principals in partner account B must query only selected tables through Athena, without copying data, using centrally managed, revocable access. What should be done?",
+      "choices": [
+        "Make the bucket public and rely on obscure prefixes",
+        "Use Lake Formation cross-account grants on the selected tables",
+        "Share IAM user access keys from account A",
+        "Replicate the S3 bucket into account B"
+      ],
+      "correctChoice": "Use Lake Formation cross-account grants on the selected tables",
+      "explanation": "Lake Formation can share data with other accounts or directly with their IAM principals, enforced through grants that can be revoked, without copying data.",
+      "difficulty": "Hard",
+      "tags": [
+        "Lake Formation",
+        "Security",
+        "Data sharing"
+      ]
+    },
+    {
+      "id": "glue-lf-athena-architecture",
+      "prompt": "Raw CSV files land in S3. The team needs automatic schema discovery, a scheduled conversion to Parquet, SQL queries without servers, and column-level permissions. Which combination fits?",
+      "choices": [
+        "DMS into RDS, Athena federated queries over RDS, and IAM policies for column access",
+        "Glue crawlers and ETL jobs plus the Glue Data Catalog, Athena for queries, Lake Formation for column permissions",
+        "Data Exchange datasets loaded into DynamoDB, with DAX and IAM policies for access",
+        "A persistent EMR cluster with its own Hive metastore, and S3 bucket policies for access"
+      ],
+      "correctChoice": "Glue crawlers and ETL jobs plus the Glue Data Catalog, Athena for queries, Lake Formation for column permissions",
+      "explanation": "Glue discovers and transforms data and holds the shared catalog, Athena queries it serverlessly, and Lake Formation adds fine-grained access control.",
+      "difficulty": "Hard",
+      "tags": [
+        "Glue",
+        "Lake Formation",
+        "Athena",
+        "Architecture"
+      ]
+    },
+    {
+      "id": "rds-multiaz-cluster-readable",
+      "prompt": "A production RDS for PostgreSQL database must fail over across AZs and have standby capacity that can also serve reads, and the team does not want to migrate to Aurora. Which option fits?",
+      "choices": [
+        "A Multi-AZ DB cluster deployment with two readable standbys in three AZs",
+        "Read replicas only, promoted manually after a failure",
+        "A single-AZ instance with two read replicas in the same AZ",
+        "A Multi-AZ DB instance deployment, reading from the standby"
+      ],
+      "correctChoice": "A Multi-AZ DB cluster deployment with two readable standbys in three AZs",
+      "explanation": "Multi-AZ DB clusters (supported engines only) have two readable standbys across three AZs. Multi-AZ DB instance deployments have a single non-readable standby.",
+      "difficulty": "Hard",
+      "tags": [
+        "RDS",
+        "Multi-AZ",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "rds-cross-region-dr",
+      "prompt": "An RDS for MySQL database in one Region must tolerate a full Regional outage, with an RPO of seconds to minutes and a faster recovery than restoring a snapshot. What is best?",
+      "choices": [
+        "Copy snapshots nightly to another Region and restore them when needed",
+        "Raise automated backup retention to 35 days",
+        "Enable Multi-AZ in the primary Region",
+        "Create a cross-Region read replica and promote it if the Region fails"
+      ],
+      "correctChoice": "Create a cross-Region read replica and promote it if the Region fails",
+      "explanation": "Cross-Region read replicas continuously replicate asynchronously and can be promoted to standalone databases. Snapshot restores are slow and Multi-AZ stays within one Region.",
+      "difficulty": "Hard",
+      "tags": [
+        "RDS",
+        "Read replicas",
+        "Disaster recovery"
+      ]
+    },
+    {
+      "id": "rds-multiaz-plus-replicas",
+      "prompt": "An RDS for MySQL application must survive an AZ failure with minimal downtime and also scale reads for reporting. Which design is best?",
+      "choices": [
+        "Enable Multi-AZ for failover and add read replicas for the reporting reads",
+        "Use a cross-Region read replica only",
+        "Use read replicas only, relying on automatic promotion",
+        "Use Multi-AZ only, and run the reports on the standby"
+      ],
+      "correctChoice": "Enable Multi-AZ for failover and add read replicas for the reporting reads",
+      "explanation": "Multi-AZ provides automatic synchronous failover, while read replicas provide asynchronous read scaling and do not fail over automatically.",
+      "difficulty": "Hard",
+      "tags": [
+        "RDS",
+        "Multi-AZ",
+        "Read replicas"
+      ]
+    },
+    {
+      "id": "rds-public-access-sg",
+      "prompt": "A developer outside the VPC cannot connect to an RDS for PostgreSQL instance. The instance is set as publicly accessible, sits in subnets routed to an internet gateway, and its security group allows only inbound TCP 443. What fixes this?",
+      "choices": [
+        "Move the instance into a private DB subnet group to expose it securely",
+        "Add an inbound rule for TCP 5432 from the developer's IP range to the security group",
+        "Attach an IAM policy with rds-db:connect to the developer's laptop",
+        "Enable Multi-AZ so that the standby instance has a public endpoint"
+      ],
+      "correctChoice": "Add an inbound rule for TCP 5432 from the developer's IP range to the security group",
+      "explanation": "Public accessibility only makes the endpoint resolve to a public address. The security group must still allow the database port (5432 for PostgreSQL).",
+      "difficulty": "Hard",
+      "tags": [
+        "RDS",
+        "Networking",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "rds-private-access-vpn",
+      "prompt": "A private RDS database has no public access. Engineers working from home need occasional access, and the company wants no public database exposure. What is the best approach?",
+      "choices": [
+        "Connect from AWS CloudShell using the private endpoint",
+        "Use AWS Direct Connect from the engineers' homes",
+        "Use AWS Client VPN to connect engineers' machines into the VPC",
+        "Make the database publicly accessible and restrict the security group to engineers' IPs"
+      ],
+      "correctChoice": "Use AWS Client VPN to connect engineers' machines into the VPC",
+      "explanation": "Client VPN gives private network access into the VPC with no public database endpoint. Direct Connect is for on-premises networks, and CloudShell does not run in a customer-managed VPC.",
+      "difficulty": "Hard",
+      "tags": [
+        "RDS",
+        "Networking",
+        "Security"
+      ]
+    },
+    {
+      "id": "rds-iam-auth-config",
+      "prompt": "An EC2 application will use IAM authentication to access an RDS for MySQL database. Which configuration is required?",
+      "choices": [
+        "Enable IAM auth and attach rds-db:connect, since IAM identities map to DB users automatically",
+        "Enable IAM auth and generate a token that can be cached for up to 24 hours",
+        "Enable IAM auth, create an IAM-enabled DB user, allow rds-db:connect on the role, connect with a token",
+        "Enable IAM auth and use the role's access key as the DB password, since it never expires"
+      ],
+      "correctChoice": "Enable IAM auth, create an IAM-enabled DB user, allow rds-db:connect on the role, connect with a token",
+      "explanation": "A database user must be created for IAM authentication, the role needs the rds-db:connect permission, and applications connect with a token that lasts 15 minutes.",
+      "difficulty": "Hard",
+      "tags": [
+        "RDS",
+        "IAM",
+        "Security"
+      ]
+    },
+    {
+      "id": "rds-custom-oracle",
+      "prompt": "A legacy Oracle application needs a third-party agent installed on the database host and a custom patch, while the team still wants managed automation where possible. Which option fits?",
+      "choices": [
+        "Amazon DocumentDB",
+        "Amazon RDS Custom for Oracle",
+        "Amazon Aurora PostgreSQL with Babelfish",
+        "Amazon RDS for Oracle with a customised parameter group"
+      ],
+      "correctChoice": "Amazon RDS Custom for Oracle",
+      "explanation": "RDS Custom lets customers access the host to install software and patches. Standard RDS does not allow host access, and parameter groups only change engine settings.",
+      "difficulty": "Hard",
+      "tags": [
+        "RDS Custom",
+        "RDS",
+        "Service selection"
+      ]
+    },
+    {
+      "id": "aurora-three-copies-lost",
+      "prompt": "Aurora keeps two copies of data in each of three AZs. An AZ fails and one storage node in another AZ also fails, so three copies are unavailable. What is the impact?",
+      "choices": [
+        "Writes continue, but read availability is lost",
+        "Both reads and writes continue",
+        "Reads continue, but write availability is lost",
+        "Both reads and writes are lost"
+      ],
+      "correctChoice": "Reads continue, but write availability is lost",
+      "explanation": "Aurora tolerates the loss of two copies without losing write availability and three without losing read availability, so with three lost, reads continue but writes do not.",
+      "difficulty": "Hard",
+      "tags": [
+        "Aurora",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "aurora-write-bottleneck",
+      "prompt": "An Aurora MySQL cluster's writer is CPU-bound on heavy INSERT and UPDATE activity, while its readers are mostly idle. What is the most appropriate fix?",
+      "choices": [
+        "Scale the writer up to a larger instance class, since writes scale vertically",
+        "Add more Aurora Replicas to spread the INSERT and UPDATE load",
+        "Enable the RDS Data API so that requests are spread across the readers",
+        "Add a secondary Region with Aurora Global Database to share the writes"
+      ],
+      "correctChoice": "Scale the writer up to a larger instance class, since writes scale vertically",
+      "explanation": "There is a single writer per cluster, so write capacity scales vertically. Readers scale reads horizontally.",
+      "difficulty": "Hard",
+      "tags": [
+        "Aurora",
+        "Performance"
+      ]
+    },
+    {
+      "id": "aurora-serverless-v2-idle",
+      "prompt": "A dev/test Aurora PostgreSQL database is used 9 to 5 on weekdays and idle otherwise. The team wants minimum cost without writing scheduling scripts. What fits best?",
+      "choices": [
+        "An Aurora Global Database with a secondary Region that is kept stopped",
+        "Aurora Serverless v2 with a minimum of 0 ACUs, pausing when idle (supported versions)",
+        "A provisioned cluster with reserved instances to lower the hourly rate",
+        "A provisioned cluster on a larger instance class with Multi-AZ enabled"
+      ],
+      "correctChoice": "Aurora Serverless v2 with a minimum of 0 ACUs, pausing when idle (supported versions)",
+      "explanation": "On supported newer versions, Serverless v2 can scale to 0 ACUs and pause automatically when idle. Provisioned clusters keep billing for instance hours.",
+      "difficulty": "Hard",
+      "tags": [
+        "Aurora",
+        "Serverless",
+        "Cost"
+      ]
+    },
+    {
+      "id": "aurora-global-regional-failure",
+      "prompt": "A business needs a Region-level recovery plan for Aurora with an RPO of about a second and a recovery time of minutes, not hours. Which is best?",
+      "choices": [
+        "Rely on Aurora's storage replication across three Availability Zones",
+        "Copy snapshots daily to another Region and restore them if needed",
+        "Run a nightly DMS full load into a database in another Region",
+        "Use Aurora Global Database and promote a secondary cluster in the other Region"
+      ],
+      "correctChoice": "Use Aurora Global Database and promote a secondary cluster in the other Region",
+      "explanation": "Global Database replicates storage to secondary Regions with typically sub-second lag, and a secondary can be promoted. Three-AZ replication does not protect against a Regional outage.",
+      "difficulty": "Hard",
+      "tags": [
+        "Aurora",
+        "Global Database",
+        "Disaster recovery"
+      ]
+    },
+    {
+      "id": "aurora-shared-storage-lag",
+      "prompt": "A write-heavy RDS for MySQL workload sees growing replica lag with several read replicas. The team wants to stay on MySQL but needs up to 15 readers with minimal lag and fast failover. What is best?",
+      "choices": [
+        "Place ElastiCache in front of the replicas to reduce their read load",
+        "Add more RDS read replicas and spread them across Availability Zones",
+        "Convert to a Multi-AZ DB instance deployment with synchronous replication",
+        "Migrate to Aurora MySQL, where replicas read from the shared storage volume"
+      ],
+      "correctChoice": "Migrate to Aurora MySQL, where replicas read from the shared storage volume",
+      "explanation": "Aurora Replicas share the cluster storage volume, so they do not replay changes through separate copies and lag stays low, and a reader can be promoted on failure.",
+      "difficulty": "Hard",
+      "tags": [
+        "Aurora",
+        "RDS",
+        "Service selection"
+      ]
+    },
+    {
+      "id": "aurora-babelfish",
+      "prompt": "A company wants to retire SQL Server licences but its .NET application uses T-SQL and SQL Server drivers. It wants minimal application changes. What is best?",
+      "choices": [
+        "Aurora PostgreSQL with Babelfish",
+        "DynamoDB with a full application rewrite",
+        "Aurora MySQL with Babelfish",
+        "RDS for SQL Server with RDS Custom"
+      ],
+      "correctChoice": "Aurora PostgreSQL with Babelfish",
+      "explanation": "Babelfish extends Aurora PostgreSQL to accept SQL Server connections and T-SQL, so applications need few code changes and no driver change.",
+      "difficulty": "Hard",
+      "tags": [
+        "Aurora",
+        "Babelfish",
+        "Migration"
+      ]
+    },
+    {
+      "id": "ddb-hot-partition",
+      "prompt": "A DynamoDB orders table uses orderStatus (three values) as its partition key. Writes are throttled even though total provisioned WCUs are barely used. What is the best fix?",
+      "choices": [
+        "Increase the provisioned WCUs so that each partition receives more capacity",
+        "Place DAX in front of the table to absorb the writes",
+        "Switch the application to eventually consistent reads to reduce write load",
+        "Redesign the key to use a high-cardinality attribute such as orderId"
+      ],
+      "correctChoice": "Redesign the key to use a high-cardinality attribute such as orderId",
+      "explanation": "Keys should be distinct and uniform. With only three values, traffic concentrates on a few partitions, which each get an even share of capacity, so throttling occurs.",
+      "difficulty": "Hard",
+      "tags": [
+        "DynamoDB",
+        "Troubleshooting",
+        "Data modelling"
+      ]
+    },
+    {
+      "id": "ddb-global-tables",
+      "prompt": "A game has players in the US and Europe who must write locally with low latency, and the data layer must survive a Regional outage with minimal operational effort. What is best?",
+      "choices": [
+        "DynamoDB global tables across both Regions",
+        "ElastiCache Global Datastore",
+        "A DynamoDB table in one Region with cross-Region backups",
+        "Aurora Global Database with writes in one Region"
+      ],
+      "correctChoice": "DynamoDB global tables across both Regions",
+      "explanation": "DynamoDB global tables are multi-Region and multi-writer. Aurora Global Database has a single writer Region.",
+      "difficulty": "Hard",
+      "tags": [
+        "DynamoDB",
+        "Global tables",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "ddb-select-user-profiles",
+      "prompt": "An application stores JSON user profiles accessed by user ID for millions of users. Traffic is spiky, it needs single-digit millisecond reads, and the team wants no cluster or instance sizing and has no joins. Which fits best?",
+      "choices": [
+        "DocumentDB with an instance-based cluster",
+        "Redshift RA3",
+        "Aurora MySQL provisioned with readers",
+        "DynamoDB in on-demand capacity mode"
+      ],
+      "correctChoice": "DynamoDB in on-demand capacity mode",
+      "explanation": "Key-based access at scale with unpredictable traffic and no capacity management points to DynamoDB on-demand. Instance-based DocumentDB needs sizing, and Aurora and Redshift suit relational/analytical use.",
+      "difficulty": "Hard",
+      "tags": [
+        "DynamoDB",
+        "Service selection"
+      ]
+    },
+    {
+      "id": "docdb-elastic-cluster",
+      "prompt": "A MongoDB-compatible application's write throughput and data size outgrow a single primary instance. Which DocumentDB option fits?",
+      "choices": [
+        "DynamoDB with DAX, after rewriting the data access layer",
+        "An instance-based cluster with up to 15 replicas for scaling reads",
+        "An elastic cluster, which shards data across instances",
+        "ElastiCache for Redis OSS placed in front of the primary"
+      ],
+      "correctChoice": "An elastic cluster, which shards data across instances",
+      "explanation": "Elastic clusters scale automatically with vCPU and instances per shard. Replicas in an instance-based cluster scale reads, not writes.",
+      "difficulty": "Hard",
+      "tags": [
+        "DocumentDB",
+        "Scaling"
+      ]
+    },
+    {
+      "id": "neptune-ml-fraud",
+      "prompt": "A graph of accounts and transactions is stored in Neptune. The team wants to predict likely fraudulent accounts using the graph relationships, without building its own ML infrastructure. What fits best?",
+      "choices": [
+        "SPARQL queries over RDF",
+        "Neptune Analytics running PageRank only",
+        "Neptune ML, which uses graph neural networks",
+        "Exporting the graph to DynamoDB"
+      ],
+      "correctChoice": "Neptune ML, which uses graph neural networks",
+      "explanation": "Neptune ML uses GNNs to make predictions on graph data. Graph algorithms and queries do not produce trained predictive models.",
+      "difficulty": "Hard",
+      "tags": [
+        "Neptune",
+        "Machine learning"
+      ]
+    },
+    {
+      "id": "dms-serverless-private",
+      "prompt": "A DMS Serverless replication runs in private subnets with no internet access and must write to Amazon S3. What is required?",
+      "choices": [
+        "Create a VPC endpoint for S3 so DMS Serverless can reach it privately",
+        "Use a replication instance, since Serverless cannot reach S3",
+        "Place the target in a different Region",
+        "Assign public IP addresses to the replication"
+      ],
+      "correctChoice": "Create a VPC endpoint for S3 so DMS Serverless can reach it privately",
+      "explanation": "DMS Serverless uses no public IPs and must use VPC endpoints to reach AWS services such as S3, Kinesis and DynamoDB.",
+      "difficulty": "Hard",
+      "tags": [
+        "DMS",
+        "Networking"
+      ]
+    },
+    {
+      "id": "dms-oracle-to-aurora-cdc",
+      "prompt": "A company must move an on-premises Oracle OLTP database to Aurora PostgreSQL with minimal downtime. What is best?",
+      "choices": [
+        "Convert the schema, run a DMS full load, replicate ongoing changes, then cut over",
+        "Run a DMS full load and disable the source for days",
+        "Create an RDS read replica of the Oracle source",
+        "Take a native Oracle backup and restore it into Aurora PostgreSQL"
+      ],
+      "correctChoice": "Convert the schema, run a DMS full load, replicate ongoing changes, then cut over",
+      "explanation": "Different engines require schema conversion, and a DMS task can keep the target in sync until cutover, minimising downtime.",
+      "difficulty": "Hard",
+      "tags": [
+        "DMS",
+        "Migration",
+        "Aurora"
+      ]
+    },
+    {
+      "id": "rs-offload-reporting",
+      "prompt": "Heavy analytical joins and aggregations on an RDS database slow down its transactional workload, and read replicas are still slow. What is the best long-term solution?",
+      "choices": [
+        "Upgrade the RDS instance to a larger memory-optimised class",
+        "Load the data into Amazon Redshift and run the analytics there",
+        "Move the RDS database to a Multi-AZ deployment",
+        "Increase the RDS automated backup retention to 35 days"
+      ],
+      "correctChoice": "Load the data into Amazon Redshift and run the analytics there",
+      "explanation": "Analytical queries over large data suit a columnar OLAP data warehouse. RDS is built for OLTP.",
+      "difficulty": "Hard",
+      "tags": [
+        "Redshift",
+        "RDS",
+        "Architecture"
+      ]
+    },
+    {
+      "id": "rds-blue-green-upgrade",
+      "prompt": "A team must test a major engine version upgrade on production-like data without risking production and switch over with minimal downtime. What fits?",
+      "choices": [
+        "Modify the engine version in place during the maintenance window",
+        "Promote a read replica after upgrading it, without further testing",
+        "An RDS Blue/Green Deployment with a synchronised staging environment",
+        "Run a Multi-AZ failover test against the standby instance"
+      ],
+      "correctChoice": "An RDS Blue/Green Deployment with a synchronised staging environment",
+      "explanation": "Blue/green deployments copy production into a synchronised staging environment where changes can be tested before switching over.",
+      "difficulty": "Hard",
+      "tags": [
+        "RDS",
+        "Blue/green",
+        "Operations"
+      ]
+    },
+    {
+      "id": "rds-das-separation",
+      "prompt": "Auditors need near-real-time DB activity records that administrators cannot alter, consumed by an external tool. What fits?",
+      "choices": [
+        "Enable Performance Insights and export its dashboards to the auditors",
+        "Rely on automated backups and transaction logs for auditing",
+        "Enable Multi-AZ so that a standby holds a copy of the activity",
+        "Enable Database Activity Streams, which feed a Kinesis data stream"
+      ],
+      "correctChoice": "Enable Database Activity Streams, which feed a Kinesis data stream",
+      "explanation": "Database Activity Streams must be enabled explicitly and send activity to a Kinesis data stream for monitoring or other consumers.",
+      "difficulty": "Hard",
+      "tags": [
+        "RDS",
+        "Database Activity Streams",
+        "Security"
+      ]
+    },
+    {
+      "id": "ddb-dax-vs-elasticache",
+      "prompt": "A read-heavy DynamoDB application needs microsecond reads with minimal code change. Which is best?",
+      "choices": [
+        "ElastiCache with custom cache-aside code",
+        "DynamoDB global tables",
+        "DynamoDB Accelerator (DAX)",
+        "Provisioned capacity increases"
+      ],
+      "correctChoice": "DynamoDB Accelerator (DAX)",
+      "explanation": "DAX is an in-memory cache for DynamoDB that requires little change. Custom ElastiCache logic adds code.",
+      "difficulty": "Hard",
+      "tags": [
+        "DynamoDB",
+        "DAX",
+        "Caching"
+      ]
+    },
+    {
+      "id": "keyspaces-vs-ddb",
+      "prompt": "A company has an on-premises Apache Cassandra application using CQL drivers and wants a managed AWS service with minimal change. Which is best?",
+      "choices": [
+        "Amazon DocumentDB",
+        "Amazon Neptune",
+        "Amazon DynamoDB",
+        "Amazon Keyspaces"
+      ],
+      "correctChoice": "Amazon Keyspaces",
+      "explanation": "Keyspaces supports CQL and Cassandra drivers. DynamoDB would require a rewrite.",
+      "difficulty": "Hard",
+      "tags": [
+        "Keyspaces",
+        "DynamoDB",
+        "Migration"
+      ]
+    },
+    {
+      "id": "athena-vs-redshift-adhoc",
+      "prompt": "A team has hundreds of TB of Parquet data in S3, already catalogued in Glue, and queries it a few times a week. It wants minimum cost and operations. Which is best?",
+      "choices": [
+        "A persistent EMR cluster",
+        "Amazon Athena",
+        "ElastiCache",
+        "A provisioned Redshift RA3 cluster"
+      ],
+      "correctChoice": "Amazon Athena",
+      "explanation": "Athena is serverless and pay-per-use, ideal for infrequent ad hoc queries over S3 data.",
+      "difficulty": "Hard",
+      "tags": [
+        "Athena",
+        "Redshift",
+        "Cost"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1736 @@
+{
+  "$schema": "../pool.schema.json",
+  "poolName": "Storage & Data Transfer: EBS, EFS, FSx, Backup, Snow, Transfer Family, DataSync & Storage Gateway (Mixed Difficulty)",
+  "description": "SAA-C03 revision questions on EBS volume types, RAID and SSD/HDD fundamentals, EFS, FSx, Amazon File Cache, AWS Backup, the Snow Family, AWS Transfer Family, Migration Hub, DataSync and Storage Gateway at Easy, Medium and Hard difficulty.",
+  "category": "Storage",
+  "version": 1,
+  "questions": [
+    {
+      "id": "ebs-same-az-attach",
+      "prompt": "An engineer wants to attach an existing EBS volume to an EC2 instance. Which condition must be met?",
+      "choices": [
+        "The instance must be stopped before the volume can be attached",
+        "The instance must be in the same subnet as the volume",
+        "The volume must first be copied to an S3 bucket in the same Region",
+        "The instance must be in the same Availability Zone as the volume"
+      ],
+      "correctChoice": "The instance must be in the same Availability Zone as the volume",
+      "explanation": "EBS volumes live in a single Availability Zone (replicated within it) and can only be attached to instances in that same AZ. A subnet match is not required, and data volumes can be attached to running instances.",
+      "difficulty": "Easy",
+      "tags": [
+        "EBS",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "ebs-gp3-vs-gp2",
+      "prompt": "Which EBS volume type costs up to 20% less per GB than gp2 and lets you provision IOPS and throughput independently of volume size?",
+      "choices": [
+        "sc1 (Cold HDD)",
+        "st1 (Throughput Optimized HDD)",
+        "gp3 (General Purpose SSD)",
+        "io1 (Provisioned IOPS SSD)"
+      ],
+      "correctChoice": "gp3 (General Purpose SSD)",
+      "explanation": "gp3 decouples performance from capacity and is cheaper per GB than gp2, whose IOPS scale with volume size. io1 is more expensive, and st1/sc1 are HDD types with no independently provisioned IOPS.",
+      "difficulty": "Easy",
+      "tags": [
+        "EBS",
+        "Cost"
+      ]
+    },
+    {
+      "id": "ebs-st1-use-case",
+      "prompt": "A log-processing application streams large sequential reads from a volume attached to EC2. Which EBS volume type is designed for this frequently accessed, throughput-oriented workload at low cost?",
+      "choices": [
+        "Cold HDD (sc1) volumes",
+        "General Purpose SSD (gp2) volumes",
+        "Provisioned IOPS SSD (io2) volumes",
+        "Throughput Optimized HDD (st1)"
+      ],
+      "correctChoice": "Throughput Optimized HDD (st1)",
+      "explanation": "st1 is HDD-backed and optimised for large sequential throughput (big data, log processing). sc1 is for infrequently accessed data, and io2 is for IOPS-intensive workloads at a much higher price.",
+      "difficulty": "Easy",
+      "tags": [
+        "EBS",
+        "Volume Types"
+      ]
+    },
+    {
+      "id": "ebs-sc1-use-case",
+      "prompt": "Which EBS volume type offers the lowest storage cost and is intended for throughput-oriented data that is accessed infrequently?",
+      "choices": [
+        "Throughput Optimized HDD (st1)",
+        "General Purpose SSD (gp3)",
+        "Cold HDD (sc1)",
+        "Provisioned IOPS SSD (io1)"
+      ],
+      "correctChoice": "Cold HDD (sc1)",
+      "explanation": "sc1 is the lowest-cost current-generation EBS volume type, designed for infrequently accessed, throughput-oriented data. st1 costs more and targets frequently accessed streaming workloads.",
+      "difficulty": "Easy",
+      "tags": [
+        "EBS",
+        "Cost"
+      ]
+    },
+    {
+      "id": "ebs-no-boot-hdd",
+      "prompt": "Which pair of EBS volume types cannot be used as a boot (root) volume?",
+      "choices": [
+        "gp3 and io2",
+        "gp2 and io1",
+        "gp3 and Magnetic (standard)",
+        "st1 and sc1"
+      ],
+      "correctChoice": "st1 and sc1",
+      "explanation": "The HDD-backed st1 and sc1 volumes cannot be boot volumes. All SSD types (gp2, gp3, io1, io2) and previous-generation Magnetic volumes can.",
+      "difficulty": "Easy",
+      "tags": [
+        "EBS",
+        "Volume Types"
+      ]
+    },
+    {
+      "id": "ebs-io2-block-express",
+      "prompt": "A mission-critical database needs consistent sub-millisecond latency, 200,000 IOPS from a single volume and 99.999% durability. Which volume type should the architect choose?",
+      "choices": [
+        "io1 Provisioned IOPS SSD",
+        "st1 Throughput Optimized HDD",
+        "gp3 General Purpose SSD",
+        "io2 Block Express"
+      ],
+      "correctChoice": "io2 Block Express",
+      "explanation": "io2 Block Express supports up to 256,000 IOPS per volume, sub-millisecond latency and 99.999% durability. io1 tops out at 64,000 IOPS with 99.8-99.9% durability, and gp3 maxes out at 80,000 IOPS.",
+      "difficulty": "Medium",
+      "tags": [
+        "EBS",
+        "Performance"
+      ]
+    },
+    {
+      "id": "ebs-gp3-over-io1",
+      "prompt": "A database needs a sustained 30,000 IOPS from a single volume. It does not need Multi-Attach or higher-than-standard durability, and the team wants the lowest cost. Which volume type fits best?",
+      "choices": [
+        "io1 with 30,000 provisioned IOPS",
+        "gp2, relying on burst credits to reach 30,000 IOPS",
+        "gp3 with IOPS provisioned to 30,000",
+        "io2 Block Express with 30,000 provisioned IOPS"
+      ],
+      "correctChoice": "gp3 with IOPS provisioned to 30,000",
+      "explanation": "gp3 now supports up to 80,000 IOPS and is cheaper than Provisioned IOPS SSD, so it covers this requirement at the lowest cost. gp2 is capped at 16,000 IOPS. io1/io2 are justified only by needs such as Multi-Attach, very high IOPS or highest durability.",
+      "difficulty": "Medium",
+      "tags": [
+        "EBS",
+        "Cost",
+        "Performance"
+      ]
+    },
+    {
+      "id": "ebs-multi-attach",
+      "prompt": "A clustered application running on Nitro-based EC2 instances in one Availability Zone needs several instances to read and write the same block volume at the same time. Which solution is supported?",
+      "choices": [
+        "A gp3 volume with EBS Multi-Attach enabled",
+        "An io2 volume attached to instances in two different Availability Zones",
+        "An io2 volume with EBS Multi-Attach enabled",
+        "An st1 volume attached to each instance"
+      ],
+      "correctChoice": "An io2 volume with EBS Multi-Attach enabled",
+      "explanation": "Multi-Attach is supported only on Provisioned IOPS SSD volumes (io1/io2), and the instances must be in the same AZ. gp3 and HDD volumes do not support Multi-Attach.",
+      "difficulty": "Medium",
+      "tags": [
+        "EBS",
+        "High Availability"
+      ]
+    },
+    {
+      "id": "ebs-move-across-az",
+      "prompt": "A volume in us-east-1a must be made available to an instance in us-east-1b. What is the correct approach?",
+      "choices": [
+        "Create a snapshot of the volume and create a new volume from it in us-east-1b",
+        "Modify the volume's Availability Zone attribute in the console",
+        "Detach the volume and attach it directly to the instance in us-east-1b",
+        "Enable Multi-Attach on the volume and attach it from us-east-1b"
+      ],
+      "correctChoice": "Create a snapshot of the volume and create a new volume from it in us-east-1b",
+      "explanation": "Volumes cannot be moved between AZs. A snapshot (stored regionally in S3) can be used to create a new volume in any AZ in the Region. Multi-Attach does not work across AZs.",
+      "difficulty": "Easy",
+      "tags": [
+        "EBS",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "storage-bandwidth-analogy",
+      "prompt": "In the common analogy \"pipe versus water\", which storage performance term is the pipe?",
+      "choices": [
+        "IOPS, the number of reads and writes per second",
+        "Latency, the delay before a request is answered",
+        "Bandwidth, the total possible speed of data movement along the network",
+        "Throughput, the actual data transfer rate to and from the storage medium"
+      ],
+      "correctChoice": "Bandwidth, the total possible speed of data movement along the network",
+      "explanation": "Bandwidth is the maximum capacity of the connection (the pipe), while throughput is the data actually moving through it (the water). IOPS counts operations per second rather than data volume.",
+      "difficulty": "Easy",
+      "tags": [
+        "Storage Fundamentals"
+      ]
+    },
+    {
+      "id": "raid0-striping",
+      "prompt": "Which RAID level splits data across multiple disks to increase performance but provides no redundancy?",
+      "choices": [
+        "RAID 5 (striping with parity)",
+        "RAID 1 (mirroring)",
+        "RAID 6 (striping with double parity)",
+        "RAID 0 (striping)"
+      ],
+      "correctChoice": "RAID 0 (striping)",
+      "explanation": "RAID 0 stripes data across disks for speed and capacity but a single disk failure loses the whole array. RAID 1, 5, 6 and 10 add redundancy.",
+      "difficulty": "Easy",
+      "tags": [
+        "RAID",
+        "Storage Fundamentals"
+      ]
+    },
+    {
+      "id": "raid0-ebs-tradeoff",
+      "prompt": "An engineer stripes four EBS volumes into a RAID 0 array on one instance to exceed single-volume throughput. What is the main trade-off?",
+      "choices": [
+        "EBS snapshots can no longer be taken of the individual volumes",
+        "The volumes must be placed in different Availability Zones",
+        "Usable capacity is halved because every block is written twice",
+        "The failure of any one volume makes the data in the whole array unavailable"
+      ],
+      "correctChoice": "The failure of any one volume makes the data in the whole array unavailable",
+      "explanation": "RAID 0 has no redundancy, so the array is only as reliable as its weakest member. It does not duplicate data, does not need multiple AZs (volumes must be in the instance's AZ) and does not prevent snapshots.",
+      "difficulty": "Medium",
+      "tags": [
+        "RAID",
+        "EBS",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "raid6-double-parity",
+      "prompt": "Which RAID level uses double parity so that the array survives two simultaneous disk failures?",
+      "choices": [
+        "RAID 5",
+        "RAID 0",
+        "RAID 6",
+        "RAID 1"
+      ],
+      "correctChoice": "RAID 6",
+      "explanation": "RAID 6 extends RAID 5 with a second parity block, tolerating two disk failures (minimum four disks). RAID 5 tolerates one, RAID 1 tolerates failure of one mirror, and RAID 0 tolerates none.",
+      "difficulty": "Easy",
+      "tags": [
+        "RAID"
+      ]
+    },
+    {
+      "id": "ssd-vs-hdd-random-io",
+      "prompt": "Which characteristic makes SSD storage better than HDD for workloads with many small, random reads and writes?",
+      "choices": [
+        "A lower cost per GB than any HDD",
+        "Data is always replicated to a second drive",
+        "Rotating platters that read contiguous data efficiently",
+        "No moving parts, giving quick access time and low latency"
+      ],
+      "correctChoice": "No moving parts, giving quick access time and low latency",
+      "explanation": "SSDs have no moving parts, so random access is fast. HDDs must physically position a head over a rotating disk, which suits continuous sequential data but not many small I/O operations.",
+      "difficulty": "Easy",
+      "tags": [
+        "SSD",
+        "HDD",
+        "Storage Fundamentals"
+      ]
+    },
+    {
+      "id": "nvme-pcie",
+      "prompt": "Which SSD interface uses the PCIe bus to deliver higher performance than SATA for intensive data tasks?",
+      "choices": [
+        "NVMe",
+        "SATA",
+        "iSCSI",
+        "Thunderbolt"
+      ],
+      "correctChoice": "NVMe",
+      "explanation": "NVMe is designed for flash storage and communicates over PCIe, giving higher throughput and lower latency than SATA. iSCSI is a network protocol for block storage, not an SSD interface.",
+      "difficulty": "Easy",
+      "tags": [
+        "SSD",
+        "Storage Fundamentals"
+      ]
+    },
+    {
+      "id": "ebs-st1-throughput-choice",
+      "prompt": "A nightly analytics job scans large sequential files and needs about 400 MiB/s from a single, frequently used data volume. Which option meets the requirement at the lowest cost?",
+      "choices": [
+        "Previous-generation Magnetic (standard) volumes",
+        "Throughput Optimized HDD (st1)",
+        "Provisioned IOPS SSD (io1) volumes",
+        "Cold HDD (sc1) volumes"
+      ],
+      "correctChoice": "Throughput Optimized HDD (st1)",
+      "explanation": "st1 supports up to 500 MiB/s per volume and is cheaper than SSD for sequential workloads. sc1 is capped at 250 MiB/s and Magnetic at 40-90 MiB/s, while io1 would be needlessly expensive.",
+      "difficulty": "Medium",
+      "tags": [
+        "EBS",
+        "Cost",
+        "Performance"
+      ]
+    },
+    {
+      "id": "ebs-st1-oltp-troubleshoot",
+      "prompt": "An OLTP database on an st1 volume suffers high latency during many small random reads and writes, although throughput is far below the volume's limit. What is the most likely cause and fix?",
+      "choices": [
+        "The volume is too large; reduce the volume size to improve IOPS",
+        "Enable Multi-Attach to spread I/O across more instances",
+        "The volume is in the wrong Availability Zone; recreate it in the instance's AZ",
+        "HDD volumes are optimised for large sequential I/O; move to an SSD volume such as gp3 or io2"
+      ],
+      "correctChoice": "HDD volumes are optimised for large sequential I/O; move to an SSD volume such as gp3 or io2",
+      "explanation": "st1 is a throughput-oriented HDD type with a low IOPS ceiling (500 at 1 MiB I/O). Small random I/O needs an SSD type. A volume must already be in the instance's AZ to be attached.",
+      "difficulty": "Medium",
+      "tags": [
+        "EBS",
+        "Performance"
+      ]
+    },
+    {
+      "id": "ebs-large-single-volume",
+      "prompt": "A database needs a single 40 TiB block volume with about 25,000 IOPS, and the team wants the lowest-cost option. Which volume type should be used?",
+      "choices": [
+        "io1",
+        "gp2",
+        "gp3",
+        "st1"
+      ],
+      "correctChoice": "gp3",
+      "explanation": "gp3 now supports volumes up to 64 TiB and up to 80,000 IOPS, so it fits at lower cost than io2. io1 and gp2 are limited to 16 TiB, and st1 is an HDD type limited to 16 TiB with a low IOPS ceiling.",
+      "difficulty": "Medium",
+      "tags": [
+        "EBS",
+        "Cost"
+      ]
+    },
+    {
+      "id": "ebs-shared-block-io2-multiattach",
+      "prompt": "A clustered database on two Nitro instances in one AZ needs shared block storage with 100,000 IOPS, sub-millisecond latency and the highest EBS durability. Which design satisfies all of these requirements?",
+      "choices": [
+        "An EFS file system mounted by both instances",
+        "One gp3 volume provisioned at 80,000 IOPS, attached to both instances",
+        "One io1 volume with Multi-Attach enabled, provisioned at 100,000 IOPS",
+        "One io2 Block Express volume with Multi-Attach enabled and both instances in that AZ"
+      ],
+      "correctChoice": "One io2 Block Express volume with Multi-Attach enabled and both instances in that AZ",
+      "explanation": "Only io1/io2 support Multi-Attach, but io1 is limited to 64,000 IOPS and 99.8-99.9% durability. io2 Block Express provides up to 256,000 IOPS with 99.999% durability. gp3 lacks Multi-Attach, and EFS is a network file system with higher latency than block storage.",
+      "difficulty": "Hard",
+      "tags": [
+        "EBS",
+        "High Availability",
+        "Performance"
+      ]
+    },
+    {
+      "id": "ebs-mixed-workload-selection",
+      "prompt": "A server needs a boot volume, a rarely read 12 TiB compliance archive on its own volume at the lowest cost, and a transactional database volume needing 150,000 IOPS with sub-millisecond latency. Which combination is the best fit?",
+      "choices": [
+        "gp3 boot volume, sc1 archive volume, io2 Block Express database volume",
+        "sc1 boot volume, st1 archive volume, io1 database volume",
+        "gp3 boot volume, st1 archive volume, gp3 database volume",
+        "io2 boot volume, sc1 archive volume, st1 database volume"
+      ],
+      "correctChoice": "gp3 boot volume, sc1 archive volume, io2 Block Express database volume",
+      "explanation": "sc1 cannot be a boot volume. The rarely read archive needs the cheapest option (sc1), while only io2 Block Express reaches 150,000 IOPS with sub-millisecond latency (io1 maxes at 64,000, gp3 at 80,000). The other combinations break a boot, cost or IOPS requirement.",
+      "difficulty": "Hard",
+      "tags": [
+        "EBS",
+        "Cost",
+        "Performance"
+      ]
+    },
+    {
+      "id": "efs-elastic-shared-linux",
+      "prompt": "Several Linux EC2 instances in different Availability Zones need to share one file system whose capacity grows and shrinks automatically as files are added and removed. Which service fits?",
+      "choices": [
+        "Amazon EFS",
+        "Amazon FSx for Windows File Server",
+        "AWS Storage Gateway Tape Gateway",
+        "Amazon EBS General Purpose SSD"
+      ],
+      "correctChoice": "Amazon EFS",
+      "explanation": "EFS is an elastic, shared NFS file system with no capacity to provision. An EBS volume is single-AZ block storage, FSx for Windows File Server is for Windows (SMB) workloads, and Tape Gateway is a backup target.",
+      "difficulty": "Easy",
+      "tags": [
+        "EFS",
+        "Service Selection"
+      ]
+    },
+    {
+      "id": "efs-nfs-protocol",
+      "prompt": "Which protocol do EC2 instances use to mount an Amazon EFS file system?",
+      "choices": [
+        "Network File System (NFS)",
+        "Hadoop Distributed File System (HDFS)",
+        "Internet Small Computer Systems Interface (iSCSI)",
+        "Server Message Block (SMB)"
+      ],
+      "correctChoice": "Network File System (NFS)",
+      "explanation": "EFS is accessed over NFS (v4.0/4.1) using an NFS client or the EFS mount helper. SMB is used by FSx for Windows File Server, and iSCSI is used for block-level access such as Volume Gateway.",
+      "difficulty": "Easy",
+      "tags": [
+        "EFS"
+      ]
+    },
+    {
+      "id": "efs-mount-target-per-az",
+      "prompt": "A Regional EFS file system will be mounted by EC2 instances in three Availability Zones of one VPC. How should mount targets be set up?",
+      "choices": [
+        "One mount target created for each EC2 instance",
+        "A single mount target created for the whole Region",
+        "One mount target created in every subnet of the VPC",
+        "One mount target in each Availability Zone, in one subnet per AZ"
+      ],
+      "correctChoice": "One mount target in each Availability Zone, in one subnet per AZ",
+      "explanation": "An EFS file system can have one mount target per AZ (in one subnet of that AZ), and instances in that AZ share it. A single mount target would create a cross-AZ dependency and cross-AZ traffic; one per instance or per subnet is not required.",
+      "difficulty": "Medium",
+      "tags": [
+        "EFS",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "efs-one-zone-risk",
+      "prompt": "A team stores easily recreated development data on EFS One Zone to save cost. What is the main resilience implication?",
+      "choices": [
+        "The file system cannot grow beyond a fixed provisioned size",
+        "The file system can only be accessed from the Region's default VPC",
+        "The data is stored in a single AZ, so an AZ outage can make it unavailable or lose it",
+        "The file system cannot be mounted by more than one EC2 instance"
+      ],
+      "correctChoice": "The data is stored in a single AZ, so an AZ outage can make it unavailable or lose it",
+      "explanation": "One Zone file systems keep data in one AZ at a lower price, so they do not survive loss of that AZ. They are still elastic and shareable across many instances.",
+      "difficulty": "Medium",
+      "tags": [
+        "EFS",
+        "Resilience",
+        "Cost"
+      ]
+    },
+    {
+      "id": "efs-lifecycle-ia",
+      "prompt": "An EFS file system holds a large amount of data that is rarely read after the first month. How can the team reduce storage cost with the least operational effort?",
+      "choices": [
+        "Reduce the provisioned storage size of the file system each month",
+        "Enable EFS lifecycle management to move inactive files to Infrequent Access (or Archive)",
+        "Apply an S3 lifecycle policy directly to the EFS file system",
+        "Replace the file system with a single gp3 EBS volume per instance"
+      ],
+      "correctChoice": "Enable EFS lifecycle management to move inactive files to Infrequent Access (or Archive)",
+      "explanation": "EFS lifecycle management automatically moves files that have not been accessed for a set period to cheaper storage classes (IA, Archive), with access charges when they are read. S3 lifecycle rules do not apply to EFS, and EFS has no provisioned size to reduce.",
+      "difficulty": "Medium",
+      "tags": [
+        "EFS",
+        "Cost"
+      ]
+    },
+    {
+      "id": "efs-lambda-fargate",
+      "prompt": "Besides EC2 instances, which compute services can mount an EFS file system?",
+      "choices": [
+        "Neither; EFS can only be mounted by EC2",
+        "AWS Fargate only",
+        "AWS Lambda and AWS Fargate",
+        "AWS Lambda only"
+      ],
+      "correctChoice": "AWS Lambda and AWS Fargate",
+      "explanation": "EFS can be mounted by Lambda functions and by ECS/EKS tasks running on Fargate, as well as by EC2 instances.",
+      "difficulty": "Easy",
+      "tags": [
+        "EFS",
+        "Containers",
+        "Serverless"
+      ]
+    },
+    {
+      "id": "efs-fargate-shared-content",
+      "prompt": "Containers on ECS Fargate across two AZs must read and write the same set of Linux files, with minimal operational overhead. Which storage choice is best?",
+      "choices": [
+        "FSx for Windows File Server mounted over SMB",
+        "A Multi-Attach io2 volume shared by all tasks",
+        "A separate gp3 EBS volume attached to each task",
+        "Amazon EFS mounted by the tasks"
+      ],
+      "correctChoice": "Amazon EFS mounted by the tasks",
+      "explanation": "EFS provides shared, multi-AZ, fully managed NFS storage that Fargate tasks can mount. EBS volumes are block storage tied to one AZ, and FSx for Windows File Server targets Windows workloads.",
+      "difficulty": "Medium",
+      "tags": [
+        "EFS",
+        "Containers",
+        "Service Selection"
+      ]
+    },
+    {
+      "id": "fsx-windows-use-case",
+      "prompt": "A company migrating Windows-based applications needs a fully managed shared file system that supports SMB. Which service should it use?",
+      "choices": [
+        "Amazon EFS with a Regional file system",
+        "Amazon EBS io2 volumes with Multi-Attach",
+        "Amazon FSx for Windows File Server",
+        "Amazon FSx for Lustre with an S3 data repository"
+      ],
+      "correctChoice": "Amazon FSx for Windows File Server",
+      "explanation": "FSx for Windows File Server provides native SMB file shares for Windows workloads with sub-millisecond latency. EFS is NFS for Linux, and Lustre targets high-performance computing.",
+      "difficulty": "Easy",
+      "tags": [
+        "FSx",
+        "Service Selection"
+      ]
+    },
+    {
+      "id": "fsx-lustre-hpc",
+      "prompt": "A machine learning team needs a file system that offers very high throughput and low latency for parallel computing, and that can be linked to an S3 bucket holding the training data. Which service fits best?",
+      "choices": [
+        "AWS Storage Gateway File Gateway",
+        "Amazon FSx for Windows File Server",
+        "Amazon FSx for Lustre",
+        "Amazon EFS in General Purpose mode"
+      ],
+      "correctChoice": "Amazon FSx for Lustre",
+      "explanation": "FSx for Lustre is built for HPC, ML and other parallel workloads and integrates with S3. FSx for Windows File Server uses SMB for Windows apps, and the other options do not target high-performance parallel processing.",
+      "difficulty": "Medium",
+      "tags": [
+        "FSx",
+        "Performance",
+        "Service Selection"
+      ]
+    },
+    {
+      "id": "fsx-ontap-multiprotocol",
+      "prompt": "A company runs NetApp storage on premises with NFS, SMB and iSCSI clients and wants to move to AWS while keeping the same ONTAP features and protocols. Which service is the best fit?",
+      "choices": [
+        "Amazon FSx for NetApp ONTAP",
+        "Amazon FSx for OpenZFS",
+        "Amazon EFS",
+        "Amazon FSx for Windows File Server"
+      ],
+      "correctChoice": "Amazon FSx for NetApp ONTAP",
+      "explanation": "FSx for NetApp ONTAP provides the ONTAP platform with multi-protocol (NFS, SMB, iSCSI) access, which eases migration of existing NetApp workloads. EFS is NFS-only and FSx for Windows File Server is SMB-only.",
+      "difficulty": "Medium",
+      "tags": [
+        "FSx",
+        "Service Selection"
+      ]
+    },
+    {
+      "id": "fsx-openzfs-migration",
+      "prompt": "A company wants to move on-premises ZFS-based Linux file servers to AWS with minimal changes, using NFS access, snapshots and low-latency performance. Which service fits?",
+      "choices": [
+        "Amazon FSx for Lustre",
+        "Amazon FSx for OpenZFS",
+        "AWS Storage Gateway Volume Gateway",
+        "Amazon FSx for Windows File Server"
+      ],
+      "correctChoice": "Amazon FSx for OpenZFS",
+      "explanation": "FSx for OpenZFS is a managed file system built on the open-source ZFS platform with NFS access, suited to migrating ZFS workloads. Windows File Server uses SMB and Lustre targets parallel high-performance computing.",
+      "difficulty": "Medium",
+      "tags": [
+        "FSx",
+        "Service Selection"
+      ]
+    },
+    {
+      "id": "file-cache-hybrid-datasets",
+      "prompt": "Compute jobs on AWS must process datasets that live in on-premises NFS file systems and in S3, presented as one unified view with high throughput and low latency, without permanently migrating the data. Which service fits?",
+      "choices": [
+        "Amazon File Cache",
+        "Amazon EBS io2 Block Express",
+        "AWS Snowball Edge Storage Optimized",
+        "Amazon EFS with One Zone storage"
+      ],
+      "correctChoice": "Amazon File Cache",
+      "explanation": "Amazon File Cache is a high-speed cache for datasets stored in on-premises file systems, AWS file systems and S3 buckets, exposing them to file-based applications on EC2, ECS and EKS. The other options do not provide a unified cache over existing data sources.",
+      "difficulty": "Medium",
+      "tags": [
+        "File Cache",
+        "Hybrid Storage",
+        "Performance"
+      ]
+    },
+    {
+      "id": "fsx-lustre-s3-linked-hpc",
+      "prompt": "A genomics pipeline processes hundreds of GB of input held in S3, needs very high parallel throughput from many Linux compute nodes for a few hours, and writes results back to S3. Which design best meets the performance requirement without a long-lived storage tier?",
+      "choices": [
+        "An FSx for Lustre file system linked to the S3 bucket, used for the job and then deleted",
+        "An EFS file system with lifecycle management moving older files to Infrequent Access",
+        "A Multi-Attach io2 volume shared by all of the compute nodes in the cluster",
+        "An FSx for NetApp ONTAP file system accessed by the nodes over SMB"
+      ],
+      "correctChoice": "An FSx for Lustre file system linked to the S3 bucket, used for the job and then deleted",
+      "explanation": "FSx for Lustre is designed for HPC workloads, loads S3 data as a high-speed file system and exports results back to S3, so it can be temporary. EFS is not optimised for this parallel throughput, Multi-Attach is limited to one AZ and a small number of Nitro instances, and ONTAP/SMB is a poor fit for Linux HPC.",
+      "difficulty": "Hard",
+      "tags": [
+        "FSx",
+        "Performance",
+        "Cost"
+      ]
+    },
+    {
+      "id": "fsx-ontap-mixed-clients",
+      "prompt": "An application tier needs Windows servers using SMB and Linux servers using NFS to share the same dataset, and a database server needs iSCSI block access to storage on the same managed platform. Which service supports all of these requirements?",
+      "choices": [
+        "Amazon EFS combined with Amazon EBS",
+        "Amazon FSx for Lustre",
+        "Amazon FSx for NetApp ONTAP",
+        "Amazon FSx for Windows File Server"
+      ],
+      "correctChoice": "Amazon FSx for NetApp ONTAP",
+      "explanation": "ONTAP is multi-protocol, serving NFS, SMB and iSCSI from one managed file system. EFS is NFS-only, FSx for Windows File Server is SMB-only and Lustre is for Linux HPC.",
+      "difficulty": "Hard",
+      "tags": [
+        "FSx",
+        "Service Selection"
+      ]
+    },
+    {
+      "id": "efs-replace-instance-ebs-uploads",
+      "prompt": "Web servers in an Auto Scaling group each store user uploads on their own EBS volume, so users see missing files depending on which server answers. What is the best fix with the least operational overhead?",
+      "choices": [
+        "Attach the same gp3 volume to every instance in the Auto Scaling group",
+        "Enable sticky sessions on the load balancer so users return to one server",
+        "Store the uploads on an Amazon EFS file system mounted by all instances",
+        "Increase the size of the EBS volume on each of the instances"
+      ],
+      "correctChoice": "Store the uploads on an Amazon EFS file system mounted by all instances",
+      "explanation": "EFS provides a shared file system that all instances in all AZs see consistently. A gp3 volume cannot be attached to multiple instances, and sticky sessions only hide the inconsistency while risking data loss when instances terminate.",
+      "difficulty": "Medium",
+      "tags": [
+        "EFS",
+        "EBS",
+        "Service Selection"
+      ]
+    },
+    {
+      "id": "backup-purpose",
+      "prompt": "What is the primary purpose of AWS Backup?",
+      "choices": [
+        "To replicate data synchronously between Regions for high availability",
+        "To physically ship large datasets into AWS",
+        "To cache frequently accessed S3 objects close to users",
+        "To centrally manage and automate backups across multiple AWS services"
+      ],
+      "correctChoice": "To centrally manage and automate backups across multiple AWS services",
+      "explanation": "AWS Backup provides a single place to define backup policies, schedules and retention for services such as EBS, EFS, RDS, DynamoDB and FSx. It is not a replication, data-transfer or caching service.",
+      "difficulty": "Easy",
+      "tags": [
+        "AWS Backup"
+      ]
+    },
+    {
+      "id": "backup-plan-definition",
+      "prompt": "In AWS Backup, which component defines the backup schedule, backup window and lifecycle rules?",
+      "choices": [
+        "Backup vault",
+        "Backup plan",
+        "Recovery point",
+        "Resource assignment"
+      ],
+      "correctChoice": "Backup plan",
+      "explanation": "A backup plan is the policy that sets when backups run, the window, and how long they are kept or transitioned. A backup vault is the container that stores the resulting recovery points.",
+      "difficulty": "Easy",
+      "tags": [
+        "AWS Backup"
+      ]
+    },
+    {
+      "id": "backup-tag-assignment",
+      "prompt": "A company wants every new EBS volume and RDS database tagged Backup=daily to be included automatically in a daily backup schedule without manual changes. What is the best approach?",
+      "choices": [
+        "Assign resources to an AWS Backup plan using the Backup=daily resource tag",
+        "Add each new resource ID to the backup plan manually",
+        "Create a Lambda function that snapshots each volume and database nightly",
+        "Enable cross-Region replication on each resource"
+      ],
+      "correctChoice": "Assign resources to an AWS Backup plan using the Backup=daily resource tag",
+      "explanation": "AWS Backup supports tag-based resource assignment, so newly created tagged resources are picked up automatically. Custom Lambda snapshots add operational overhead and do not centralise policy.",
+      "difficulty": "Medium",
+      "tags": [
+        "AWS Backup",
+        "Operational Excellence"
+      ]
+    },
+    {
+      "id": "backup-cross-region-account",
+      "prompt": "A company needs backups protected from both a Regional outage and the compromise of a single AWS account. Which AWS Backup capability addresses this?",
+      "choices": [
+        "Store backups in a second vault in the same account and Region",
+        "Copy backups to a vault in another Region and another account",
+        "Enable incremental backups on the plan",
+        "Increase the retention period of the existing backup plan"
+      ],
+      "correctChoice": "Copy backups to a vault in another Region and another account",
+      "explanation": "AWS Backup can copy recovery points across Regions and accounts, isolating them from both Regional failure and a compromised source account. A same-account, same-Region vault shares the same failure and access domain.",
+      "difficulty": "Medium",
+      "tags": [
+        "AWS Backup",
+        "Disaster Recovery"
+      ]
+    },
+    {
+      "id": "backup-vault-lock-ransomware",
+      "prompt": "To satisfy a compliance rule, backups must be immutable: no user, including account administrators, may delete them or shorten retention before expiry. Which solution meets this requirement?",
+      "choices": [
+        "Schedule more frequent incremental backups",
+        "Attach an IAM policy denying backup deletion to all administrators",
+        "Encrypt the vault with a customer managed KMS key",
+        "Enable AWS Backup Vault Lock (WORM) in compliance mode on the vault"
+      ],
+      "correctChoice": "Enable AWS Backup Vault Lock (WORM) in compliance mode on the vault",
+      "explanation": "Vault Lock enforces write-once-read-many retention, and in compliance mode it cannot be changed or removed by anyone once the cooling-off period ends. An IAM deny can be edited by an administrator, and KMS or backup frequency do not provide immutability.",
+      "difficulty": "Hard",
+      "tags": [
+        "AWS Backup",
+        "Security"
+      ]
+    },
+    {
+      "id": "backup-incremental",
+      "prompt": "How does AWS Backup store backups of a resource after the first one?",
+      "choices": [
+        "As a compressed archive in an S3 Glacier vault that you must manage yourself",
+        "Only as the latest copy of the resource, overwriting the previous backup",
+        "Incrementally, storing only the data that changed since the previous backup",
+        "As a full copy of the entire resource every time a backup runs"
+      ],
+      "correctChoice": "Incrementally, storing only the data that changed since the previous backup",
+      "explanation": "After the initial backup, AWS Backup stores incremental backups containing only changes, which reduces storage cost while still allowing a restore to any retained recovery point.",
+      "difficulty": "Easy",
+      "tags": [
+        "AWS Backup",
+        "Cost"
+      ]
+    },
+    {
+      "id": "backup-org-policy",
+      "prompt": "A company with many AWS accounts in AWS Organizations wants one central team to define and enforce backup schedules and retention across all accounts. Which approach is best?",
+      "choices": [
+        "Enable cross-Region replication on each resource in each account",
+        "Have each account owner create their own backup plans and share the settings by email",
+        "Use AWS Backup with organization-level backup policies managed from a central account",
+        "Use AWS Config rules to take snapshots on a schedule"
+      ],
+      "correctChoice": "Use AWS Backup with organization-level backup policies managed from a central account",
+      "explanation": "AWS Backup integrates with AWS Organizations so backup policies can be created centrally and applied across accounts. Per-account manual plans cannot be enforced centrally, and replication or Config rules are not backup management tools.",
+      "difficulty": "Medium",
+      "tags": [
+        "AWS Backup",
+        "Governance"
+      ]
+    },
+    {
+      "id": "backup-audit-manager",
+      "prompt": "Auditors require evidence that backups comply with the company's frequency and retention policy, with reports generated automatically. Which AWS Backup feature provides this?",
+      "choices": [
+        "Amazon EBS fast snapshot restore",
+        "AWS Backup Vault Lock",
+        "AWS Backup lifecycle rules",
+        "AWS Backup Audit Manager"
+      ],
+      "correctChoice": "AWS Backup Audit Manager",
+      "explanation": "Backup Audit Manager provides built-in reporting and auditing of backup compliance against defined controls. Vault Lock protects retention but does not produce compliance reports.",
+      "difficulty": "Medium",
+      "tags": [
+        "AWS Backup",
+        "Compliance"
+      ]
+    },
+    {
+      "id": "backup-central-governance-hard",
+      "prompt": "A company must back up RDS databases, EFS file systems and DynamoDB tables in 40 accounts with consistent schedules, copy them to a second Region, and produce compliance evidence for auditors, with minimal custom code. Which solution is best?",
+      "choices": [
+        "S3 Cross-Region Replication of exported data, with CloudTrail as audit evidence",
+        "AWS Backup organization policies with cross-Region copy rules and Backup Audit Manager reports",
+        "A single backup plan in one account, because AWS Backup plans cannot span accounts",
+        "Per-service scheduled snapshots and exports scripted with Lambda in every account"
+      ],
+      "correctChoice": "AWS Backup organization policies with cross-Region copy rules and Backup Audit Manager reports",
+      "explanation": "AWS Backup centralises policy across services and accounts via Organizations, supports cross-Region copies, and includes Audit Manager for compliance reporting. Custom Lambda scripts add heavy operational overhead, and S3 replication is not a backup compliance mechanism for these services.",
+      "difficulty": "Hard",
+      "tags": [
+        "AWS Backup",
+        "Governance",
+        "Compliance"
+      ]
+    },
+    {
+      "id": "snowball-slow-link",
+      "prompt": "A company must move 200 TB from a remote site to S3 within three weeks. The site has only a 100 Mbps internet link, which would take roughly six months. Which solution is the most appropriate?",
+      "choices": [
+        "AWS DataSync transferring over the existing 100 Mbps internet link",
+        "AWS Snowball Edge Storage Optimized devices shipped to the site and returned to AWS",
+        "AWS Transfer Family with an SFTP endpoint backed by an S3 bucket",
+        "Amazon S3 Transfer Acceleration using multipart uploads from the site"
+      ],
+      "correctChoice": "AWS Snowball Edge Storage Optimized devices shipped to the site and returned to AWS",
+      "explanation": "When network transfer would take too long, Snow Family devices move data physically, and it is loaded into S3 when the device is returned. DataSync, SFTP and Transfer Acceleration all still depend on the slow 100 Mbps link.",
+      "difficulty": "Medium",
+      "tags": [
+        "Snow Family",
+        "Migration"
+      ]
+    },
+    {
+      "id": "snowball-edge-compute",
+      "prompt": "A mining company needs to process sensor data on-site in a location without reliable connectivity and later move the results into S3. Which option fits?",
+      "choices": [
+        "Amazon FSx for Lustre linked to an S3 bucket in the nearest Region",
+        "AWS Snowball Edge Compute Optimized, running EC2 instances locally and shipped back to AWS",
+        "An AWS Transfer Family SFTP endpoint running in the nearest Region",
+        "AWS Storage Gateway File Gateway installed on the site's local network"
+      ],
+      "correctChoice": "AWS Snowball Edge Compute Optimized, running EC2 instances locally and shipped back to AWS",
+      "explanation": "Snowball Edge Compute Optimized provides local compute (EC2 instances/Lambda) and storage in disconnected environments, then data is loaded to S3 on return. Gateways and Transfer Family need connectivity to AWS.",
+      "difficulty": "Medium",
+      "tags": [
+        "Snow Family",
+        "Edge Computing"
+      ]
+    },
+    {
+      "id": "datasync-vs-snow-direct-connect",
+      "prompt": "A company needs to copy 30 TB from an on-premises NFS server to Amazon EFS and then keep it synchronised with nightly changes. It already has an unused 1 Gbps Direct Connect link. Which solution is the most appropriate?",
+      "choices": [
+        "AWS Storage Gateway Tape Gateway",
+        "Order AWS Snowball Edge devices and repeat the shipment each night",
+        "AWS Transfer Family with an SFTP endpoint backed by EFS",
+        "AWS DataSync with a scheduled task over the Direct Connect connection"
+      ],
+      "correctChoice": "AWS DataSync with a scheduled task over the Direct Connect connection",
+      "explanation": "30 TB over 1 Gbps takes only a few days, and DataSync supports NFS sources, EFS targets, scheduling and incremental transfers. Snow devices make sense only when bandwidth is insufficient, and they cannot provide nightly sync.",
+      "difficulty": "Hard",
+      "tags": [
+        "DataSync",
+        "Snow Family",
+        "Migration"
+      ]
+    },
+    {
+      "id": "transfer-family-purpose",
+      "prompt": "External partners must upload files using SFTP directly into an S3 bucket, and the company does not want to run or patch SFTP servers. Which service should it use?",
+      "choices": [
+        "AWS Snowball Edge",
+        "AWS Storage Gateway Volume Gateway",
+        "AWS Transfer Family",
+        "Amazon FSx for Windows File Server"
+      ],
+      "correctChoice": "AWS Transfer Family",
+      "explanation": "Transfer Family is a fully managed service offering SFTP, FTPS, FTP and AS2 endpoints that read and write to S3 or EFS. Snowball Edge ships data physically, and the other options do not provide managed SFTP.",
+      "difficulty": "Easy",
+      "tags": [
+        "Transfer Family"
+      ]
+    },
+    {
+      "id": "transfer-family-ftp-vpc",
+      "prompt": "A vendor's legacy system supports only plain, unencrypted FTP. What constraint applies when using AWS Transfer Family for it?",
+      "choices": [
+        "FTP requires an AS2 workflow to be configured in front of the server",
+        "FTP endpoints can only be reached from within a VPC, not over the public internet",
+        "FTP endpoints are available only when attached to a Direct Connect gateway",
+        "FTP is supported only when the backend storage is an EFS file system"
+      ],
+      "correctChoice": "FTP endpoints can only be reached from within a VPC, not over the public internet",
+      "explanation": "Because FTP is unencrypted, Transfer Family allows it only on VPC-hosted endpoints (internal access, for example over VPN or Direct Connect). It works with both S3 and EFS and does not need AS2.",
+      "difficulty": "Medium",
+      "tags": [
+        "Transfer Family",
+        "Security"
+      ]
+    },
+    {
+      "id": "transfer-family-as2",
+      "prompt": "A retailer exchanges B2B messages with suppliers and must have signed receipts as proof that each message was received. Which Transfer Family protocol is designed for this?",
+      "choices": [
+        "SFTP",
+        "FTPS",
+        "FTP",
+        "AS2"
+      ],
+      "correctChoice": "AS2",
+      "explanation": "AS2 provides secure, reliable messaging over HTTP/S with signed acknowledgements, so it is used for e-commerce and EDI scenarios requiring proof of delivery. SFTP and FTPS encrypt the transfer but do not provide message-level receipts.",
+      "difficulty": "Medium",
+      "tags": [
+        "Transfer Family",
+        "Service Selection"
+      ]
+    },
+    {
+      "id": "transfer-managed-workflows",
+      "prompt": "Which AWS Transfer Family capability automates processing steps such as copying, tagging, decrypting or deleting files after they are uploaded?",
+      "choices": [
+        "S3 Transfer Acceleration",
+        "Backup Vault Lock",
+        "Storage Gateway cached volumes",
+        "Managed File Transfer Workflows"
+      ],
+      "correctChoice": "Managed File Transfer Workflows",
+      "explanation": "Managed workflows are a serverless way to run post-upload steps (copy, tag, delete, decrypt, or a custom Lambda step) on files received via Transfer Family.",
+      "difficulty": "Easy",
+      "tags": [
+        "Transfer Family"
+      ]
+    },
+    {
+      "id": "transfer-workflow-pgp-pipeline",
+      "prompt": "Partners upload PGP-encrypted files over SFTP. Each file must be decrypted, scanned by a custom Lambda function, tagged and copied to a processed S3 location, using built-in Transfer Family capabilities and no servers to manage. What is the best design?",
+      "choices": [
+        "An EC2 SFTP server with a cron job that processes new files",
+        "A Storage Gateway File Gateway with a Lambda function polling its cache",
+        "An S3 bucket accessed through FTP on a Transfer Family endpoint, with manual operator review",
+        "A Transfer Family managed workflow with decrypt, custom Lambda, tag and copy steps attached to the server"
+      ],
+      "correctChoice": "A Transfer Family managed workflow with decrypt, custom Lambda, tag and copy steps attached to the server",
+      "explanation": "Managed workflows support Decrypt (PGP), Copy, Tag, Delete and a custom Lambda step, run serverlessly on each uploaded file. EC2 servers and gateways add operational overhead, and manual review does not automate processing.",
+      "difficulty": "Hard",
+      "tags": [
+        "Transfer Family",
+        "Operational Excellence"
+      ]
+    },
+    {
+      "id": "migration-hub-tracking",
+      "prompt": "Which AWS service gives a single place to discover existing servers, plan a migration and track the status of migrations performed with tools such as Application Migration Service and DMS?",
+      "choices": [
+        "AWS Migration Hub",
+        "AWS Organizations",
+        "AWS Config",
+        "AWS Trusted Advisor"
+      ],
+      "correctChoice": "AWS Migration Hub",
+      "explanation": "Migration Hub centralises discovery, planning and migration tracking. Note that it is closed to new customers (from 7 Nov 2025), so existing customers continue to use it and AWS Transform is the recommended replacement.",
+      "difficulty": "Easy",
+      "tags": [
+        "Migration Hub",
+        "Migration"
+      ]
+    },
+    {
+      "id": "datasync-smb-to-fsx",
+      "prompt": "A company needs to migrate files from an on-premises SMB file share to Amazon FSx for Windows File Server with a managed, schedulable transfer service. Which service should it use?",
+      "choices": [
+        "AWS DataSync",
+        "AWS Direct Connect",
+        "AWS Transfer Family with SFTP",
+        "AWS Snowmobile"
+      ],
+      "correctChoice": "AWS DataSync",
+      "explanation": "DataSync is a managed data-transfer service supporting NFS, SMB, HDFS and object storage sources, with S3, EFS and FSx targets, and it can run on a schedule. Direct Connect is only connectivity, and Transfer Family is for clients pushing files via SFTP/FTPS/FTP/AS2.",
+      "difficulty": "Easy",
+      "tags": [
+        "DataSync",
+        "Migration"
+      ]
+    },
+    {
+      "id": "datasync-other-cloud",
+      "prompt": "A company stores data in Microsoft Azure Blob Storage and wants to copy it to Amazon S3 on a recurring schedule with minimal custom code. Which service fits?",
+      "choices": [
+        "AWS Snowball Edge",
+        "AWS DataSync",
+        "Amazon EFS with the EFS mount helper",
+        "AWS Storage Gateway Tape Gateway"
+      ],
+      "correctChoice": "AWS DataSync",
+      "explanation": "DataSync can transfer data between other cloud storage (Google Cloud Storage, Azure Blob Storage, Azure Files and others) and AWS storage, on a schedule. Tape Gateway and Snowball Edge serve different purposes.",
+      "difficulty": "Medium",
+      "tags": [
+        "DataSync",
+        "Migration"
+      ]
+    },
+    {
+      "id": "datasync-hdfs-to-s3",
+      "prompt": "A company must migrate 150 TB from an on-premises HDFS cluster to S3 for analytics. It has a 10 Gbps Direct Connect link, and wants encryption in transit, data-integrity verification and scheduled incremental copies with minimal scripting. Which option is best?",
+      "choices": [
+        "An AWS DataSync agent reading from HDFS and a scheduled DataSync task to S3 over Direct Connect",
+        "An AWS Transfer Family SFTP endpoint with a scheduled upload script",
+        "AWS Backup with an on-premises backup plan covering the HDFS cluster",
+        "Custom S3 CLI sync scripts scheduled on a fleet of EC2 instances"
+      ],
+      "correctChoice": "An AWS DataSync agent reading from HDFS and a scheduled DataSync task to S3 over Direct Connect",
+      "explanation": "DataSync natively supports HDFS sources, verifies data integrity, encrypts in transit, and supports scheduling and incremental transfers. Hand-written scripts add overhead and lack built-in verification, and neither Transfer Family nor AWS Backup is a migration tool for HDFS.",
+      "difficulty": "Hard",
+      "tags": [
+        "DataSync",
+        "Migration",
+        "Analytics"
+      ]
+    },
+    {
+      "id": "ebs-gp3-independent-performance",
+      "prompt": "An application needs 12,000 IOPS and 500 MiB/s from a 200 GiB volume. A colleague proposes io1 because gp2 cannot deliver this. What is the best recommendation?",
+      "choices": [
+        "Use gp3 and provision the IOPS and throughput independently of the 200 GiB size",
+        "Use io1, because only Provisioned IOPS volumes support more than 3,000 IOPS",
+        "Use gp2 and increase the volume size until it reaches the required IOPS",
+        "Use st1, because it offers 500 MiB/s of throughput at the lowest cost"
+      ],
+      "correctChoice": "Use gp3 and provision the IOPS and throughput independently of the 200 GiB size",
+      "explanation": "gp3 lets IOPS (up to 80,000) and throughput (up to 2,000 MiB/s) be set independently of size at lower cost than io1. gp2 couples IOPS to size and is capped at 16,000 IOPS and 250 MiB/s, and st1 is an HDD type with a low IOPS ceiling.",
+      "difficulty": "Medium",
+      "tags": [
+        "EBS",
+        "Cost",
+        "Performance"
+      ]
+    },
+    {
+      "id": "ebs-replication-scope",
+      "prompt": "EBS automatically replicates each volume within its Availability Zone. Which risk does this replication protect against?",
+      "choices": [
+        "Loss of the whole Availability Zone hosting the volume",
+        "Loss of the whole Region hosting the volume's Availability Zone",
+        "Accidental deletion of files by a user or application",
+        "Failure of the underlying storage hardware in that Availability Zone"
+      ],
+      "correctChoice": "Failure of the underlying storage hardware in that Availability Zone",
+      "explanation": "Within-AZ replication guards against component failure only. Protection from AZ or Region loss or deletion requires snapshots or backups (for example AWS Backup) copied elsewhere.",
+      "difficulty": "Medium",
+      "tags": [
+        "EBS",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "ebs-durability-decisive-requirement",
+      "prompt": "A transactional database needs about 20,000 IOPS on a single volume, and the business requires the highest durability EBS offers (99.999%) for the data volume. Which volume type satisfies the requirement?",
+      "choices": [
+        "io1 provisioned at 20,000 IOPS",
+        "gp2 sized to reach 20,000 IOPS",
+        "gp3 provisioned at 20,000 IOPS",
+        "io2"
+      ],
+      "correctChoice": "io2",
+      "explanation": "The decisive requirement is durability: only io2 (Block Express) offers 99.999%, while gp3, gp2 and io1 are rated 99.8-99.9%, even though they can meet the IOPS need.",
+      "difficulty": "Hard",
+      "tags": [
+        "EBS",
+        "Performance",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "backup-vault-definition",
+      "prompt": "In AWS Backup, what is a backup vault?",
+      "choices": [
+        "A report that audits whether backups comply with required controls",
+        "A container in which recovery points (backups) are stored and protected",
+        "A resource tag that assigns resources to a backup plan automatically",
+        "A policy that defines when backups are taken and how long they are kept"
+      ],
+      "correctChoice": "A container in which recovery points (backups) are stored and protected",
+      "explanation": "A backup vault stores recovery points and can have its own access policy and encryption key. The schedule and lifecycle are defined in a backup plan.",
+      "difficulty": "Easy",
+      "tags": [
+        "AWS Backup"
+      ]
+    },
+    {
+      "id": "sgw-file-gateway-basic",
+      "prompt": "On-premises applications need to store files in Amazon S3 using the standard NFS or SMB protocols through a local gateway. Which Storage Gateway type should be used?",
+      "choices": [
+        "Tape Gateway",
+        "Volume Gateway with stored volumes",
+        "Volume Gateway with cached volumes",
+        "File Gateway"
+      ],
+      "correctChoice": "File Gateway",
+      "explanation": "File Gateway exposes S3 buckets as NFS/SMB file shares on premises, storing files as S3 objects. Volume Gateway presents block volumes over iSCSI, and Tape Gateway presents a virtual tape library.",
+      "difficulty": "Easy",
+      "tags": [
+        "Storage Gateway",
+        "Hybrid Storage"
+      ]
+    },
+    {
+      "id": "sgw-tape-gateway-basic",
+      "prompt": "A company wants to replace its physical tape library with a cloud-based, cost-effective long-term archive without changing its backup software. Which solution fits?",
+      "choices": [
+        "AWS Snowball Edge Storage Optimized",
+        "Amazon EFS with lifecycle management",
+        "Storage Gateway Tape Gateway",
+        "Storage Gateway File Gateway"
+      ],
+      "correctChoice": "Storage Gateway Tape Gateway",
+      "explanation": "Tape Gateway presents a virtual tape library to existing backup applications and archives virtual tapes to S3 Glacier Flexible Retrieval or S3 Glacier Deep Archive. The other options require changes to the backup workflow or are not archive targets for tape-based backups.",
+      "difficulty": "Easy",
+      "tags": [
+        "Storage Gateway",
+        "Backup",
+        "Cost"
+      ]
+    },
+    {
+      "id": "sgw-volume-iscsi",
+      "prompt": "Which protocol do on-premises servers use to connect to volumes presented by a Volume Gateway?",
+      "choices": [
+        "NFS",
+        "FTPS",
+        "iSCSI",
+        "SMB"
+      ],
+      "correctChoice": "iSCSI",
+      "explanation": "Volume Gateway presents block storage volumes to on-premises servers as iSCSI devices. NFS and SMB are used by File Gateway.",
+      "difficulty": "Easy",
+      "tags": [
+        "Storage Gateway"
+      ]
+    },
+    {
+      "id": "sgw-stored-volumes",
+      "prompt": "An on-premises application requires low-latency access to its entire dataset and wants asynchronous backups of that data to AWS. Which Volume Gateway configuration meets this?",
+      "choices": [
+        "Stored volumes, keeping the full dataset locally and backing it up to S3 as snapshots",
+        "Cached volumes, keeping only recently accessed data on premises",
+        "A Tape Gateway presenting a virtual tape library to the application",
+        "A File Gateway presenting the dataset as an NFS file share"
+      ],
+      "correctChoice": "Stored volumes, keeping the full dataset locally and backing it up to S3 as snapshots",
+      "explanation": "Stored volumes keep the complete dataset on premises for low-latency access and asynchronously back up point-in-time snapshots to AWS. Cached volumes keep primary data in S3 with only a local cache of hot data.",
+      "difficulty": "Medium",
+      "tags": [
+        "Storage Gateway",
+        "Hybrid Storage"
+      ]
+    },
+    {
+      "id": "sgw-stored-volume-snapshots",
+      "prompt": "How are backups of Volume Gateway stored volumes kept in AWS?",
+      "choices": [
+        "As full uncompressed copies of the volumes in an S3 Glacier vault",
+        "As incremental, compressed snapshots stored as EBS snapshots",
+        "As objects stored in an Amazon EFS file system in the Region",
+        "As virtual tapes held in a virtual tape library in S3 Glacier"
+      ],
+      "correctChoice": "As incremental, compressed snapshots stored as EBS snapshots",
+      "explanation": "Stored-volume data is backed up asynchronously as incremental, compressed snapshots stored in AWS as EBS snapshots, which can later be restored to new EBS volumes.",
+      "difficulty": "Medium",
+      "tags": [
+        "Storage Gateway",
+        "Disaster Recovery"
+      ]
+    },
+    {
+      "id": "sgw-cached-capacity-expansion",
+      "prompt": "An on-premises data centre is running out of block storage capacity. Applications attach storage over iSCSI, most reads target recently written data, and the company wants to avoid buying more on-premises storage while keeping low latency for hot data. Which solution is best?",
+      "choices": [
+        "Storage Gateway File Gateway",
+        "Storage Gateway Volume Gateway with stored volumes",
+        "Storage Gateway Volume Gateway with cached volumes",
+        "AWS DataSync scheduled copies to S3"
+      ],
+      "correctChoice": "Storage Gateway Volume Gateway with cached volumes",
+      "explanation": "Cached volumes store primary data in S3 and keep frequently accessed data in a local cache, reducing the need to scale on-premises storage while preserving iSCSI access and low latency for hot data. Stored volumes need local capacity for the full dataset, and File Gateway is file-level, not block.",
+      "difficulty": "Hard",
+      "tags": [
+        "Storage Gateway",
+        "Hybrid Storage"
+      ]
+    },
+    {
+      "id": "sgw-tape-retention-backup-app",
+      "prompt": "A company's backup software writes to a physical tape library through an iSCSI virtual tape interface and must retain seven years of backups at the lowest cost, with no changes to the backup software. Which design is best?",
+      "choices": [
+        "A File Gateway writing to S3 Standard with the backup software retargeted to an SMB share",
+        "A Volume Gateway with stored volumes backed up to EBS snapshots",
+        "A Tape Gateway whose virtual tapes are archived to S3 Glacier Deep Archive",
+        "An EFS file system with Infrequent Access storage mounted by the backup server"
+      ],
+      "correctChoice": "A Tape Gateway whose virtual tapes are archived to S3 Glacier Deep Archive",
+      "explanation": "Tape Gateway is compatible with existing tape-based backup applications and archives tapes to the cheapest long-term tier (Glacier Deep Archive). The alternatives require reconfiguring the backup software and cost more for long retention.",
+      "difficulty": "Hard",
+      "tags": [
+        "Storage Gateway",
+        "Backup",
+        "Cost"
+      ]
+    },
+    {
+      "id": "sgw-file-gateway-lifecycle",
+      "prompt": "A branch office needs NFS access to files with low latency for recently used files, while all data is stored durably in AWS and moved to a cheaper archival tier after 90 days. Which design satisfies these requirements?",
+      "choices": [
+        "An EFS file system mounted over a VPN with lifecycle management enabled",
+        "A Tape Gateway with virtual tapes ejected to the archive after 90 days",
+        "A Volume Gateway with cached volumes and an S3 lifecycle rule on the volume",
+        "A File Gateway backed by an S3 bucket with a lifecycle rule transitioning objects after 90 days"
+      ],
+      "correctChoice": "A File Gateway backed by an S3 bucket with a lifecycle rule transitioning objects after 90 days",
+      "explanation": "File Gateway provides NFS/SMB with a local cache for hot data, stores files as S3 objects, and S3 lifecycle rules can transition them to archive classes. Volume Gateway data is stored in S3 as volumes, not as lifecycle-manageable files, and Tape Gateway is not a file share.",
+      "difficulty": "Hard",
+      "tags": [
+        "Storage Gateway",
+        "S3",
+        "Cost"
+      ]
+    },
+    {
+      "id": "sgw-vs-datasync-ongoing-access",
+      "prompt": "On-premises Linux servers must continue to use NFS indefinitely with low-latency reads of hot files, while the data itself resides in S3 for downstream cloud analytics. Which solution is the best fit?",
+      "choices": [
+        "A File Gateway deployed on premises, backed by S3",
+        "An EFS file system mounted over Direct Connect",
+        "AWS DataSync scheduled tasks copying the share to S3",
+        "AWS Transfer Family with an SFTP endpoint"
+      ],
+      "correctChoice": "A File Gateway deployed on premises, backed by S3",
+      "explanation": "File Gateway is a persistent access path: local NFS with a cache, data stored in S3. DataSync is for transferring or synchronising data rather than providing ongoing file access, Transfer Family is for SFTP/FTPS/FTP/AS2 clients, and EFS over Direct Connect has higher latency.",
+      "difficulty": "Hard",
+      "tags": [
+        "Storage Gateway",
+        "DataSync",
+        "Hybrid Storage"
+      ]
+    },
+    {
+      "id": "efs-lambda-shared-dataset",
+      "prompt": "Many concurrently running Lambda functions must read and write a shared 50 GB dataset using a file-based library, with minimal code changes and persistence between invocations. Which solution is best?",
+      "choices": [
+        "Use each function's ephemeral /tmp storage",
+        "Mount an Amazon EFS file system on the Lambda functions",
+        "Attach an EBS volume to each function",
+        "Download the dataset from S3 into memory on every invocation"
+      ],
+      "correctChoice": "Mount an Amazon EFS file system on the Lambda functions",
+      "explanation": "Lambda can mount EFS, giving all functions a shared, persistent, POSIX file system with no code changes to file-based libraries. Ephemeral storage is limited to 10 GB per function and not shared or persistent, Lambda cannot attach EBS volumes, and downloading 50 GB per invocation is impractical.",
+      "difficulty": "Hard",
+      "tags": [
+        "EFS",
+        "Serverless",
+        "Service Selection"
+      ]
+    },
+    {
+      "id": "efs-utils-mount-helper",
+      "prompt": "Which tool, installed on an EC2 instance before mounting an EFS file system, provides a mount helper and lets CloudWatch monitor the file system's mount status?",
+      "choices": [
+        "The AWS DataSync agent installed on the EC2 instance",
+        "The Storage Gateway virtual appliance deployed in the VPC",
+        "The AWS Backup agent installed on the EC2 instance",
+        "The Amazon EFS client (amazon-efs-utils)"
+      ],
+      "correctChoice": "The Amazon EFS client (amazon-efs-utils)",
+      "explanation": "The open-source Amazon EFS client includes the mount helper and supports monitoring the mount status with CloudWatch. DataSync agents, gateway appliances and Backup agents have different purposes.",
+      "difficulty": "Easy",
+      "tags": [
+        "EFS"
+      ]
+    },
+    {
+      "id": "storage-iops-metric",
+      "prompt": "A database performs a very large number of small, non-contiguous reads and writes. Which storage performance metric matters most for sizing its volume?",
+      "choices": [
+        "Bandwidth of the network link",
+        "Volume capacity in TiB",
+        "IOPS",
+        "Throughput in MiB/s for large sequential transfers"
+      ],
+      "correctChoice": "IOPS",
+      "explanation": "IOPS measures how many non-contiguous read and write operations per second a volume can perform, which is the limiting factor for small random I/O. Throughput matters more for large sequential transfers.",
+      "difficulty": "Easy",
+      "tags": [
+        "Storage Fundamentals",
+        "EBS"
+      ]
+    },
+    {
+      "id": "backup-independent-kms-key",
+      "prompt": "A security team wants backups to remain readable and protected even if the KMS key encrypting the source resource is compromised or deleted. What can AWS Backup do?",
+      "choices": [
+        "Disable encryption on the backup vault",
+        "Store the backups in a vault in the same account without encryption settings",
+        "Encrypt backups in the vault with an independent KMS key",
+        "Re-use the source resource's key so only one key must be managed"
+      ],
+      "correctChoice": "Encrypt backups in the vault with an independent KMS key",
+      "explanation": "AWS Backup can encrypt recovery points using a KMS key that is independent of the source resource's key, separating the blast radius of key compromise or deletion.",
+      "difficulty": "Medium",
+      "tags": [
+        "AWS Backup",
+        "Security"
+      ]
+    },
+    {
+      "id": "transfer-ftps-data-ports",
+      "prompt": "FTPS clients can connect to an AWS Transfer Family server and log in, but directory listings and file transfers fail. Port 21 is allowed in the security group. What is the most likely missing rule?",
+      "choices": [
+        "Inbound access on port 5080 (the AS2 HTTP port)",
+        "Inbound access on the FTPS data port range 8192-8200",
+        "Outbound access on port 3389 from the client network",
+        "Inbound access on port 22 (the SFTP port)"
+      ],
+      "correctChoice": "Inbound access on the FTPS data port range 8192-8200",
+      "explanation": "FTPS uses port 21 for the control channel and ports 8192-8200 for data transfers, so listings and transfers fail if the data range is blocked. Port 22 is for SFTP and 5080 is for AS2.",
+      "difficulty": "Medium",
+      "tags": [
+        "Transfer Family",
+        "Networking"
+      ]
+    },
+    {
+      "id": "ebs-raid10-performance-redundancy",
+      "prompt": "A database on a single instance needs more IOPS than one volume provides and must keep running if one EBS volume fails. Which software RAID configuration across EBS volumes fits both requirements?",
+      "choices": [
+        "A single io2 volume with Multi-Attach",
+        "RAID 10 (striped mirrors)",
+        "RAID 0 (striping)",
+        "RAID 1 (mirroring) across two volumes"
+      ],
+      "correctChoice": "RAID 10 (striped mirrors)",
+      "explanation": "RAID 10 combines striping for performance with mirroring for redundancy (minimum four disks). RAID 0 has no redundancy, RAID 1 gives redundancy without a write performance gain, and Multi-Attach shares one volume rather than adding redundancy.",
+      "difficulty": "Medium",
+      "tags": [
+        "RAID",
+        "EBS",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "efs-cold-data-cost-no-app-change",
+      "prompt": "An application uses an EFS file system containing 200 TB, of which about 90% has not been accessed in months. The data must stay available through the same NFS mount with no application changes, and storage cost must be minimised. What should the architect do?",
+      "choices": [
+        "Copy the data to a larger gp3 EBS volume attached to the instance",
+        "Migrate cold files to S3 Glacier Deep Archive and change the application to use the S3 API",
+        "Move to EFS One Zone and disable lifecycle management entirely",
+        "Enable EFS lifecycle management to move cold files to Infrequent Access and Archive storage classes"
+      ],
+      "correctChoice": "Enable EFS lifecycle management to move cold files to Infrequent Access and Archive storage classes",
+      "explanation": "EFS lifecycle management transparently tiers cold files to cheaper classes while keeping them in the same file system and mount, with access charges if read. Moving to S3 requires application changes, and a gp3 volume costs more and cannot be shared.",
+      "difficulty": "Hard",
+      "tags": [
+        "EFS",
+        "Cost"
+      ]
+    },
+    {
+      "id": "backup-account-isolation-hard",
+      "prompt": "A ransomware actor with administrator access to the production account could delete backups held in that account. Which design best ensures recoverable, undeletable backups?",
+      "choices": [
+        "Keep backups in the production account and add an IAM policy that denies deletion",
+        "Copy backups to a second vault in the production account in another Region",
+        "Encrypt the production vault with a different customer managed KMS key",
+        "Copy backups to a vault in a separate, tightly controlled account and apply Vault Lock in compliance mode"
+      ],
+      "correctChoice": "Copy backups to a vault in a separate, tightly controlled account and apply Vault Lock in compliance mode",
+      "explanation": "Isolating recovery points in a separate account removes them from the compromised administrator's reach, and compliance-mode Vault Lock prevents deletion or retention changes. IAM policies and keys in the compromised account can be changed by the attacker.",
+      "difficulty": "Hard",
+      "tags": [
+        "AWS Backup",
+        "Security",
+        "Disaster Recovery"
+      ]
+    },
+    {
+      "id": "snow-then-datasync-hybrid",
+      "prompt": "A company must migrate 500 TB to S3 within two weeks over a 1 Gbps link, which would take roughly seven weeks. The on-premises data keeps changing during the migration. What is the best approach?",
+      "choices": [
+        "Use DataSync over the 1 Gbps link for both the bulk dataset and the changes",
+        "Use a Transfer Family SFTP server for both the bulk dataset and the changes",
+        "Use Snowball Edge only and freeze all changes until the devices are loaded",
+        "Ship the bulk data on Snowball Edge devices, then use DataSync over the network to transfer the changes"
+      ],
+      "correctChoice": "Ship the bulk data on Snowball Edge devices, then use DataSync over the network to transfer the changes",
+      "explanation": "The bulk load exceeds what the link can move in time, so Snow devices handle the initial copy, and DataSync efficiently syncs the delta that changed afterward. Network-only options miss the deadline, and freezing changes is usually unacceptable.",
+      "difficulty": "Hard",
+      "tags": [
+        "Snow Family",
+        "DataSync",
+        "Migration"
+      ]
+    },
+    {
+      "id": "transfer-efs-posix-backend",
+      "prompt": "Partners upload files via SFTP, and internal Linux applications on EC2 must read and process those same files in place through an NFS mount, with no servers to manage for the SFTP service. Which design fits?",
+      "choices": [
+        "A Transfer Family SFTP server using EFS as its storage, with the EC2 instances mounting the same EFS file system",
+        "An SFTP server on EC2 using a gp3 volume shared with other instances through Multi-Attach",
+        "A Transfer Family SFTP server using S3, with the EC2 instances mounting the bucket as an EBS volume",
+        "AWS DataSync agents on each partner's network"
+      ],
+      "correctChoice": "A Transfer Family SFTP server using EFS as its storage, with the EC2 instances mounting the same EFS file system",
+      "explanation": "Transfer Family can store files in EFS, which the EC2 applications can mount over NFS. S3 buckets cannot be attached as EBS volumes, gp3 does not support Multi-Attach, and an EC2 SFTP server adds operational overhead.",
+      "difficulty": "Hard",
+      "tags": [
+        "Transfer Family",
+        "EFS",
+        "Service Selection"
+      ]
+    },
+    {
+      "id": "file-cache-onprem-nfs-burst",
+      "prompt": "For compliance reasons an on-premises NFS file system cannot be permanently migrated, but EC2-based batch jobs need high-throughput, low-latency access to its data during peak periods. Which solution is best?",
+      "choices": [
+        "A Tape Gateway presenting the data as virtual tapes",
+        "Amazon File Cache linked to the on-premises NFS file system",
+        "FSx for Windows File Server with SMB access",
+        "AWS DataSync copying the entire file system to EFS, then deleting the on-premises copy"
+      ],
+      "correctChoice": "Amazon File Cache linked to the on-premises NFS file system",
+      "explanation": "File Cache provides a high-speed cache over data kept in on-premises file systems, so the source stays in place while cloud jobs get fast access. Copying then deleting violates the retention constraint, and tape or SMB options do not suit this NFS/Linux workload.",
+      "difficulty": "Hard",
+      "tags": [
+        "File Cache",
+        "Hybrid Storage",
+        "Performance"
+      ]
+    },
+    {
+      "id": "ebs-magnetic-previous-gen",
+      "prompt": "Which EBS volume type is a previous-generation HDD type and is not recommended for new workloads that need consistent performance?",
+      "choices": [
+        "Cold HDD (sc1)",
+        "Magnetic (standard)",
+        "General Purpose SSD (gp3)",
+        "Throughput Optimized HDD (st1)"
+      ],
+      "correctChoice": "Magnetic (standard)",
+      "explanation": "Magnetic (standard) volumes are the previous-generation type with low IOPS (about 40-200) and throughput. st1 and sc1 are current-generation HDD types, and gp3 is a current SSD type.",
+      "difficulty": "Easy",
+      "tags": [
+        "EBS",
+        "Volume Types"
+      ]
+    },
+    {
+      "id": "ebs-persistence-after-stop",
+      "prompt": "An EC2 instance with a non-root EBS data volume is stopped. What happens to the data on the data volume?",
+      "choices": [
+        "It persists, because EBS provides persistent block storage independent of the instance's running state",
+        "It is erased, because block storage lives only while the instance is running",
+        "It is moved automatically to S3 as soon as the instance stops",
+        "It is copied to another Availability Zone and removed from the original volume"
+      ],
+      "correctChoice": "It persists, because EBS provides persistent block storage independent of the instance's running state",
+      "explanation": "EBS volumes persist independently of instance state, so data remains when an instance is stopped. EBS does not move data to S3 or another AZ automatically.",
+      "difficulty": "Easy",
+      "tags": [
+        "EBS"
+      ]
+    },
+    {
+      "id": "raid1-mirroring",
+      "prompt": "Which RAID level mirrors identical data across at least two disks so that data survives a single disk failure?",
+      "choices": [
+        "RAID 1 (mirroring)",
+        "RAID 6 (striping with double parity)",
+        "RAID 0 (striping)",
+        "RAID 5 (striping with parity)"
+      ],
+      "correctChoice": "RAID 1 (mirroring)",
+      "explanation": "RAID 1 writes the same data to two or more disks, tolerating the loss of one. RAID 5 and 6 use parity rather than mirroring, and RAID 0 offers no redundancy.",
+      "difficulty": "Easy",
+      "tags": [
+        "RAID"
+      ]
+    },
+    {
+      "id": "ebs-vs-efs-contrast",
+      "prompt": "Which statement correctly contrasts EBS and EFS?",
+      "choices": [
+        "EFS requires its capacity to be provisioned in advance, while EBS grows automatically",
+        "EBS is a shared NFS file system, while EFS is block storage for a single instance",
+        "EBS provides block storage that is provisioned by size and tied to one AZ, while EFS provides elastic shared file storage across AZs",
+        "Both are billed on provisioned capacity and both are restricted to a single AZ"
+      ],
+      "correctChoice": "EBS provides block storage that is provisioned by size and tied to one AZ, while EFS provides elastic shared file storage across AZs",
+      "explanation": "EBS volumes are block devices with a provisioned size, in a single AZ, normally attached to one instance. EFS is a managed NFS file system that grows and shrinks automatically, can be mounted from many instances and across AZs, and is billed on storage used.",
+      "difficulty": "Medium",
+      "tags": [
+        "EBS",
+        "EFS",
+        "Service Selection"
+      ]
+    },
+    {
+      "id": "fsx-windows-hdd-cost",
+      "prompt": "Windows servers on EC2 need SMB file shares that integrate with Active Directory. The shares hold 100 TB of large, rarely accessed files where cost matters more than latency. Which option is the best fit?",
+      "choices": [
+        "Amazon FSx for Windows File Server using SSD storage",
+        "Amazon EFS with Standard storage and NFS mounts",
+        "Amazon FSx for Windows File Server using HDD storage",
+        "Amazon FSx for Lustre with an S3 data repository"
+      ],
+      "correctChoice": "Amazon FSx for Windows File Server using HDD storage",
+      "explanation": "FSx for Windows File Server provides SMB and AD integration, and offers HDD storage that is cheaper for large, less latency-sensitive shares. SSD storage costs more, EFS is NFS-based and Lustre targets HPC.",
+      "difficulty": "Medium",
+      "tags": [
+        "FSx",
+        "Cost"
+      ]
+    },
+    {
+      "id": "efs-new-az-mount-failure",
+      "prompt": "After an Auto Scaling group is extended to a new Availability Zone, the instances there cannot mount an existing Regional EFS file system, while instances in the original AZs can. What should be done?",
+      "choices": [
+        "Increase the provisioned capacity of the EFS file system for the new AZ",
+        "Create a new EFS file system in the new AZ and replicate with DataSync",
+        "Create a mount target in the new AZ and allow inbound NFS (TCP 2049) from the instances to its security group",
+        "Add an S3 gateway endpoint to the VPC so the instances can reach EFS"
+      ],
+      "correctChoice": "Create a mount target in the new AZ and allow inbound NFS (TCP 2049) from the instances to its security group",
+      "explanation": "Instances reach EFS through a mount target in their own AZ, and the mount target's security group must allow NFS on TCP 2049. EFS has no provisioned capacity, and a second file system adds unnecessary complexity.",
+      "difficulty": "Hard",
+      "tags": [
+        "EFS",
+        "Troubleshooting",
+        "Networking"
+      ]
+    },
+    {
+      "id": "storage-multi-tier-combo",
+      "prompt": "A three-AZ Linux web tier needs shared content files. A single database instance needs 100,000 IOPS with sub-millisecond latency. Both need one backup policy with 35-day retention managed centrally. Which combination best meets these requirements?",
+      "choices": [
+        "EFS for the content, gp3 for the database, and one AWS Backup plan",
+        "EFS for the content, io2 Block Express for the database, and one AWS Backup plan with tag-based assignment",
+        "gp3 with Multi-Attach for the content, io2 Block Express for the database, and scripted snapshots",
+        "st1 for the content, io1 for the database, and one AWS Backup plan"
+      ],
+      "correctChoice": "EFS for the content, io2 Block Express for the database, and one AWS Backup plan with tag-based assignment",
+      "explanation": "EFS shares files across AZs. The database IOPS and latency target is only met by io2 Block Express (gp3 maxes at 80,000 IOPS, io1 at 64,000). AWS Backup covers both services centrally. gp3 does not support Multi-Attach, and st1 is an HDD type that cannot share across instances.",
+      "difficulty": "Hard",
+      "tags": [
+        "EFS",
+        "EBS",
+        "AWS Backup",
+        "Service Selection"
+      ]
+    },
+    {
+      "id": "transfer-ftp-private-endpoint",
+      "prompt": "On-premises legacy systems can only use plain FTP to deliver files to S3. Security policy forbids any internet exposure of the endpoint. Which design meets this with the least operational overhead?",
+      "choices": [
+        "A Transfer Family FTP server on a public internet-facing endpoint restricted by IP addresses",
+        "A Transfer Family SFTP server on a public endpoint, leaving the legacy systems unchanged",
+        "An FTP server on an EC2 instance with an Elastic IP address and a restrictive security group",
+        "A Transfer Family FTP server on a VPC-hosted endpoint, reached from on premises over Site-to-Site VPN or Direct Connect"
+      ],
+      "correctChoice": "A Transfer Family FTP server on a VPC-hosted endpoint, reached from on premises over Site-to-Site VPN or Direct Connect",
+      "explanation": "Plain FTP is only allowed on VPC-internal Transfer Family endpoints, which on-premises networks reach privately via VPN or Direct Connect. Public FTP is not available, legacy FTP clients cannot speak SFTP, and EC2 servers add overhead and internet exposure.",
+      "difficulty": "Hard",
+      "tags": [
+        "Transfer Family",
+        "Security",
+        "Networking"
+      ]
+    },
+    {
+      "id": "backup-vault-lock-modes",
+      "prompt": "A team is introducing AWS Backup Vault Lock and wants to test and adjust the retention settings before making them permanent. Which approach fits?",
+      "choices": [
+        "Avoid Vault Lock and rely on an IAM deny policy, which is equally immutable",
+        "Use governance mode permanently, because it prevents anyone from ever removing the lock",
+        "Start with governance mode, then switch to compliance mode once the settings are validated",
+        "Start with compliance mode, since the lock can be removed at any time by an administrator"
+      ],
+      "correctChoice": "Start with governance mode, then switch to compliance mode once the settings are validated",
+      "explanation": "Governance mode lets users with sufficient permissions change or remove the lock, so it suits testing. Compliance mode becomes immutable after its cooling-off period, so it should be used once settings are final. IAM policies can be edited by administrators.",
+      "difficulty": "Hard",
+      "tags": [
+        "AWS Backup",
+        "Security",
+        "Compliance"
+      ]
+    },
+    {
+      "id": "ebs-gp2-burst-exhaustion",
+      "prompt": "A 100 GiB gp2 volume supports a database that needs a steady 5,000 IOPS. Performance degrades after bursts because burst credits are exhausted. What is the lowest-cost fix that provides consistent performance?",
+      "choices": [
+        "Expand the gp2 volume to about 1.7 TiB to raise its baseline IOPS",
+        "Migrate to a gp3 volume and provision 5,000 IOPS",
+        "Switch to an st1 volume for higher throughput",
+        "Migrate to an io2 Block Express volume provisioned with 5,000 IOPS"
+      ],
+      "correctChoice": "Migrate to a gp3 volume and provision 5,000 IOPS",
+      "explanation": "gp3 provides a 3,000 IOPS baseline and allows extra IOPS to be provisioned independently of size, with no burst credits, at a low cost. Growing a gp2 volume or moving to io2 costs far more, and st1 is an HDD type unsuited to small random I/O.",
+      "difficulty": "Hard",
+      "tags": [
+        "EBS",
+        "Performance",
+        "Cost"
+      ]
+    },
+    {
+      "id": "transfer-family-backends",
+      "prompt": "Which AWS storage services can AWS Transfer Family use as the backend for transferred files?",
+      "choices": [
+        "Amazon FSx for Lustre and Amazon File Cache",
+        "Amazon S3 and Amazon EFS",
+        "Amazon S3 Glacier Deep Archive and AWS Backup vaults",
+        "Amazon EBS and instance store"
+      ],
+      "correctChoice": "Amazon S3 and Amazon EFS",
+      "explanation": "Transfer Family supports SFTP, FTPS, FTP and AS2 transfers into and out of S3 or EFS. EBS volumes, backup vaults and the other file systems are not Transfer Family backends.",
+      "difficulty": "Easy",
+      "tags": [
+        "Transfer Family"
+      ]
+    },
+    {
+      "id": "snow-data-destination",
+      "prompt": "When a Snowball Edge device is returned to AWS after data was loaded onto it, where is the data imported?",
+      "choices": [
+        "An Amazon DynamoDB table",
+        "An EFS file system",
+        "An EBS volume",
+        "An Amazon S3 bucket"
+      ],
+      "correctChoice": "An Amazon S3 bucket",
+      "explanation": "Snowball Edge import jobs load the data into the S3 bucket specified when the job was created.",
+      "difficulty": "Easy",
+      "tags": [
+        "Snow Family",
+        "S3"
+      ]
+    },
+    {
+      "id": "sgw-cache-troubleshoot",
+      "prompt": "As a branch office's dataset grew, users report slow reads of older files through an on-premises File Gateway. Most reads hit data that is no longer in the gateway's local cache. What is the most appropriate fix?",
+      "choices": [
+        "Move the S3 bucket to a Region geographically closer to the branch office",
+        "Convert the gateway into a DataSync agent that copies the data nightly",
+        "Allocate additional local disk to the gateway's cache storage so more frequently accessed data stays local",
+        "Replace the File Gateway with a Tape Gateway to improve read latency"
+      ],
+      "correctChoice": "Allocate additional local disk to the gateway's cache storage so more frequently accessed data stays local",
+      "explanation": "File Gateway serves hot data from its local cache and fetches other data from S3. If the cache is too small for the working set, adding cache disk reduces the cache misses. Tape Gateway and DataSync serve different purposes, and the Region is not the bottleneck.",
+      "difficulty": "Hard",
+      "tags": [
+        "Storage Gateway",
+        "Performance",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "datasync-scheduled-throttled",
+      "prompt": "A company is copying 40 TB from an on-premises NAS to S3 over a link shared with production traffic. Transfers should run only on nights and weekends, with no hand-built tooling. Which solution is best?",
+      "choices": [
+        "A DataSync task with a schedule that runs during the permitted windows",
+        "An SFTP server on EC2 that staff upload to manually",
+        "A Tape Gateway with virtual tapes ejected on weekends",
+        "A Snowball Edge device, because scheduled network transfers are not possible"
+      ],
+      "correctChoice": "A DataSync task with a schedule that runs during the permitted windows",
+      "explanation": "DataSync supports scheduled tasks (and bandwidth limits), so transfers can be confined to off-peak windows without custom tooling. The other options add manual effort or are not designed for scheduled NAS-to-S3 copies.",
+      "difficulty": "Hard",
+      "tags": [
+        "DataSync",
+        "Migration",
+        "Cost"
+      ]
+    },
+    {
+      "id": "sgw-file-gateway-dr-ec2",
+      "prompt": "A File Gateway on premises stores all files in S3. The data centre is lost in a disaster, and AWS-based applications must quickly resume file access to the same data. What is the best recovery approach?",
+      "choices": [
+        "Deploy a File Gateway on an EC2 instance from the gateway AMI and create file shares on the same S3 bucket",
+        "Restore the data from virtual tapes using a Tape Gateway in AWS",
+        "Recreate the files from EBS snapshots of the on-premises gateway disks",
+        "Order a Snowball Edge device to copy the data back out of S3"
+      ],
+      "correctChoice": "Deploy a File Gateway on an EC2 instance from the gateway AMI and create file shares on the same S3 bucket",
+      "explanation": "Because File Gateway keeps the data in S3, a gateway can be deployed on EC2 and pointed at the same bucket to restore file-protocol access. The data does not need to be restored from tape, snapshots or a Snow device.",
+      "difficulty": "Hard",
+      "tags": [
+        "Storage Gateway",
+        "Disaster Recovery"
+      ]
+    },
+    {
+      "id": "efs-on-premises-direct-connect",
+      "prompt": "On-premises Linux servers connected to a VPC by Direct Connect must periodically burst-process data using the same shared NFS storage as EC2 instances, with the least effort. Which solution is the best fit?",
+      "choices": [
+        "Deploy a Tape Gateway on premises and write the data to virtual tapes",
+        "Mount the EFS file system from the on-premises servers through a mount target over Direct Connect",
+        "Run nightly DataSync tasks between the on-premises NAS and a new EFS file system",
+        "Order a Snowball Edge device to keep a second copy of the dataset locally"
+      ],
+      "correctChoice": "Mount the EFS file system from the on-premises servers through a mount target over Direct Connect",
+      "explanation": "EFS can be mounted from on-premises Linux servers over Direct Connect or VPN, so both environments see the same data directly. DataSync is for copying, not for shared live access, and tape or Snow solutions do not provide shared NFS access.",
+      "difficulty": "Hard",
+      "tags": [
+        "EFS",
+        "Hybrid Storage"
+      ]
+    },
+    {
+      "id": "transfer-family-vs-datasync-partner",
+      "prompt": "A supplier's system can only push files over SFTP, and the company wants the files to land in S3 with no software to deploy at the supplier's site. Which service should receive the files?",
+      "choices": [
+        "AWS Storage Gateway File Gateway at the supplier",
+        "AWS Snowball Edge shipped to the supplier",
+        "AWS DataSync with an agent installed at the supplier",
+        "AWS Transfer Family"
+      ],
+      "correctChoice": "AWS Transfer Family",
+      "explanation": "Transfer Family offers a managed SFTP endpoint that external clients connect to directly. DataSync, File Gateway and Snow devices all need software or hardware deployed at the source site.",
+      "difficulty": "Hard",
+      "tags": [
+        "Transfer Family",
+        "DataSync",
+        "Service Selection"
+      ]
+    },
+    {
+      "id": "efs-standard-vs-one-zone-az-failure",
+      "prompt": "A production NFS workload must keep serving data without manual intervention if an Availability Zone fails, and the company wants the lowest cost that still meets that requirement. Which configuration is best?",
+      "choices": [
+        "An EFS One Zone file system with lifecycle management to Infrequent Access",
+        "A gp3 EBS volume with Multi-Attach",
+        "An EFS One Zone file system with daily backups restored manually after a failure",
+        "A Regional EFS file system with lifecycle management to Infrequent Access"
+      ],
+      "correctChoice": "A Regional EFS file system with lifecycle management to Infrequent Access",
+      "explanation": "Regional EFS stores data redundantly across multiple AZs, so an AZ failure does not stop access, and lifecycle management cuts cost for cold data. One Zone depends on a single AZ, and EBS volumes are single-AZ and gp3 does not support Multi-Attach.",
+      "difficulty": "Hard",
+      "tags": [
+        "EFS",
+        "Resilience",
+        "Cost"
+      ]
+    },
+    {
+      "id": "ebs-multi-attach-cluster-aware-fs",
+      "prompt": "Two instances in one AZ attach the same io2 volume with Multi-Attach, and both mount it read-write with a standard single-node file system. Files become corrupted. What is the correct fix?",
+      "choices": [
+        "Enable Multi-Attach on a second io2 volume placed in another Availability Zone",
+        "Increase the provisioned IOPS so that writes are serialised across the instances",
+        "Use a cluster-aware file system or application that coordinates concurrent writes, or move the data to EFS",
+        "Switch the volume to gp3, which handles concurrent writes from two instances safely"
+      ],
+      "correctChoice": "Use a cluster-aware file system or application that coordinates concurrent writes, or move the data to EFS",
+      "explanation": "Multi-Attach does not coordinate writes between instances; the file system or application must be cluster-aware. gp3 does not support Multi-Attach, volumes cannot be shared across AZs, and IOPS does not provide write coordination.",
+      "difficulty": "Hard",
+      "tags": [
+        "EBS",
+        "High Availability",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "efs-ia-frequent-access-cost",
+      "prompt": "A team enabled lifecycle management on EFS and the bill rose because some files moved to Infrequent Access are now read daily and incur access charges. What is the best adjustment?",
+      "choices": [
+        "Move all of the files to the EFS Archive storage class for lower cost",
+        "Switch the file system to One Zone storage to remove the access charges",
+        "Disable lifecycle management but leave the existing IA files where they are",
+        "Configure lifecycle management to move files back to Standard on first access, and use a longer period before transitioning to IA"
+      ],
+      "correctChoice": "Configure lifecycle management to move files back to Standard on first access, and use a longer period before transitioning to IA",
+      "explanation": "IA and Archive reduce storage cost but add per-access charges, so they suit data that is rarely read. Returning files to Standard on access and lengthening the transition period avoids paying access fees for active files. Archive is for even colder data, and One Zone does not remove access charges.",
+      "difficulty": "Hard",
+      "tags": [
+        "EFS",
+        "Cost"
+      ]
+    }
+  ]
+}

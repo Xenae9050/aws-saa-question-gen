@@ -1,0 +1,1684 @@
+{
+  "$schema": "../pool.schema.json",
+  "poolName": "Networking & Edge: Route 53, Global Accelerator, CloudFront, Shield, WAF, API Gateway, Firewall Manager & AppSync (Mixed Difficulty)",
+  "description": "SAA-C03 revision questions on Amazon Route 53, AWS Global Accelerator, Amazon CloudFront, Lambda@Edge and CloudFront Functions, AWS Shield, AWS WAF, Amazon API Gateway, AWS Firewall Manager and AWS AppSync at Easy, Medium and Hard difficulty: routing policies, edge delivery and acceleration, DDoS and web exploit protection, API types and trade-offs, and GraphQL.",
+  "category": "Networking & Content Delivery",
+  "version": 1,
+  "questions": [
+    {
+      "id": "r53-hosted-zone-types",
+      "prompt": "A company wants DNS records that are resolved only by resources inside its VPCs and are not visible on the public internet. Which Route 53 construct should it create?",
+      "choices": [
+        "A health check",
+        "A traffic policy record",
+        "A private hosted zone",
+        "A public hosted zone"
+      ],
+      "correctChoice": "A private hosted zone",
+      "explanation": "A private hosted zone holds records that answer queries only from the VPCs it is associated with. A public hosted zone routes internet traffic.",
+      "difficulty": "Easy",
+      "tags": [
+        "Route 53",
+        "Hosted zones"
+      ]
+    },
+    {
+      "id": "r53-alias-apex",
+      "prompt": "A company must point the zone apex of its domain (example.com) at an Application Load Balancer. Which record type should it use?",
+      "choices": [
+        "A TXT record containing the load balancer DNS name",
+        "An alias A record pointing at the load balancer",
+        "An MX record pointing at the load balancer DNS name",
+        "A CNAME record pointing at the load balancer DNS name"
+      ],
+      "correctChoice": "An alias A record pointing at the load balancer",
+      "explanation": "A CNAME is not permitted at the zone apex. An alias record can be created at the apex, is dynamically tied to the AWS endpoint, and survives IP changes of the underlying resource.",
+      "difficulty": "Easy",
+      "tags": [
+        "Route 53",
+        "Alias records"
+      ]
+    },
+    {
+      "id": "r53-alias-targets",
+      "prompt": "Which of the following can be used directly as the target of a Route 53 alias record?",
+      "choices": [
+        "An Amazon RDS DB instance endpoint",
+        "An Amazon EBS volume ID",
+        "An AWS Lambda function ARN",
+        "An S3 static website endpoint"
+      ],
+      "correctChoice": "An S3 static website endpoint",
+      "explanation": "Alias records can point at AWS endpoints such as CloudFront distributions, load balancers, Elastic Beanstalk environments, S3 website endpoints, VPC endpoints and API Gateway custom regional APIs.",
+      "difficulty": "Easy",
+      "tags": [
+        "Route 53",
+        "Alias records"
+      ]
+    },
+    {
+      "id": "r53-failover-basics",
+      "prompt": "Which Route 53 routing policy sends traffic to a primary resource and switches to a secondary resource only when health checks on the primary fail?",
+      "choices": [
+        "Multi-value answer",
+        "Failover",
+        "Geolocation",
+        "Weighted"
+      ],
+      "correctChoice": "Failover",
+      "explanation": "Failover routing is active-passive. Route 53 monitors the primary with a health check and begins answering with the secondary when the primary is unhealthy.",
+      "difficulty": "Easy",
+      "tags": [
+        "Route 53",
+        "Routing policies"
+      ]
+    },
+    {
+      "id": "r53-weighted-canary",
+      "prompt": "A team wants to send roughly 10% of DNS responses to a new application version and 90% to the current version. Which routing policy fits best?",
+      "choices": [
+        "Latency-based",
+        "Weighted",
+        "Geolocation",
+        "Simple"
+      ],
+      "correctChoice": "Weighted",
+      "explanation": "Weighted routing assigns a relative weight to each record, so the share of responses matches the weights. It is commonly used for gradual rollouts and A/B tests.",
+      "difficulty": "Easy",
+      "tags": [
+        "Route 53",
+        "Routing policies"
+      ]
+    },
+    {
+      "id": "r53-latency-basics",
+      "prompt": "An application runs in two Regions behind ALBs. Each user should be directed to whichever Region gives them the lowest latency. Which routing policy should be used?",
+      "choices": [
+        "Failover",
+        "Weighted",
+        "Latency-based",
+        "IP-based"
+      ],
+      "correctChoice": "Latency-based",
+      "explanation": "Latency-based routing needs a latency record for the resource in each Region and answers with the Region that has the lowest latency for the user.",
+      "difficulty": "Easy",
+      "tags": [
+        "Route 53",
+        "Routing policies"
+      ]
+    },
+    {
+      "id": "r53-health-check-interval",
+      "prompt": "By default, how often does Route 53 perform each health check request, and what faster interval can be configured?",
+      "choices": [
+        "Every 60 seconds by default; it can be reduced to every 30 seconds",
+        "Every 30 seconds by default; it can be reduced to every 10 seconds",
+        "Every 10 seconds by default; it can be reduced to every 1 second",
+        "Every 5 minutes by default; it can be reduced to every 1 minute"
+      ],
+      "correctChoice": "Every 30 seconds by default; it can be reduced to every 10 seconds",
+      "explanation": "Route 53 health checks run every 30 seconds by default, with a fast option of 10 seconds.",
+      "difficulty": "Easy",
+      "tags": [
+        "Route 53",
+        "Health checks"
+      ]
+    },
+    {
+      "id": "r53-resolver-endpoints-dir",
+      "prompt": "Which Route 53 Resolver endpoint type allows DNS queries to originate on an on-premises network and be resolved inside a VPC?",
+      "choices": [
+        "Outbound endpoint",
+        "Gateway endpoint",
+        "Inbound endpoint",
+        "Interface endpoint for Route 53"
+      ],
+      "correctChoice": "Inbound endpoint",
+      "explanation": "Inbound Resolver endpoints receive DNS queries coming into the VPC from on premises or another VPC. Outbound endpoints send queries out of the VPC.",
+      "difficulty": "Easy",
+      "tags": [
+        "Route 53",
+        "Resolver"
+      ]
+    },
+    {
+      "id": "r53-dnssec-purpose",
+      "prompt": "What does enabling DNSSEC signing for a Route 53 public hosted zone allow DNS resolvers to do?",
+      "choices": [
+        "Block DNS queries that originate from malicious IP addresses",
+        "Encrypt the DNS queries sent from clients to Route 53",
+        "Automatically fail over to a secondary Region when the primary fails",
+        "Validate that a DNS response came from Route 53 and has not been tampered with"
+      ],
+      "correctChoice": "Validate that a DNS response came from Route 53 and has not been tampered with",
+      "explanation": "DNSSEC provides origin authentication and integrity for DNS responses, which protects against impersonation and tampering. It does not encrypt queries or provide failover.",
+      "difficulty": "Easy",
+      "tags": [
+        "Route 53",
+        "DNSSEC"
+      ]
+    },
+    {
+      "id": "r53-profiles-purpose",
+      "prompt": "What is the purpose of Route 53 Profiles?",
+      "choices": [
+        "To register new domain names and transfer existing domains between registrars",
+        "To monitor the health of endpoints and send notifications when a health check fails",
+        "To apply DNS-related configuration, such as private hosted zones and Resolver rules, across multiple VPCs and accounts",
+        "To route each DNS query to whichever endpoint currently gives the user the lowest network latency"
+      ],
+      "correctChoice": "To apply DNS-related configuration, such as private hosted zones and Resolver rules, across multiple VPCs and accounts",
+      "explanation": "Profiles let you associate private hosted zones, Resolver rules and DNS Firewall rule groups once and apply them to many VPCs and AWS accounts.",
+      "difficulty": "Easy",
+      "tags": [
+        "Route 53",
+        "Profiles"
+      ]
+    },
+    {
+      "id": "r53-geolocation-use",
+      "prompt": "A streaming company must serve users in Germany from a Frankfurt deployment because of content licensing and data residency rules, even if another Region has lower latency for some of those users. Which routing policy meets this?",
+      "choices": [
+        "Weighted",
+        "Geolocation",
+        "Failover",
+        "Latency-based"
+      ],
+      "correctChoice": "Geolocation",
+      "explanation": "Geolocation routes by the user's location, so the rule is applied regardless of latency. Latency-based routing optimises for speed and could send users to another Region.",
+      "difficulty": "Medium",
+      "tags": [
+        "Route 53",
+        "Routing policies"
+      ]
+    },
+    {
+      "id": "r53-geoprox-bias",
+      "prompt": "A company has endpoints in us-east-1 and eu-west-1 and wants users routed to the geographically closest endpoint. After scaling up us-east-1, it wants that Region to serve a larger geographic area, including some users who are physically closer to Europe, without writing country-by-country rules. Which solution meets this?",
+      "choices": [
+        "Weighted routing with 70% on us-east-1 and 30% on eu-west-1",
+        "Latency-based routing with a latency record in each Region",
+        "Geoproximity routing with a positive bias on the us-east-1 record",
+        "Geolocation routing with a record for every country"
+      ],
+      "correctChoice": "Geoproximity routing with a positive bias on the us-east-1 record",
+      "explanation": "Geoproximity routes by user and resource location and lets you expand or shrink a Region's effective area with a bias. Weighted routing ignores location, and geolocation requires explicit location mappings.",
+      "difficulty": "Hard",
+      "tags": [
+        "Route 53",
+        "Routing policies"
+      ]
+    },
+    {
+      "id": "r53-multivalue-vs-simple",
+      "prompt": "A simple routing record returns the IP addresses of three web servers. When one server fails, some clients intermittently time out. The company does not want to add a load balancer. What is the best change?",
+      "choices": [
+        "Replace the record with a failover record pair using all three servers",
+        "Replace the record with weighted records with equal weights and no health checks",
+        "Increase the TTL of the simple record",
+        "Replace the record with multi-value answer records, each with a health check"
+      ],
+      "correctChoice": "Replace the record with multi-value answer records, each with a health check",
+      "explanation": "Simple routing has no health checking, so failed servers are still returned. Multi-value answer routing returns only healthy addresses. Equal weights without health checks would still return failed servers.",
+      "difficulty": "Hard",
+      "tags": [
+        "Route 53",
+        "Routing policies",
+        "Health checks"
+      ]
+    },
+    {
+      "id": "r53-health-check-alarm",
+      "prompt": "When a Route 53 health check detects an unhealthy endpoint, which actions can it drive?",
+      "choices": [
+        "It can trigger DNS failover and create a CloudWatch alarm to notify operators",
+        "It can restart the instance and replace the failed EBS volume",
+        "It can resize the Auto Scaling group and add capacity",
+        "It can rotate the TLS certificate and reissue it"
+      ],
+      "correctChoice": "It can trigger DNS failover and create a CloudWatch alarm to notify operators",
+      "explanation": "Route 53 health checks influence DNS answers for failover and can be tied to CloudWatch alarms for notification. They do not repair or scale resources.",
+      "difficulty": "Medium",
+      "tags": [
+        "Route 53",
+        "Health checks"
+      ]
+    },
+    {
+      "id": "r53-calculated-health",
+      "prompt": "A service is considered healthy only if at least two of its three component endpoints pass their own health checks. When it is unhealthy, DNS must fail over to a DR site. How should this be configured?",
+      "choices": [
+        "Create a health check that monitors the three component health checks with a threshold of two, and associate it with the primary failover record",
+        "Create three separate failover records, one for each component endpoint, with the same name",
+        "Associate only one component's health check with the primary failover record and ignore the others",
+        "Create a weighted record for each component with equal weights and a shared health check"
+      ],
+      "correctChoice": "Create a health check that monitors the three component health checks with a threshold of two, and associate it with the primary failover record",
+      "explanation": "A health check that monitors other health checks combines their results against a threshold. Associating it with the primary failover record triggers failover when the service as a whole is unhealthy.",
+      "difficulty": "Hard",
+      "tags": [
+        "Route 53",
+        "Health checks"
+      ]
+    },
+    {
+      "id": "r53-resolver-outbound-scenario",
+      "prompt": "Many VPCs across several accounts must resolve names in the on-premises corporate domain over Direct Connect, and the network team wants this configured once and consistently applied. Which design is appropriate?",
+      "choices": [
+        "An inbound Resolver endpoint in every VPC with a forwarding rule for the corporate domain",
+        "An outbound Resolver endpoint with a forwarding rule for the corporate domain, applied to the VPCs through a Route 53 Profile",
+        "A latency-based record for each on-premises DNS server in the corporate network",
+        "A public hosted zone containing the corporate records, associated with every VPC"
+      ],
+      "correctChoice": "An outbound Resolver endpoint with a forwarding rule for the corporate domain, applied to the VPCs through a Route 53 Profile",
+      "explanation": "Queries leaving a VPC for on-premises DNS use an outbound endpoint and a forwarding rule. A Profile can apply the Resolver rule to many VPCs and accounts.",
+      "difficulty": "Hard",
+      "tags": [
+        "Route 53",
+        "Resolver",
+        "Profiles"
+      ]
+    },
+    {
+      "id": "r53-resolver-inbound-scenario",
+      "prompt": "On-premises servers must resolve hostnames in a Route 53 private hosted zone that is associated with a VPC. What should be configured?",
+      "choices": [
+        "An inbound Resolver endpoint that the on-premises DNS servers forward queries to",
+        "An outbound Resolver endpoint in the VPC with a forwarding rule for the domain",
+        "A public hosted zone with the same domain name as the private hosted zone",
+        "A Route 53 health check on each of the on-premises DNS servers"
+      ],
+      "correctChoice": "An inbound Resolver endpoint that the on-premises DNS servers forward queries to",
+      "explanation": "On-premises DNS servers forward queries to the IP addresses of an inbound Resolver endpoint, which resolves them in the VPC, including private hosted zone records.",
+      "difficulty": "Medium",
+      "tags": [
+        "Route 53",
+        "Resolver"
+      ]
+    },
+    {
+      "id": "r53-traffic-flow",
+      "prompt": "Which statement best describes Route 53 Traffic Flow?",
+      "choices": [
+        "It provides a visual editor for building complex routing configurations and supports versioning of traffic policies",
+        "It is a free feature that automatically replaces all Route 53 health checks",
+        "It automatically caches DNS answers at CloudFront edge locations worldwide",
+        "It encrypts DNS traffic between the client and the recursive resolver"
+      ],
+      "correctChoice": "It provides a visual editor for building complex routing configurations and supports versioning of traffic policies",
+      "explanation": "Traffic Flow lets you build and version sophisticated routing policies in a UI, and it is charged per policy record.",
+      "difficulty": "Medium",
+      "tags": [
+        "Route 53",
+        "Traffic flow"
+      ]
+    },
+    {
+      "id": "r53-zonal-shift-purpose",
+      "prompt": "What does Route 53 Application Recovery Controller zonal shift do?",
+      "choices": [
+        "Moves load balancer traffic away from an impaired Availability Zone toward healthy ones",
+        "Fails an RDS database over to its standby instance in another Availability Zone",
+        "Replicates a hosted zone to a second Region so that DNS keeps working during a Region failure",
+        "Moves EC2 instances to a different Availability Zone automatically when one is impaired"
+      ],
+      "correctChoice": "Moves load balancer traffic away from an impaired Availability Zone toward healthy ones",
+      "explanation": "Zonal shift temporarily shifts traffic for a supported ALB or NLB away from an impaired AZ. It does not move instances or databases.",
+      "difficulty": "Medium",
+      "tags": [
+        "Route 53",
+        "ARC",
+        "Zonal shift"
+      ]
+    },
+    {
+      "id": "r53-dnssec-spoofing",
+      "prompt": "A security team is concerned that attackers could impersonate the company's domain by forging DNS responses sent to users. Which Route 53 capability addresses this specific risk?",
+      "choices": [
+        "Enable Route 53 health checks with a 10-second interval",
+        "Enable DNSSEC signing on the public hosted zone",
+        "Attach AWS WAF to the hosted zone",
+        "Create a private hosted zone with the same name"
+      ],
+      "correctChoice": "Enable DNSSEC signing on the public hosted zone",
+      "explanation": "DNSSEC lets resolvers validate that responses really came from Route 53 and were not altered, which stops forged answers. WAF filters HTTP requests and does not protect DNS responses.",
+      "difficulty": "Medium",
+      "tags": [
+        "Route 53",
+        "DNSSEC"
+      ]
+    },
+    {
+      "id": "r53-active-active-latency-health",
+      "prompt": "An application is deployed active-active in two Regions behind ALBs. Users should normally reach the Region with the lowest latency, and if one Region becomes unhealthy all users must be sent to the other Region automatically. Which DNS design meets this?",
+      "choices": [
+        "Two failover records, with each Region marked as the primary",
+        "Weighted records with a 50/50 split and no health checks",
+        "Latency-based alias records for each Region's ALB, each associated with a health check",
+        "Geolocation records for each continent without a default record"
+      ],
+      "correctChoice": "Latency-based alias records for each Region's ALB, each associated with a health check",
+      "explanation": "Latency-based routing gives lowest-latency answers and, with health checks on the records, Route 53 stops returning an unhealthy Region. Failover is active-passive and would not serve both Regions normally.",
+      "difficulty": "Hard",
+      "tags": [
+        "Route 53",
+        "Routing policies",
+        "Health checks"
+      ]
+    },
+    {
+      "id": "r53-geolocation-default",
+      "prompt": "A company created geolocation records only for the United States and Europe. Users in other countries receive no usable DNS answer. What is the simplest fix?",
+      "choices": [
+        "Replace all of the records with a single simple routing record containing every IP address",
+        "Add a default geolocation record to answer queries from locations that match no other record",
+        "Increase the health check interval to 10 seconds so that failures are detected sooner",
+        "Create a private hosted zone with the same name for the users in the other countries"
+      ],
+      "correctChoice": "Add a default geolocation record to answer queries from locations that match no other record",
+      "explanation": "Geolocation routing needs a default record to answer queries from locations not covered by a specific record. Without it, Route 53 returns no answer for those users.",
+      "difficulty": "Hard",
+      "tags": [
+        "Route 53",
+        "Routing policies"
+      ]
+    },
+    {
+      "id": "r53-profiles-multiaccount",
+      "prompt": "A central network team manages 50 VPCs across 12 AWS accounts. They want the same private hosted zone associations, Resolver forwarding rules and DNS Firewall rule groups applied consistently, with minimal per-VPC work. What should they use?",
+      "choices": [
+        "A Route 53 Profile associated with the VPCs",
+        "An AWS Global Accelerator accelerator for each VPC",
+        "Route 53 Traffic Flow with a traffic policy for each account",
+        "Manual association of each resource with every VPC, one at a time"
+      ],
+      "correctChoice": "A Route 53 Profile associated with the VPCs",
+      "explanation": "A Profile bundles private hosted zones, Resolver rules and DNS Firewall rule groups so they can be associated once with many VPCs and shared across accounts.",
+      "difficulty": "Hard",
+      "tags": [
+        "Route 53",
+        "Profiles"
+      ]
+    },
+    {
+      "id": "r53-zonal-shift-conditions",
+      "prompt": "Which statement about zonal shift in Route 53 Application Recovery Controller is correct?",
+      "choices": [
+        "It supports ALBs and NLBs, and shifts traffic away from a single Availability Zone per load balancer",
+        "It supports an ALB used as an endpoint of an AWS Global Accelerator accelerator",
+        "It supports only Classic Load Balancers with cross-zone load balancing disabled",
+        "It can shift traffic away from several Availability Zones of one load balancer at once"
+      ],
+      "correctChoice": "It supports ALBs and NLBs, and shifts traffic away from a single Availability Zone per load balancer",
+      "explanation": "Zonal shift works with ALBs and NLBs (cross-zone enabled or disabled), only one AZ per load balancer at a time, and not for an ALB that is a Global Accelerator endpoint.",
+      "difficulty": "Hard",
+      "tags": [
+        "Route 53",
+        "ARC",
+        "Zonal shift"
+      ]
+    },
+    {
+      "id": "r53-hybrid-dns-both-ways",
+      "prompt": "On-premises servers must resolve names in a VPC private hosted zone, and VPC workloads must resolve names in the on-premises corporate domain. Connectivity is already in place over Direct Connect. What is the minimum Route 53 Resolver setup?",
+      "choices": [
+        "One inbound endpoint and one outbound endpoint, with a forwarding rule for the on-premises domain",
+        "Two outbound endpoints, one in each Availability Zone",
+        "A single inbound endpoint with a forwarding rule for the on-premises domain",
+        "A single outbound endpoint and a public hosted zone for the corporate domain"
+      ],
+      "correctChoice": "One inbound endpoint and one outbound endpoint, with a forwarding rule for the on-premises domain",
+      "explanation": "Each direction needs its own endpoint type: inbound for on-premises to VPC queries and outbound with a forwarding rule for VPC to on-premises queries.",
+      "difficulty": "Hard",
+      "tags": [
+        "Route 53",
+        "Resolver"
+      ]
+    },
+    {
+      "id": "r53-ip-based-routing",
+      "prompt": "A company wants clients from specific ISP network ranges, defined as CIDR blocks, to be sent to a particular endpoint to improve performance. Which Route 53 routing policy fits?",
+      "choices": [
+        "Geolocation routing",
+        "IP-based routing",
+        "Multi-value answer routing",
+        "Simple routing"
+      ],
+      "correctChoice": "IP-based routing",
+      "explanation": "IP-based routing uses CIDR ranges that you define for client IP addresses, unlike geolocation which uses the user's geographic location.",
+      "difficulty": "Medium",
+      "tags": [
+        "Route 53",
+        "Routing policies"
+      ]
+    },
+    {
+      "id": "r53-failover-s3-dr",
+      "prompt": "A web application runs on an ALB in one Region. If it fails, users should see a static maintenance page hosted in an S3 website bucket. Which approach should be used?",
+      "choices": [
+        "Latency-based routing between the ALB and the S3 website endpoint, with no health check",
+        "Weighted routing with 100% weight on the ALB and 0% on the S3 endpoint, with no health check",
+        "Multi-value answer routing that returns both the ALB and the S3 endpoint at the same time",
+        "Failover routing with an alias to the ALB as primary, an alias to the S3 website endpoint as secondary, and a health check on the primary"
+      ],
+      "correctChoice": "Failover routing with an alias to the ALB as primary, an alias to the S3 website endpoint as secondary, and a health check on the primary",
+      "explanation": "Failover routing is active-passive: the secondary is returned only when the health check on the primary fails. An S3 website endpoint is a valid alias target.",
+      "difficulty": "Medium",
+      "tags": [
+        "Route 53",
+        "Routing policies"
+      ]
+    },
+    {
+      "id": "ga-what-is",
+      "prompt": "What does AWS Global Accelerator do for an application?",
+      "choices": [
+        "It translates DNS names into IP addresses for resources that run inside a VPC",
+        "It caches static objects at edge locations so that fewer requests reach the origin",
+        "It sends user traffic to the nearest AWS edge location and over the AWS network to the optimal healthy endpoint",
+        "It inspects HTTP requests at the edge and blocks SQL injection attempts"
+      ],
+      "correctChoice": "It sends user traffic to the nearest AWS edge location and over the AWS network to the optimal healthy endpoint",
+      "explanation": "Global Accelerator brings traffic onto the AWS global network at an edge location and routes it to the best healthy endpoint. CDN caching is CloudFront and request filtering is WAF.",
+      "difficulty": "Easy",
+      "tags": [
+        "Global Accelerator"
+      ]
+    },
+    {
+      "id": "ga-standard-vs-custom",
+      "prompt": "Which Global Accelerator type maps individual users to specific EC2 instance and port destinations within VPC subnets?",
+      "choices": [
+        "Standard accelerator",
+        "Edge-optimised accelerator",
+        "Regional accelerator",
+        "Custom routing accelerator"
+      ],
+      "correctChoice": "Custom routing accelerator",
+      "explanation": "Custom routing accelerators map users to specific instance and port destinations in VPC subnets. Standard accelerators route to the nearest healthy endpoint.",
+      "difficulty": "Easy",
+      "tags": [
+        "Global Accelerator"
+      ]
+    },
+    {
+      "id": "ga-endpoint-types",
+      "prompt": "Which of the following can be an endpoint for a standard Global Accelerator accelerator?",
+      "choices": [
+        "An Amazon S3 bucket",
+        "An Application Load Balancer",
+        "An Amazon RDS DB instance",
+        "An Amazon DynamoDB table"
+      ],
+      "correctChoice": "An Application Load Balancer",
+      "explanation": "Standard accelerator endpoints are Application Load Balancers, Network Load Balancers, EC2 instances and Elastic IP addresses.",
+      "difficulty": "Easy",
+      "tags": [
+        "Global Accelerator"
+      ]
+    },
+    {
+      "id": "ga-vs-cloudfront-udp",
+      "prompt": "A UDP-based game must have fixed IP addresses that players' firewalls can allow-list, low-latency access, and automatic redirection away from an unhealthy Region. Servers sit behind Network Load Balancers in two Regions. Which solution meets this?",
+      "choices": [
+        "Global Accelerator with the NLBs as endpoints in endpoint groups for each Region",
+        "An edge-optimised API Gateway REST API in front of the NLBs",
+        "Route 53 latency-based records with a short TTL",
+        "A CloudFront distribution with both NLBs as origins"
+      ],
+      "correctChoice": "Global Accelerator with the NLBs as endpoints in endpoint groups for each Region",
+      "explanation": "Global Accelerator provides static anycast IP addresses, supports UDP and shifts traffic away from unhealthy endpoints. CloudFront is HTTP(S)-oriented and DNS-based failover does not give fixed IPs.",
+      "difficulty": "Hard",
+      "tags": [
+        "Global Accelerator"
+      ]
+    },
+    {
+      "id": "ga-traffic-dial",
+      "prompt": "An operator wants to shift traffic gradually away from a Region's endpoint group during maintenance, without removing the endpoints. Which Global Accelerator feature helps?",
+      "choices": [
+        "A new Route 53 hosted zone",
+        "An additional origin in a CloudFront distribution",
+        "A listener on a different port",
+        "The traffic dial on the endpoint group"
+      ],
+      "correctChoice": "The traffic dial on the endpoint group",
+      "explanation": "Each endpoint group in a Region has a traffic dial that controls the percentage of traffic it receives, so traffic can be reduced or drained without deleting endpoints.",
+      "difficulty": "Medium",
+      "tags": [
+        "Global Accelerator"
+      ]
+    },
+    {
+      "id": "ga-failover-vs-dns",
+      "prompt": "A company runs an application in two Regions. Clients are hard-coded to a fixed set of IP addresses and some resolvers cache DNS answers well beyond the TTL. The company needs fast failover to the healthy Region. What should it do?",
+      "choices": [
+        "Use Route 53 failover records with a low TTL so that resolvers refresh quickly",
+        "Use Route 53 weighted records and update the weights manually during an incident",
+        "Use a CloudFront distribution that has both Regions configured as origins",
+        "Use Global Accelerator, which provides static anycast IP addresses and routes around unhealthy endpoints"
+      ],
+      "correctChoice": "Use Global Accelerator, which provides static anycast IP addresses and routes around unhealthy endpoints",
+      "explanation": "Global Accelerator gives fixed anycast IP addresses and shifts traffic itself, so failover does not depend on clients or resolvers honouring DNS TTLs.",
+      "difficulty": "Hard",
+      "tags": [
+        "Global Accelerator",
+        "Route 53"
+      ]
+    },
+    {
+      "id": "ga-custom-routing-game",
+      "prompt": "A game company assigns each match to a specific EC2 instance and port in a VPC subnet. Players must be deterministically routed to the instance hosting their match using the accelerator. Which option meets this?",
+      "choices": [
+        "A Route 53 geolocation record for each match",
+        "A standard accelerator with an ALB endpoint and weighted routing",
+        "A CloudFront distribution with a custom origin per match",
+        "A custom routing accelerator"
+      ],
+      "correctChoice": "A custom routing accelerator",
+      "explanation": "Custom routing accelerators let the application deterministically map users to specific destinations, which standard accelerators and load balancers do not do.",
+      "difficulty": "Hard",
+      "tags": [
+        "Global Accelerator"
+      ]
+    },
+    {
+      "id": "cf-purpose",
+      "prompt": "What is the primary purpose of Amazon CloudFront?",
+      "choices": [
+        "To block DDoS attacks at the network layer only, without caching any content",
+        "To balance traffic across EC2 instances in a single Region and Availability Zone",
+        "To deliver content with low latency by caching it at edge locations close to users",
+        "To provide a managed DNS service with health checks and several routing policies"
+      ],
+      "correctChoice": "To deliver content with low latency by caching it at edge locations close to users",
+      "explanation": "CloudFront is a content delivery network that caches content in a distributed network of edge locations to speed up delivery.",
+      "difficulty": "Easy",
+      "tags": [
+        "CloudFront"
+      ]
+    },
+    {
+      "id": "cf-oac-s3",
+      "prompt": "A company serves content to users through CloudFront from an Amazon S3 bucket and wants users to access it only through CloudFront, not directly from S3. What should be configured?",
+      "choices": [
+        "Origin Access Control (OAC) on the S3 origin, with a bucket policy allowing CloudFront",
+        "An inbound security group rule on the bucket that only allows CloudFront traffic",
+        "A public bucket policy that allows s3:GetObject to every principal on the internet",
+        "An Elastic IP address that is attached to the bucket and allow-listed on the distribution"
+      ],
+      "correctChoice": "Origin Access Control (OAC) on the S3 origin, with a bucket policy allowing CloudFront",
+      "explanation": "OAC lets CloudFront sign requests to S3 so the bucket can stay private and only be read via the distribution.",
+      "difficulty": "Easy",
+      "tags": [
+        "CloudFront",
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "cf-distribution-concept",
+      "prompt": "In CloudFront, what is a distribution?",
+      "choices": [
+        "A Route 53 hosted zone that contains the alias records pointing at CloudFront",
+        "A Lambda function that rewrites viewer requests before the cache lookup occurs",
+        "The configuration that defines how content from origins is cached and delivered through edge locations",
+        "A group of EC2 instances in an Auto Scaling group that runs the origin application"
+      ],
+      "correctChoice": "The configuration that defines how content from origins is cached and delivered through edge locations",
+      "explanation": "A distribution is the CloudFront resource that defines origins and how cached content should behave across the edge network.",
+      "difficulty": "Easy",
+      "tags": [
+        "CloudFront"
+      ]
+    },
+    {
+      "id": "cf-not-only-static",
+      "prompt": "An architect states that CloudFront is only useful for static files. Which response is most accurate?",
+      "choices": [
+        "CloudFront can also deliver dynamic content, video streaming and WebSocket traffic",
+        "Correct, because CloudFront cannot connect to EC2 or load balancers",
+        "Correct, because CloudFront can only cache objects stored in S3",
+        "Partially correct, because dynamic content requires Global Accelerator instead"
+      ],
+      "correctChoice": "CloudFront can also deliver dynamic content, video streaming and WebSocket traffic",
+      "explanation": "CloudFront supports static and dynamic content, video streaming and WebSockets, and can use S3, EC2, ELB or other custom origins.",
+      "difficulty": "Medium",
+      "tags": [
+        "CloudFront"
+      ]
+    },
+    {
+      "id": "cf-oai-legacy",
+      "prompt": "Which statement about restricting access to an S3 origin in CloudFront is correct?",
+      "choices": [
+        "Neither can be used with S3 buckets that are encrypted",
+        "Origin Access Control is the current approach and Origin Access Identity is the legacy approach",
+        "Both require the S3 bucket to be publicly readable",
+        "Origin Access Identity is the current approach and Origin Access Control is the legacy approach"
+      ],
+      "correctChoice": "Origin Access Control is the current approach and Origin Access Identity is the legacy approach",
+      "explanation": "OAC supersedes the legacy OAI for keeping S3 origins private.",
+      "difficulty": "Medium",
+      "tags": [
+        "CloudFront",
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "cf-regional-cache",
+      "prompt": "What is the role of a regional edge cache in CloudFront?",
+      "choices": [
+        "It sits between edge locations and the origin and holds content longer to reduce requests that reach the origin",
+        "It replaces edge locations by serving all viewer requests from a few large Regions",
+        "It stores the distribution's access logs permanently for later compliance review",
+        "It runs the origin application in a Region close to users to reduce round trips"
+      ],
+      "correctChoice": "It sits between edge locations and the origin and holds content longer to reduce requests that reach the origin",
+      "explanation": "Regional edge caches are larger caches in broad geographic locations that speed up requests from edge locations and reduce load on the origin.",
+      "difficulty": "Medium",
+      "tags": [
+        "CloudFront"
+      ]
+    },
+    {
+      "id": "cf-waf-owasp",
+      "prompt": "A company wants to protect a CloudFront-delivered web application against common web exploits such as SQL injection and cross-site scripting. What should it do?",
+      "choices": [
+        "Associate an AWS WAF web ACL with the CloudFront distribution",
+        "Configure a Route 53 failover record",
+        "Create a security group on the distribution",
+        "Enable AWS Shield Standard only, which blocks all application attacks"
+      ],
+      "correctChoice": "Associate an AWS WAF web ACL with the CloudFront distribution",
+      "explanation": "AWS WAF can be attached to CloudFront and uses rules to block patterns such as injection and XSS in HTTP requests. Shield Standard is focused on network and transport layer DDoS.",
+      "difficulty": "Medium",
+      "tags": [
+        "CloudFront",
+        "WAF"
+      ]
+    },
+    {
+      "id": "cf-custom-origin",
+      "prompt": "An origin for a CloudFront distribution is an Application Load Balancer. Which configuration type is used for this origin?",
+      "choices": [
+        "A Lambda@Edge origin configuration",
+        "An S3 origin configuration",
+        "An Elastic IP origin configuration",
+        "A custom origin configuration"
+      ],
+      "correctChoice": "A custom origin configuration",
+      "explanation": "Non-S3 origins such as ALBs, EC2 instances and S3 website endpoints are configured as custom origins.",
+      "difficulty": "Medium",
+      "tags": [
+        "CloudFront",
+        "Origins"
+      ]
+    },
+    {
+      "id": "cf-s3-website-oac",
+      "prompt": "A static website is served through CloudFront using the S3 website endpoint as a custom origin. The security team now requires the bucket to be private and accessible only through CloudFront. What is the correct approach?",
+      "choices": [
+        "Keep the website endpoint origin and enable OAC on it",
+        "Keep the website endpoint and make the bucket public with a long random bucket name",
+        "Keep the website endpoint origin and use a legacy OAI",
+        "Change the origin to the S3 REST endpoint of the bucket and use OAC with a bucket policy"
+      ],
+      "correctChoice": "Change the origin to the S3 REST endpoint of the bucket and use OAC with a bucket policy",
+      "explanation": "OAC does not apply to S3 website endpoints, which are custom origins. To keep the bucket private, use the S3 REST endpoint as an S3 origin with OAC (index document handling must then be addressed in CloudFront).",
+      "difficulty": "Hard",
+      "tags": [
+        "CloudFront",
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "edge-lifecycle-order",
+      "prompt": "In what order do the four Lambda@Edge event types occur for a request that is not served from the cache?",
+      "choices": [
+        "Viewer request, origin request, origin response, viewer response",
+        "Viewer request, viewer response, origin request, origin response",
+        "Origin request, origin response, viewer request, viewer response",
+        "Origin request, viewer request, viewer response, origin response"
+      ],
+      "correctChoice": "Viewer request, origin request, origin response, viewer response",
+      "explanation": "The viewer request triggers first, then the origin request, the origin response, and finally the viewer response before the response is returned to the user.",
+      "difficulty": "Easy",
+      "tags": [
+        "Lambda@Edge",
+        "CloudFront"
+      ]
+    },
+    {
+      "id": "edge-languages",
+      "prompt": "Which languages are supported for CloudFront Functions and Lambda@Edge functions respectively?",
+      "choices": [
+        "CloudFront Functions: Python only; Lambda@Edge: JavaScript only",
+        "Both: Java and Go only",
+        "CloudFront Functions: JavaScript only; Lambda@Edge: Node.js and Python",
+        "CloudFront Functions: Node.js and Python; Lambda@Edge: JavaScript only"
+      ],
+      "correctChoice": "CloudFront Functions: JavaScript only; Lambda@Edge: Node.js and Python",
+      "explanation": "CloudFront Functions are written in JavaScript. Lambda@Edge supports Node.js and Python.",
+      "difficulty": "Easy",
+      "tags": [
+        "CloudFront Functions",
+        "Lambda@Edge"
+      ]
+    },
+    {
+      "id": "edge-cff-events",
+      "prompt": "Which CloudFront events can trigger a CloudFront Function?",
+      "choices": [
+        "Origin request and origin response",
+        "Origin response only",
+        "Viewer request and viewer response",
+        "All four: viewer request, origin request, origin response and viewer response"
+      ],
+      "correctChoice": "Viewer request and viewer response",
+      "explanation": "CloudFront Functions run only on viewer-facing events, whereas Lambda@Edge also supports the origin request and origin response events.",
+      "difficulty": "Easy",
+      "tags": [
+        "CloudFront Functions"
+      ]
+    },
+    {
+      "id": "edge-cff-scale",
+      "prompt": "A site receives millions of requests per second and needs simple header manipulation and URL redirects with sub-millisecond execution at the lowest possible cost. Which option is the best fit?",
+      "choices": [
+        "Lambda@Edge on origin events",
+        "CloudFront Functions on viewer events",
+        "An EC2 Auto Scaling group running a reverse proxy",
+        "An AWS Lambda function behind an Application Load Balancer"
+      ],
+      "correctChoice": "CloudFront Functions on viewer events",
+      "explanation": "CloudFront Functions are lightweight, cheaper and faster than Lambda@Edge and scale to millions of requests per second for simple viewer-side transformations.",
+      "difficulty": "Medium",
+      "tags": [
+        "CloudFront Functions"
+      ]
+    },
+    {
+      "id": "edge-lambda-network",
+      "prompt": "An edge function must call an external HTTPS API and read the request body before deciding how to handle a request. Which option supports this?",
+      "choices": [
+        "Lambda@Edge, because it has network access and request body access",
+        "CloudFront Functions, because they run on the largest memory configuration",
+        "Neither, because edge functions cannot make network calls",
+        "CloudFront Functions, because they have network and request body access"
+      ],
+      "correctChoice": "Lambda@Edge, because it has network access and request body access",
+      "explanation": "CloudFront Functions have no network, file system or request body access. Lambda@Edge supports them, at higher cost and latency.",
+      "difficulty": "Medium",
+      "tags": [
+        "CloudFront Functions",
+        "Lambda@Edge"
+      ]
+    },
+    {
+      "id": "edge-viewer-response-headers",
+      "prompt": "A company wants to add security headers such as HSTS and CSP to every response returned to the viewer. At which point should the function run?",
+      "choices": [
+        "On the origin request event",
+        "On the viewer request event, before CloudFront checks the cache",
+        "On the viewer request event",
+        "On the viewer response event"
+      ],
+      "correctChoice": "On the viewer response event",
+      "explanation": "Headers that apply to what the viewer receives are set on the viewer response event, just before CloudFront returns the response.",
+      "difficulty": "Medium",
+      "tags": [
+        "CloudFront",
+        "Lambda@Edge"
+      ]
+    },
+    {
+      "id": "edge-origin-request-rewrite",
+      "prompt": "A company needs to rewrite request URLs and inject an authentication header just before CloudFront forwards a request to the origin. Which Lambda@Edge event type is appropriate?",
+      "choices": [
+        "Viewer request, because it runs only on cache misses",
+        "Viewer response",
+        "Origin request",
+        "Origin response"
+      ],
+      "correctChoice": "Origin request",
+      "explanation": "The origin request event occurs before CloudFront forwards a request to the origin, which makes it suitable for URL rewrites and origin authentication headers.",
+      "difficulty": "Medium",
+      "tags": [
+        "Lambda@Edge"
+      ]
+    },
+    {
+      "id": "edge-deploy-location",
+      "prompt": "Where do Lambda@Edge functions and CloudFront Functions run?",
+      "choices": [
+        "Both in the origin Region",
+        "Lambda@Edge at edge locations; CloudFront Functions in regional edge caches",
+        "Both in the user's VPC",
+        "Lambda@Edge in regional edge caches; CloudFront Functions at edge locations"
+      ],
+      "correctChoice": "Lambda@Edge in regional edge caches; CloudFront Functions at edge locations",
+      "explanation": "CloudFront Functions run at the edge locations closest to viewers, while Lambda@Edge functions run in regional edge caches.",
+      "difficulty": "Medium",
+      "tags": [
+        "CloudFront Functions",
+        "Lambda@Edge"
+      ]
+    },
+    {
+      "id": "edge-cache-key-normalisation",
+      "prompt": "A high-traffic site has a poor cache hit ratio because clients send query strings in different orders. The company wants to normalise requests before CloudFront checks its cache, at the lowest cost and latency. Which solution fits?",
+      "choices": [
+        "A Lambda function in the origin Region that normalises requests",
+        "A Lambda@Edge function on the origin request event",
+        "A CloudFront Function on the viewer request event",
+        "An AWS WAF rule that sorts query strings"
+      ],
+      "correctChoice": "A CloudFront Function on the viewer request event",
+      "explanation": "Cache key normalisation must happen on the viewer request, before the cache lookup. CloudFront Functions are suited to this high-scale, lightweight task, and origin request events run only after a cache miss.",
+      "difficulty": "Hard",
+      "tags": [
+        "CloudFront Functions",
+        "Caching"
+      ]
+    },
+    {
+      "id": "edge-external-auth",
+      "prompt": "Before serving protected content, a CloudFront distribution must validate each request by calling an external identity provider's API over HTTPS. Which approach is correct?",
+      "choices": [
+        "A CloudFront Function on the viewer response event",
+        "A Lambda@Edge function on the viewer response event",
+        "A Lambda@Edge function on the viewer request event",
+        "A CloudFront Function on the viewer request event"
+      ],
+      "correctChoice": "A Lambda@Edge function on the viewer request event",
+      "explanation": "Calling an external API requires network access, which CloudFront Functions lack. The check must run on the viewer request, before content is served, which is why viewer response is too late.",
+      "difficulty": "Hard",
+      "tags": [
+        "Lambda@Edge",
+        "CloudFront Functions",
+        "Security"
+      ]
+    },
+    {
+      "id": "edge-origin-response-cache",
+      "prompt": "The origin returns responses with caching headers that do not match what the company wants, and the corrected headers should apply to the object stored in the CloudFront cache. Where should the headers be modified?",
+      "choices": [
+        "In a CloudFront Function on the viewer request event",
+        "In a Lambda@Edge viewer response function",
+        "In an AWS WAF rule on the distribution",
+        "In a Lambda@Edge origin response function"
+      ],
+      "correctChoice": "In a Lambda@Edge origin response function",
+      "explanation": "The origin response event runs after the origin responds and before the object is cached, so header changes (such as cache control) affect what is cached. Viewer response runs on every response.",
+      "difficulty": "Hard",
+      "tags": [
+        "Lambda@Edge",
+        "Caching"
+      ]
+    },
+    {
+      "id": "shield-standard-free",
+      "prompt": "A small company serves its website through CloudFront and Route 53 and wants baseline protection against common network and transport layer DDoS attacks at no extra cost. What should it do?",
+      "choices": [
+        "Nothing extra, because AWS Shield Standard is automatically included at no additional charge",
+        "Deploy AWS Firewall Manager policies in every Region before any DDoS protection applies",
+        "Purchase a Shield Advanced subscription and then cancel it after the first month",
+        "Subscribe to AWS Shield Advanced, because Standard is not enabled by default for any resource"
+      ],
+      "correctChoice": "Nothing extra, because AWS Shield Standard is automatically included at no additional charge",
+      "explanation": "Shield Standard is free and automatically applied to all AWS customers, with extra protection when traffic goes through services such as CloudFront and Route 53.",
+      "difficulty": "Easy",
+      "tags": [
+        "Shield"
+      ]
+    },
+    {
+      "id": "shield-layer7",
+      "prompt": "Which combination provides protection against application-layer (layer 7) DDoS attacks on a web application?",
+      "choices": [
+        "Amazon Route 53 health checks",
+        "AWS Firewall Manager alone",
+        "AWS Shield with AWS WAF",
+        "AWS Shield Standard alone, with no other services"
+      ],
+      "correctChoice": "AWS Shield with AWS WAF",
+      "explanation": "Layer 3 and 4 attacks are handled by Shield, while application-layer protection is achieved through integration with AWS WAF rules.",
+      "difficulty": "Medium",
+      "tags": [
+        "Shield",
+        "WAF"
+      ]
+    },
+    {
+      "id": "shield-advanced-features",
+      "prompt": "Which capabilities are provided by AWS Shield Advanced but not by Shield Standard?",
+      "choices": [
+        "Cross-Region replication of databases and object storage for disaster recovery purposes",
+        "Managed encryption of data at rest using customer managed KMS keys in each account",
+        "DDoS cost protection, access to the DDoS response team, and detailed attack visibility and reporting",
+        "Free, automatic protection that is applied to every AWS service without a subscription"
+      ],
+      "correctChoice": "DDoS cost protection, access to the DDoS response team, and detailed attack visibility and reporting",
+      "explanation": "Shield Advanced is a paid subscription that adds visibility and reporting, support from AWS's response team, DDoS cost protection and an SLA.",
+      "difficulty": "Medium",
+      "tags": [
+        "Shield"
+      ]
+    },
+    {
+      "id": "shield-advanced-resources",
+      "prompt": "Which of the following resources can be protected by AWS Shield Advanced?",
+      "choices": [
+        "An AWS Global Accelerator accelerator",
+        "An Amazon S3 bucket",
+        "An AWS Lambda function",
+        "An Amazon RDS DB instance"
+      ],
+      "correctChoice": "An AWS Global Accelerator accelerator",
+      "explanation": "Shield Advanced protects Route 53, CloudFront, Elastic Load Balancing, Global Accelerator and Elastic IP addresses (including EC2 and NLB).",
+      "difficulty": "Medium",
+      "tags": [
+        "Shield"
+      ]
+    },
+    {
+      "id": "shield-hard-scenario",
+      "prompt": "An online retailer runs a public ALB-based application and has suffered large DDoS events. It requires 24/7 access to AWS DDoS specialists, protection against scaling charges during an attack, and application-layer rule tuning. Which solution meets these needs?",
+      "choices": [
+        "Use AWS Shield Standard and AWS Firewall Manager only",
+        "Use AWS Network Firewall with no Shield subscription",
+        "Subscribe to AWS Shield Advanced and use AWS WAF with the protected resources",
+        "Rely on AWS Shield Standard and add security group rules"
+      ],
+      "correctChoice": "Subscribe to AWS Shield Advanced and use AWS WAF with the protected resources",
+      "explanation": "Specialist support and DDoS cost protection are Shield Advanced features, and AWS WAF provides application-layer rules. Shield Standard has neither.",
+      "difficulty": "Hard",
+      "tags": [
+        "Shield",
+        "WAF"
+      ]
+    },
+    {
+      "id": "waf-purpose",
+      "prompt": "What does AWS WAF protect web applications from?",
+      "choices": [
+        "Data loss, by replicating objects between Regions and keeping versions of them",
+        "Unauthorised AWS API calls, by evaluating IAM identity and resource policies",
+        "Common web exploits, by allowing or denying requests based on HTTP request contents",
+        "Slow DNS resolution, by caching records in the resolvers close to the users"
+      ],
+      "correctChoice": "Common web exploits, by allowing or denying requests based on HTTP request contents",
+      "explanation": "AWS WAF lets you create rules that inspect HTTP requests and allow or block them, helping to protect against exploits such as injection and cross-site scripting.",
+      "difficulty": "Easy",
+      "tags": [
+        "WAF"
+      ]
+    },
+    {
+      "id": "waf-sg-vs-waf",
+      "prompt": "A security team wants to block requests whose query string contains SQL injection patterns. Which control can do this?",
+      "choices": [
+        "AWS WAF rules on the web ACL",
+        "An Amazon Route 53 routing policy",
+        "A network ACL rule on the subnet",
+        "A security group rule on the ALB"
+      ],
+      "correctChoice": "AWS WAF rules on the web ACL",
+      "explanation": "Security groups and network ACLs filter on IP, port and protocol. WAF inspects HTTP request contents such as the query string, headers and body.",
+      "difficulty": "Medium",
+      "tags": [
+        "WAF",
+        "Security"
+      ]
+    },
+    {
+      "id": "waf-managed-rules",
+      "prompt": "A team wants ready-made WAF rules maintained by a trusted vendor rather than writing its own. What can it use?",
+      "choices": [
+        "A CloudWatch composite alarm that blocks traffic when it is triggered",
+        "A rule set from an AWS Security Partner via the AWS WAF Rules Marketplace",
+        "An S3 bucket policy that includes a managed condition for blocking bad requests",
+        "A Route 53 Resolver DNS Firewall rule group that filters outbound DNS queries"
+      ],
+      "correctChoice": "A rule set from an AWS Security Partner via the AWS WAF Rules Marketplace",
+      "explanation": "In addition to custom rules, AWS WAF can use rule sets from AWS Security Partners available through the AWS Marketplace.",
+      "difficulty": "Medium",
+      "tags": [
+        "WAF"
+      ]
+    },
+    {
+      "id": "waf-nlb-limit",
+      "prompt": "A TCP/HTTP application runs on EC2 behind a Network Load Balancer, and the company must filter HTTP requests that contain SQL injection patterns. Which approach is correct?",
+      "choices": [
+        "Enable AWS Shield Standard, which blocks SQL injection",
+        "Add a network ACL rule that matches SQL keywords",
+        "Place the application behind an ALB or CloudFront and associate AWS WAF with it",
+        "Associate the AWS WAF web ACL directly with the Network Load Balancer"
+      ],
+      "correctChoice": "Place the application behind an ALB or CloudFront and associate AWS WAF with it",
+      "explanation": "WAF can be attached to CloudFront, ALBs, API Gateway REST APIs, AppSync and Cognito user pools, not to NLBs. Shield Standard handles DDoS, not injection.",
+      "difficulty": "Hard",
+      "tags": [
+        "WAF",
+        "Load balancing"
+      ]
+    },
+    {
+      "id": "waf-attach-targets",
+      "prompt": "Which of the following can have an AWS WAF web ACL associated with it?",
+      "choices": [
+        "An Amazon EC2 instance",
+        "An Amazon RDS DB instance",
+        "An AWS Direct Connect connection",
+        "An AWS AppSync GraphQL API"
+      ],
+      "correctChoice": "An AWS AppSync GraphQL API",
+      "explanation": "WAF supports CloudFront, Application Load Balancers, API Gateway REST APIs, AppSync GraphQL APIs and Cognito user pools.",
+      "difficulty": "Medium",
+      "tags": [
+        "WAF"
+      ]
+    },
+    {
+      "id": "apigw-purpose",
+      "prompt": "What is Amazon API Gateway used for?",
+      "choices": [
+        "Distributing static content from edge locations close to users around the world",
+        "Streaming large volumes of real-time data into an analytics pipeline for processing",
+        "Creating and managing secure APIs that act as a front door to backend services such as Lambda functions",
+        "Running containers on a managed platform without managing the underlying servers"
+      ],
+      "correctChoice": "Creating and managing secure APIs that act as a front door to backend services such as Lambda functions",
+      "explanation": "API Gateway sits between clients and multiple backends and provides routing, throttling, logging, caching and request/response handling at any scale.",
+      "difficulty": "Easy",
+      "tags": [
+        "API Gateway"
+      ]
+    },
+    {
+      "id": "apigw-http-for-cost",
+      "prompt": "A team needs a simple, low-latency, low-cost API that proxies requests to a Lambda function and does not need advanced features such as caching or API keys. Which API Gateway API type fits best?",
+      "choices": [
+        "REST API",
+        "GraphQL API",
+        "WebSocket API",
+        "HTTP API"
+      ],
+      "correctChoice": "HTTP API",
+      "explanation": "HTTP APIs have a simpler feature set, lower latency and lower cost than REST APIs.",
+      "difficulty": "Easy",
+      "tags": [
+        "API Gateway"
+      ]
+    },
+    {
+      "id": "apigw-websocket",
+      "prompt": "A chat application needs persistent two-way connections between clients and the backend. Which API Gateway API type should be used?",
+      "choices": [
+        "HTTP API",
+        "REST API",
+        "Private REST API",
+        "WebSocket API"
+      ],
+      "correctChoice": "WebSocket API",
+      "explanation": "WebSocket APIs maintain persistent connections for real-time, two-way communication use cases.",
+      "difficulty": "Easy",
+      "tags": [
+        "API Gateway"
+      ]
+    },
+    {
+      "id": "apigw-private-api",
+      "prompt": "An API must be reachable only from inside a VPC and not exposed to the internet. Which API Gateway option supports this?",
+      "choices": [
+        "An HTTP API with an edge-optimised endpoint",
+        "An HTTP API with a regional endpoint",
+        "A REST API with an edge-optimised endpoint",
+        "A REST API with a private endpoint type"
+      ],
+      "correctChoice": "A REST API with a private endpoint type",
+      "explanation": "Private endpoints are available for REST APIs only. HTTP APIs support only regional endpoints and are public.",
+      "difficulty": "Medium",
+      "tags": [
+        "API Gateway"
+      ]
+    },
+    {
+      "id": "apigw-usage-plans",
+      "prompt": "A company sells API access to partners in tiers, such as a free tier limited to a number of requests per day and a premium tier with higher rate limits. It wants API Gateway to identify and throttle each client natively with minimal custom code. Which solution fits?",
+      "choices": [
+        "A WebSocket API with a $default route",
+        "An HTTP API with a JWT authoriser and API keys",
+        "A REST API with API keys and usage plans",
+        "An HTTP API with a Lambda authoriser that implements throttling logic"
+      ],
+      "correctChoice": "A REST API with API keys and usage plans",
+      "explanation": "API keys with per-client rate limits and quotas are native REST API features. HTTP APIs do not support them, so throttling would require custom code.",
+      "difficulty": "Hard",
+      "tags": [
+        "API Gateway",
+        "Security"
+      ]
+    },
+    {
+      "id": "apigw-jwt-auth",
+      "prompt": "A team uses an external OIDC provider and wants API Gateway to validate JSON Web Tokens natively without writing a custom authoriser. Which API type provides this?",
+      "choices": [
+        "HTTP API",
+        "REST API, which has a built-in JWT authoriser",
+        "Both REST and HTTP APIs identically",
+        "Neither, because JWT validation always needs a Lambda function"
+      ],
+      "correctChoice": "HTTP API",
+      "explanation": "HTTP APIs support JWT authorisation natively. REST APIs can support JWTs, but only through a Lambda authoriser.",
+      "difficulty": "Medium",
+      "tags": [
+        "API Gateway",
+        "Security"
+      ]
+    },
+    {
+      "id": "apigw-caching",
+      "prompt": "A REST API's backend is being overloaded by repeated identical requests. Which API Gateway capability can reduce load and latency?",
+      "choices": [
+        "Enable API caching on the REST API stage",
+        "Enable caching on an HTTP API",
+        "Add a Route 53 geolocation record",
+        "Switch the API to a WebSocket API"
+      ],
+      "correctChoice": "Enable API caching on the REST API stage",
+      "explanation": "REST APIs support caching of responses in the stage. HTTP APIs do not support caching.",
+      "difficulty": "Medium",
+      "tags": [
+        "API Gateway",
+        "Performance"
+      ]
+    },
+    {
+      "id": "apigw-canary",
+      "prompt": "A team built a low-cost HTTP API. They now need canary release deployments, response caching and request validation. What is the correct conclusion?",
+      "choices": [
+        "Enable them by adding API keys to the HTTP API and creating a usage plan",
+        "Convert it to a WebSocket API, which includes all three features by default",
+        "Enable them in the HTTP API stage settings, because they are available there",
+        "These are REST API features, so the API should be implemented as a REST API"
+      ],
+      "correctChoice": "These are REST API features, so the API should be implemented as a REST API",
+      "explanation": "Canary releases, caching and request validation are available on REST APIs but not HTTP APIs. The trade-off is that REST APIs cost more.",
+      "difficulty": "Hard",
+      "tags": [
+        "API Gateway"
+      ]
+    },
+    {
+      "id": "apigw-edge-optimised",
+      "prompt": "Global users call an API deployed in a single Region. The company wants requests to enter through the nearest CloudFront point of presence, and it also requires per-client usage plans, response caching and a WAF web ACL attached directly to the API. Which API Gateway configuration meets this?",
+      "choices": [
+        "An HTTP API with a regional endpoint",
+        "A REST API with an edge-optimised endpoint",
+        "A REST API with a private endpoint",
+        "A REST API with a regional endpoint and no CloudFront"
+      ],
+      "correctChoice": "A REST API with an edge-optimised endpoint",
+      "explanation": "Edge-optimised endpoints route through CloudFront and exist only for REST APIs, which also provide usage plans, caching and WAF. HTTP APIs are regional only, and private endpoints are not reachable from the internet.",
+      "difficulty": "Hard",
+      "tags": [
+        "API Gateway",
+        "CloudFront"
+      ]
+    },
+    {
+      "id": "apigw-method-flow",
+      "prompt": "In an API Gateway REST API, what is the order of processing for a request?",
+      "choices": [
+        "Integration, method request, method response, integration request, integration response",
+        "Method request, integration request, integration, integration response, method response",
+        "Method request, integration, integration request, method response, integration response",
+        "Integration request, method request, integration, method response, integration response"
+      ],
+      "correctChoice": "Method request, integration request, integration, integration response, method response",
+      "explanation": "The client request is processed by the method request, passed to the integration request, sent to the integration, and the result is handled by the integration response and then the method response.",
+      "difficulty": "Easy",
+      "tags": [
+        "API Gateway"
+      ]
+    },
+    {
+      "id": "apigw-waf-rest-only",
+      "prompt": "A company wants to protect an API Gateway API with AWS WAF. Which API type allows a WAF web ACL to be associated directly?",
+      "choices": [
+        "Neither, because WAF only supports CloudFront",
+        "REST API",
+        "Both REST API and HTTP API",
+        "HTTP API"
+      ],
+      "correctChoice": "REST API",
+      "explanation": "AWS WAF can be attached to REST API stages. HTTP APIs do not support WAF.",
+      "difficulty": "Medium",
+      "tags": [
+        "API Gateway",
+        "WAF"
+      ]
+    },
+    {
+      "id": "apigw-resource-policy",
+      "prompt": "A company must restrict a REST API so that only requests from a specific set of IP address ranges and one specific VPC endpoint are accepted. Which API Gateway feature supports this?",
+      "choices": [
+        "A request mapping template",
+        "A resource policy on the REST API",
+        "An API key with a usage plan",
+        "A JWT authoriser on an HTTP API"
+      ],
+      "correctChoice": "A resource policy on the REST API",
+      "explanation": "Resource policies are available on REST APIs and can allow or deny based on source IP ranges, VPC endpoints and accounts. HTTP APIs do not support resource policies.",
+      "difficulty": "Hard",
+      "tags": [
+        "API Gateway",
+        "Security"
+      ]
+    },
+    {
+      "id": "apigw-http-private-integration",
+      "prompt": "A microservice runs in a private subnet and is registered in AWS Cloud Map. A team wants a low-cost API Gateway API that integrates privately with it through a VPC link. Which API type supports the Cloud Map integration?",
+      "choices": [
+        "REST API with an edge-optimised endpoint",
+        "HTTP API",
+        "WebSocket API",
+        "REST API"
+      ],
+      "correctChoice": "HTTP API",
+      "explanation": "HTTP APIs support private integrations with ALB, NLB and AWS Cloud Map. REST APIs support private integrations with NLB and ALB but not Cloud Map.",
+      "difficulty": "Hard",
+      "tags": [
+        "API Gateway",
+        "Integrations"
+      ]
+    },
+    {
+      "id": "apigw-request-validation",
+      "prompt": "A team needs API Gateway to reject malformed requests and transform request bodies before they reach a Lambda backend, to reduce unneeded backend invocations. Which approach meets this?",
+      "choices": [
+        "An HTTP API with API caching enabled",
+        "An HTTP API with request validation and request body transformation",
+        "A WebSocket API with a $default route",
+        "A REST API with request validation and request body transformation"
+      ],
+      "correctChoice": "A REST API with request validation and request body transformation",
+      "explanation": "Request validation and request body transformation are REST API features. HTTP APIs only support parameter transformation.",
+      "difficulty": "Hard",
+      "tags": [
+        "API Gateway"
+      ]
+    },
+    {
+      "id": "apigw-http-aws-services",
+      "prompt": "Which AWS services can an HTTP API integrate with directly, apart from Lambda?",
+      "choices": [
+        "A limited set, including SQS, EventBridge, Kinesis Data Streams, AppConfig and Step Functions",
+        "Only Amazon S3 and Amazon DynamoDB, through direct service integrations",
+        "None, because only Lambda functions and HTTP endpoints can be used as integrations",
+        "Any AWS service, through the same AWS service integration that REST APIs provide"
+      ],
+      "correctChoice": "A limited set, including SQS, EventBridge, Kinesis Data Streams, AppConfig and Step Functions",
+      "explanation": "HTTP APIs support a limited set of AWS service integrations (for example EventBridge, SQS, AppConfig, Kinesis Data Streams and Step Functions). REST APIs support the broader set.",
+      "difficulty": "Medium",
+      "tags": [
+        "API Gateway",
+        "Integrations"
+      ]
+    },
+    {
+      "id": "apigw-stage-deploy",
+      "prompt": "A developer changes a REST API's method but clients still see the old behaviour. What is the most likely cause?",
+      "choices": [
+        "The stage must first be converted to a $default stage",
+        "The API has not been deployed to the stage",
+        "HTTP APIs are required for changes to take effect",
+        "REST API changes deploy automatically but need a CloudFront invalidation"
+      ],
+      "correctChoice": "The API has not been deployed to the stage",
+      "explanation": "A REST API must be deployed to a stage before changes become available. HTTP APIs, by contrast, can auto-deploy the $default stage.",
+      "difficulty": "Medium",
+      "tags": [
+        "API Gateway"
+      ]
+    },
+    {
+      "id": "apigw-http-auto-deploy",
+      "prompt": "Which statement about deployments is true for HTTP APIs?",
+      "choices": [
+        "Auto-deployment is available and is the default for the $default stage",
+        "Deployments always require a canary configuration to be defined first",
+        "They do not support stages at all and have a single fixed version",
+        "Changes can only be deployed by manually creating a deployment each time"
+      ],
+      "correctChoice": "Auto-deployment is available and is the default for the $default stage",
+      "explanation": "HTTP APIs support automatic deployments to the default stage, while still allowing user-controlled deployments.",
+      "difficulty": "Easy",
+      "tags": [
+        "API Gateway"
+      ]
+    },
+    {
+      "id": "apigw-openapi-import",
+      "prompt": "How can an existing OpenAPI 3 definition be used with API Gateway?",
+      "choices": [
+        "It can only be used with WebSocket APIs",
+        "It can be imported when creating a REST or HTTP API",
+        "It can only be used with AppSync",
+        "It can be used only after being converted to GraphQL"
+      ],
+      "correctChoice": "It can be imported when creating a REST or HTTP API",
+      "explanation": "OpenAPI 3 files can be imported to create REST and HTTP APIs, and AWS extensions allow API Gateway-specific features to be defined in the file.",
+      "difficulty": "Easy",
+      "tags": [
+        "API Gateway",
+        "OpenAPI"
+      ]
+    },
+    {
+      "id": "openapi-format",
+      "prompt": "In which formats can an OpenAPI definition be written?",
+      "choices": [
+        "HCL or TOML",
+        "GraphQL SDL only",
+        "XML or CSV",
+        "JSON or YAML"
+      ],
+      "correctChoice": "JSON or YAML",
+      "explanation": "OpenAPI definitions are expressed in JSON or YAML.",
+      "difficulty": "Easy",
+      "tags": [
+        "OpenAPI"
+      ]
+    },
+    {
+      "id": "apigw-rest-monitoring",
+      "prompt": "A REST API needs detailed execution logs, AWS X-Ray tracing and the ability to test method invocations from the console. Which API type provides these features?",
+      "choices": [
+        "REST API",
+        "Both, with identical features",
+        "WebSocket API only",
+        "HTTP API"
+      ],
+      "correctChoice": "REST API",
+      "explanation": "Execution logs, X-Ray tracing and test invocations are REST API features and are not available on HTTP APIs.",
+      "difficulty": "Medium",
+      "tags": [
+        "API Gateway",
+        "Monitoring"
+      ]
+    },
+    {
+      "id": "fm-purpose",
+      "prompt": "What is AWS Firewall Manager used for?",
+      "choices": [
+        "Resolving DNS queries between on-premises networks and VPCs through forwarding rules",
+        "Centrally configuring and managing firewall rules, such as WAF rules and security groups, across accounts and applications",
+        "Replacing AWS WAF with a faster rules engine that is managed separately in each Region and account",
+        "Caching content at edge locations so that users receive responses from a nearby location"
+      ],
+      "correctChoice": "Centrally configuring and managing firewall rules, such as WAF rules and security groups, across accounts and applications",
+      "explanation": "Firewall Manager applies protections such as AWS WAF, Shield Advanced, security groups, Network Firewall and DNS Firewall policies centrally across an organisation.",
+      "difficulty": "Easy",
+      "tags": [
+        "Firewall Manager"
+      ]
+    },
+    {
+      "id": "fm-prereq-troubleshoot",
+      "prompt": "A security team created an AWS Firewall Manager security policy but it is not applied to resources in several member accounts. The accounts are in the organisation and the administrator account is configured. Which missing prerequisite is the most likely cause?",
+      "choices": [
+        "AWS Config is not enabled in those accounts and Regions",
+        "AWS Shield Standard is not enabled in those accounts",
+        "The accounts have no CloudFront distribution",
+        "The accounts have no Route 53 hosted zone"
+      ],
+      "correctChoice": "AWS Config is not enabled in those accounts and Regions",
+      "explanation": "Firewall Manager requires an AWS Organisation, a designated Firewall Manager administrator and AWS Config enabled for the accounts and Regions in scope. Some policy types also need AWS RAM.",
+      "difficulty": "Hard",
+      "tags": [
+        "Firewall Manager"
+      ]
+    },
+    {
+      "id": "fm-auto-new-accounts",
+      "prompt": "A company with many AWS accounts wants every ALB in every current and future account in its organisation to have the same WAF rules, enforced centrally and without manual setup in each account. What should it do?",
+      "choices": [
+        "Create a web ACL in each account manually and attach it to each ALB",
+        "Create a Route 53 Profile for the organisation",
+        "Create an AWS Firewall Manager WAF policy scoped to the organisation",
+        "Use AWS Shield Standard, which applies WAF rules automatically"
+      ],
+      "correctChoice": "Create an AWS Firewall Manager WAF policy scoped to the organisation",
+      "explanation": "Firewall Manager policies can be applied across accounts in an AWS Organisation and apply to new accounts and resources automatically.",
+      "difficulty": "Hard",
+      "tags": [
+        "Firewall Manager",
+        "WAF"
+      ]
+    },
+    {
+      "id": "fm-scope-services",
+      "prompt": "A security team wants one central place to manage security group rules, AWS WAF rules, AWS Network Firewall rules and Route 53 Resolver DNS Firewall rule groups across all accounts. Which service is designed for this?",
+      "choices": [
+        "AWS Config conformance packs only",
+        "AWS Shield Advanced",
+        "Amazon GuardDuty",
+        "AWS Firewall Manager"
+      ],
+      "correctChoice": "AWS Firewall Manager",
+      "explanation": "Firewall Manager can manage WAF, Shield Advanced, security groups, network access controls, Network Firewall and DNS Firewall policies. Config is used under the hood but does not manage all these controls directly.",
+      "difficulty": "Medium",
+      "tags": [
+        "Firewall Manager"
+      ]
+    },
+    {
+      "id": "graphql-what",
+      "prompt": "What is a main advantage of GraphQL over a traditional REST API for clients?",
+      "choices": [
+        "It removes the need for any backend data source, because the schema stores data",
+        "It only works with relational databases, because queries are translated to SQL",
+        "It guarantees lower cost than any REST API, because it is billed per field",
+        "Clients can request exactly the nested data they need in a single query"
+      ],
+      "correctChoice": "Clients can request exactly the nested data they need in a single query",
+      "explanation": "With GraphQL the query defines the exact shape of the data needed, reducing over-fetching and the need for multiple versioned endpoints.",
+      "difficulty": "Easy",
+      "tags": [
+        "AppSync",
+        "GraphQL"
+      ]
+    },
+    {
+      "id": "appsync-purpose",
+      "prompt": "Which AWS service is a fully managed GraphQL service?",
+      "choices": [
+        "AWS Step Functions",
+        "AWS AppSync",
+        "Amazon API Gateway HTTP API",
+        "Amazon CloudFront"
+      ],
+      "correctChoice": "AWS AppSync",
+      "explanation": "AppSync is the managed GraphQL service, using resolvers to connect schema fields to data sources.",
+      "difficulty": "Easy",
+      "tags": [
+        "AppSync"
+      ]
+    },
+    {
+      "id": "graphql-operations",
+      "prompt": "In GraphQL, which operation type is used to create, update or delete data?",
+      "choices": [
+        "Subscription",
+        "Resolver",
+        "Mutation",
+        "Query"
+      ],
+      "correctChoice": "Mutation",
+      "explanation": "Queries read data, mutations change data, and subscriptions deliver live updates from the server to clients.",
+      "difficulty": "Easy",
+      "tags": [
+        "AppSync",
+        "GraphQL"
+      ]
+    },
+    {
+      "id": "appsync-subscriptions",
+      "prompt": "How does AppSync support real-time updates pushed to clients?",
+      "choices": [
+        "Through CloudFront Functions",
+        "Through GraphQL subscriptions",
+        "Through Route 53 latency records",
+        "Through S3 event notifications"
+      ],
+      "correctChoice": "Through GraphQL subscriptions",
+      "explanation": "Subscriptions let AppSync push live updates from the server to connected clients.",
+      "difficulty": "Easy",
+      "tags": [
+        "AppSync",
+        "GraphQL"
+      ]
+    },
+    {
+      "id": "appsync-resolvers",
+      "prompt": "In AppSync, what connects a field in a GraphQL schema to a data source?",
+      "choices": [
+        "A usage plan",
+        "A resolver attached to the field",
+        "A Lambda@Edge viewer request function",
+        "A health check"
+      ],
+      "correctChoice": "A resolver attached to the field",
+      "explanation": "Resolvers attached to fields in types implement the query, mutation and subscription operations against data sources.",
+      "difficulty": "Medium",
+      "tags": [
+        "AppSync"
+      ]
+    },
+    {
+      "id": "appsync-datasources",
+      "prompt": "A mobile backend must expose a single GraphQL API that combines order data in DynamoDB, product search in OpenSearch and an existing third-party REST service, with minimal custom server code. What is the best fit?",
+      "choices": [
+        "AWS AppSync with resolvers on DynamoDB, OpenSearch and HTTP data sources",
+        "Three separate API Gateway REST APIs, with the client merging the results",
+        "An API Gateway WebSocket API with a $default route",
+        "CloudFront with three custom origins"
+      ],
+      "correctChoice": "AWS AppSync with resolvers on DynamoDB, OpenSearch and HTTP data sources",
+      "explanation": "AppSync can aggregate multiple data sources, including DynamoDB, OpenSearch, Lambda, HTTP endpoints, EventBridge and RDS, behind a single GraphQL API.",
+      "difficulty": "Hard",
+      "tags": [
+        "AppSync",
+        "Integrations"
+      ]
+    },
+    {
+      "id": "appsync-merged-apis",
+      "prompt": "Several teams each own a separate AppSync GraphQL API. The company wants client applications to use one endpoint that exposes all of them while the teams keep owning their own APIs. Which AppSync feature fits?",
+      "choices": [
+        "API key authorisation",
+        "Per-resolver caching",
+        "A custom domain name only",
+        "Merged APIs"
+      ],
+      "correctChoice": "Merged APIs",
+      "explanation": "A merged API combines multiple GraphQL APIs so they act as one, while each team can keep its source API.",
+      "difficulty": "Hard",
+      "tags": [
+        "AppSync"
+      ]
+    },
+    {
+      "id": "appsync-vs-rest-overfetch",
+      "prompt": "A mobile team's REST API is repeatedly changed and versioned because different clients need different subsets of nested data, and the client makes several calls per screen. The team wants clients to ask for exactly the fields they need. Which option is the best solution?",
+      "choices": [
+        "API Gateway REST API with caching",
+        "A CloudFront distribution with a Lambda@Edge origin request function",
+        "API Gateway HTTP API with more routes for each screen",
+        "AWS AppSync with a GraphQL schema"
+      ],
+      "correctChoice": "AWS AppSync with a GraphQL schema",
+      "explanation": "GraphQL lets the client define the shape of the data in a query, which avoids over-fetching and many versioned endpoints.",
+      "difficulty": "Hard",
+      "tags": [
+        "AppSync",
+        "GraphQL",
+        "API Gateway"
+      ]
+    },
+    {
+      "id": "appsync-vs-apigw-realtime",
+      "prompt": "A collaboration app needs to push live updates to clients when data in DynamoDB changes, with a typed schema and minimal custom connection management. Which approach is the best fit?",
+      "choices": [
+        "A CloudFront distribution with websockets enabled",
+        "An API Gateway HTTP API with Lambda integration",
+        "AppSync GraphQL subscriptions with a DynamoDB data source",
+        "An API Gateway REST API with polling clients"
+      ],
+      "correctChoice": "AppSync GraphQL subscriptions with a DynamoDB data source",
+      "explanation": "AppSync supports real-time APIs via GraphQL subscriptions with managed connections. REST APIs and HTTP APIs have no persistent connection model.",
+      "difficulty": "Hard",
+      "tags": [
+        "AppSync",
+        "API Gateway"
+      ]
+    },
+    {
+      "id": "appsync-auth-oidc",
+      "prompt": "Users of an AppSync API authenticate with a third-party OpenID Connect identity provider and the company does not use Amazon Cognito. Which authorisation mode is the best fit?",
+      "choices": [
+        "AWS IAM",
+        "API key",
+        "Amazon Cognito user pools",
+        "OpenID Connect"
+      ],
+      "correctChoice": "OpenID Connect",
+      "explanation": "AppSync supports API key, IAM, Cognito user pools, Lambda and OpenID Connect authorisation. OIDC validates tokens from an external provider, whereas Cognito requires a user pool.",
+      "difficulty": "Hard",
+      "tags": [
+        "AppSync",
+        "Security"
+      ]
+    },
+    {
+      "id": "appsync-caching",
+      "prompt": "An AppSync API has a few expensive resolvers that read rarely changing data from DynamoDB. The team wants to cache only those resolvers' results. Which statement is correct?",
+      "choices": [
+        "Use full request caching, which can't be limited to specific resolvers",
+        "Use per-resolver caching, which is serverless and needs no cache instance",
+        "Use per-resolver caching, which requires provisioning an on-demand cache instance",
+        "Enable caching on an HTTP API instead, because AppSync cannot cache"
+      ],
+      "correctChoice": "Use per-resolver caching, which requires provisioning an on-demand cache instance",
+      "explanation": "AppSync supports no caching, full request caching and per-resolver caching. Caching uses a provisioned cache instance rather than a serverless option.",
+      "difficulty": "Hard",
+      "tags": [
+        "AppSync",
+        "Performance"
+      ]
+    },
+    {
+      "id": "cf-vs-ga-hybrid",
+      "prompt": "A company has a global web store with cacheable product images and pages, plus a UDP-based voice service. It wants edge caching for the web content and accelerated routing to healthy Regional endpoints for the voice service. Which design meets this?",
+      "choices": [
+        "Route 53 latency-based routing for both",
+        "CloudFront for the web content and Global Accelerator for the UDP service",
+        "CloudFront for both",
+        "Global Accelerator for both, with the web content cached by Global Accelerator"
+      ],
+      "correctChoice": "CloudFront for the web content and Global Accelerator for the UDP service",
+      "explanation": "CloudFront caches HTTP(S) content at the edge but doesn't handle UDP. Global Accelerator doesn't cache, but accelerates TCP and UDP traffic to healthy endpoints.",
+      "difficulty": "Hard",
+      "tags": [
+        "CloudFront",
+        "Global Accelerator"
+      ]
+    }
+  ]
+}

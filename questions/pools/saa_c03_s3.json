@@ -1,0 +1,1709 @@
+{
+  "$schema": "./pool.schema.json",
+  "poolName": "S3 (Mixed Difficulty)",
+  "description": "SAA-C03 revision questions on Amazon S3 at Easy, Medium and Hard difficulty: storage classes, security and encryption, replication, performance and cost optimisation.",
+  "category": "Storage",
+  "version": 1,
+  "questions": [
+    {
+      "id": "object-lock-compliance",
+      "prompt": "A financial firm must guarantee that certain records in S3 cannot be deleted or overwritten by anyone, including the account root user, for seven years. Which configuration meets this requirement?",
+      "choices": [
+        "Enable Object Lock in Compliance mode with a seven-year retention period",
+        "Enable Object Lock in Governance mode with a seven-year retention period",
+        "Apply an Object Lock legal hold to each object",
+        "Enable MFA Delete on the bucket"
+      ],
+      "correctChoice": "Enable Object Lock in Compliance mode with a seven-year retention period",
+      "explanation": "Compliance mode cannot be bypassed by any user, including root, until the retention period expires. Governance mode can be bypassed by users with special permissions. Object Lock requires versioning.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "object-lock-legal-hold",
+      "prompt": "During an investigation, a legal team needs specific S3 object versions protected from deletion until they explicitly release them. No end date is known. What should the architect use?",
+      "choices": [
+        "Compliance mode with a ten-year retention period",
+        "Governance mode with a one-year retention period",
+        "An Object Lock legal hold",
+        "A lifecycle rule that never expires the objects"
+      ],
+      "correctChoice": "An Object Lock legal hold",
+      "explanation": "A legal hold has no expiry and stays until removed by an authorised user, so it fits an open-ended requirement. Retention periods are time-bound, and a lifecycle rule does not prevent deletion.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "intelligent-tiering-unknown-access",
+      "prompt": "A data lake holds objects with unpredictable and changing access patterns. The company wants storage costs to optimise automatically, with no retrieval fees and no lifecycle rules to maintain. Which storage class fits best?",
+      "choices": [
+        "S3 Standard-IA",
+        "S3 Intelligent-Tiering",
+        "S3 One Zone-IA",
+        "S3 Glacier Flexible Retrieval"
+      ],
+      "correctChoice": "S3 Intelligent-Tiering",
+      "explanation": "Intelligent-Tiering moves objects between access tiers automatically for a per-object monitoring fee, with no retrieval fees. Standard-IA and One Zone-IA charge retrieval fees; Glacier Flexible Retrieval requires restores.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Storage classes"
+      ]
+    },
+    {
+      "id": "glacier-instant-retrieval",
+      "prompt": "Medical images are accessed roughly once or twice a year, but when needed they must be returned immediately without a restore step. The company wants the lowest storage cost that meets this. Which class should be used?",
+      "choices": [
+        "S3 Glacier Flexible Retrieval",
+        "S3 Glacier Deep Archive",
+        "S3 Standard",
+        "S3 Glacier Instant Retrieval"
+      ],
+      "correctChoice": "S3 Glacier Instant Retrieval",
+      "explanation": "Glacier Instant Retrieval is an archive-priced class with real-time access and no restore. Flexible Retrieval and Deep Archive need a restore taking minutes to hours. Standard is costlier for rarely accessed data.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Storage classes"
+      ]
+    },
+    {
+      "id": "glacier-minimum-duration",
+      "prompt": "A team moves objects to S3 Glacier Flexible Retrieval and deletes them after 30 days. How will this affect the storage charges?",
+      "choices": [
+        "They are charged as if the objects were stored for the 90-day minimum",
+        "They are charged only for the 30 days stored",
+        "They are charged for 180 days, the archive minimum",
+        "There is no charge for storage under 90 days"
+      ],
+      "correctChoice": "They are charged as if the objects were stored for the 90-day minimum",
+      "explanation": "Glacier Flexible Retrieval has a 90-day minimum storage duration; Deep Archive is 180 days and Standard-IA and One Zone-IA are 30 days. Deleting early still incurs charges for the remaining minimum period.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Storage classes"
+      ]
+    },
+    {
+      "id": "one-zone-ia",
+      "prompt": "An application stores thumbnails that can be regenerated from the originals. They are rarely accessed, but must be available immediately when requested. The company wants the lowest-cost option and accepts the loss of data if an Availability Zone fails. Which storage class is best?",
+      "choices": [
+        "S3 Standard-IA",
+        "S3 Express One Zone",
+        "S3 One Zone-IA",
+        "S3 Glacier Flexible Retrieval"
+      ],
+      "correctChoice": "S3 One Zone-IA",
+      "explanation": "One Zone-IA stores data in a single AZ at a lower price than Standard-IA and suits re-creatable, infrequently accessed data. Express One Zone targets frequently accessed, latency-sensitive data. Glacier Flexible Retrieval requires a restore.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Storage classes"
+      ]
+    },
+    {
+      "id": "express-one-zone",
+      "prompt": "A machine-learning training job in one Availability Zone reads very large numbers of small objects repeatedly and needs consistent single-digit millisecond access. Which S3 option is designed for this?",
+      "choices": [
+        "S3 Intelligent-Tiering in a general purpose bucket",
+        "S3 Express One Zone with a directory bucket",
+        "S3 One Zone-IA in a general purpose bucket",
+        "S3 Standard with Transfer Acceleration"
+      ],
+      "correctChoice": "S3 Express One Zone with a directory bucket",
+      "explanation": "Express One Zone stores data in one user-selected AZ in a directory bucket and provides single-digit millisecond access. One Zone-IA is for infrequent access, and Transfer Acceleration addresses distance, not request latency within an AZ.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Performance"
+      ]
+    },
+    {
+      "id": "lifecycle-noncurrent-versions",
+      "prompt": "A versioned bucket's cost keeps growing because old versions of frequently updated objects accumulate. Only the current version is needed, plus recent history for 30 days. What is the most appropriate way to automate this?",
+      "choices": [
+        "Turn versioning off for the bucket",
+        "Move the bucket to S3 Intelligent-Tiering",
+        "Enable MFA Delete on the bucket",
+        "A lifecycle rule that expires noncurrent versions 30 days after they become noncurrent"
+      ],
+      "correctChoice": "A lifecycle rule that expires noncurrent versions 30 days after they become noncurrent",
+      "explanation": "Lifecycle rules can apply to noncurrent versions. Versioning cannot be turned off once enabled, only suspended. Intelligent-Tiering changes the tier, not the retention, and MFA Delete controls deletion rather than automating it.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Cost optimisation"
+      ]
+    },
+    {
+      "id": "abort-incomplete-multipart",
+      "prompt": "A bucket's storage bill is higher than the size of its visible objects suggests. Large uploads from several clients frequently fail part-way through. What should the architect do?",
+      "choices": [
+        "Add a lifecycle rule to abort incomplete multipart uploads",
+        "Enable S3 Transfer Acceleration on the bucket",
+        "Enable an S3 Bucket Key",
+        "Enable versioning on the bucket"
+      ],
+      "correctChoice": "Add a lifecycle rule to abort incomplete multipart uploads",
+      "explanation": "Parts of incomplete multipart uploads have no expiry and continue to incur storage charges until the upload is completed or aborted. A lifecycle rule can abort them automatically.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Cost optimisation"
+      ]
+    },
+    {
+      "id": "multipart-large-uploads",
+      "prompt": "A company uploads 20 GB files from an on-premises site over an unreliable connection. Failed transfers currently restart from the beginning. Which approach improves reliability and throughput?",
+      "choices": [
+        "Use a single PUT request and retry on failure",
+        "Use multipart upload so parts are sent in parallel and only failed parts are retried",
+        "Use byte-range requests",
+        "Generate a presigned URL for the upload"
+      ],
+      "correctChoice": "Use multipart upload so parts are sent in parallel and only failed parts are retried",
+      "explanation": "Multipart upload splits an object into parts that can be uploaded concurrently and retried individually. Byte-range requests apply to downloads, and neither a single PUT nor a presigned URL splits the object into parts.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Performance"
+      ]
+    },
+    {
+      "id": "transfer-acceleration-use-case",
+      "prompt": "Users across the world upload large files to a single bucket in us-east-1 and experience slow transfers. The company wants to keep one bucket and make minimal changes. Which feature should be used?",
+      "choices": [
+        "A gateway VPC endpoint for S3",
+        "S3 Glacier Instant Retrieval",
+        "S3 Transfer Acceleration, with clients using the s3-accelerate endpoint",
+        "S3 Requester Pays"
+      ],
+      "correctChoice": "S3 Transfer Acceleration, with clients using the s3-accelerate endpoint",
+      "explanation": "Transfer Acceleration routes uploads through CloudFront edge locations onto the AWS global network, improving long-distance transfers to a single bucket. A gateway endpoint only helps traffic originating inside a VPC.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Performance"
+      ]
+    },
+    {
+      "id": "transfer-acceleration-dots",
+      "prompt": "An administrator tries to enable Transfer Acceleration on a bucket named media.example.com and cannot use the accelerated endpoint. What is the most likely cause?",
+      "choices": [
+        "Transfer Acceleration works only on buckets with versioning disabled",
+        "Transfer Acceleration works only with path-style requests",
+        "Transfer Acceleration requires the bucket to use SSE-C",
+        "Buckets used with Transfer Acceleration cannot have dots in their names"
+      ],
+      "correctChoice": "Buckets used with Transfer Acceleration cannot have dots in their names",
+      "explanation": "Transfer Acceleration works with virtual-hosted-style requests and requires bucket names without dots. It has no dependency on versioning or on the encryption type.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Performance"
+      ]
+    },
+    {
+      "id": "static-website-https",
+      "prompt": "A company hosts a static website from an S3 bucket using static website hosting and now needs HTTPS on its own domain. What should the architect do?",
+      "choices": [
+        "Put a CloudFront distribution in front of the bucket and attach an ACM certificate",
+        "Enable HTTPS on the S3 website endpoint in the bucket settings",
+        "Switch to the dash-style website endpoint (s3-website-region)",
+        "Enable Transfer Acceleration on the bucket"
+      ],
+      "correctChoice": "Put a CloudFront distribution in front of the bucket and attach an ACM certificate",
+      "explanation": "The S3 website endpoint supports HTTP only. HTTPS requires a front end such as CloudFront. Both website endpoint formats are HTTP only, and Transfer Acceleration does not provide HTTPS for websites.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "block-public-access-precedence",
+      "prompt": "A bucket policy grants s3:GetObject to Principal \"*\", but Block Public Access settings that block public bucket policies are enabled on the account. What happens when an anonymous user requests an object?",
+      "choices": [
+        "The request succeeds because explicit bucket policies override account settings",
+        "The request succeeds only for objects uploaded after the policy was created",
+        "The request is denied because Block Public Access takes priority over the bucket policy",
+        "The request succeeds only over HTTPS"
+      ],
+      "correctChoice": "The request is denied because Block Public Access takes priority over the bucket policy",
+      "explanation": "Block Public Access overrides bucket policies and ACLs that would grant public access, so anonymous access is denied until Block Public Access is changed.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "presigned-url",
+      "prompt": "A company wants an external customer to download one private object for the next hour without creating AWS credentials for them or making the bucket public. What is the best approach?",
+      "choices": [
+        "Add a bucket policy that allows public read on the object",
+        "Generate a presigned URL for the object with a one-hour expiry",
+        "Set the object ACL to public-read",
+        "Create an IAM user for the customer and share its access keys"
+      ],
+      "correctChoice": "Generate a presigned URL for the object with a one-hour expiry",
+      "explanation": "A presigned URL grants temporary access to a specific object using the permissions of the signer, with no public exposure or long-term credentials.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "access-points-multiple-teams",
+      "prompt": "A shared dataset in one bucket is used by an internet-facing application, a development team and a production team. Each needs different permissions and different network controls, and the bucket policy is becoming unmanageable. What simplifies this?",
+      "choices": [
+        "Create S3 Multi-Region Access Points",
+        "Use ACLs on every object",
+        "Enable S3 Transfer Acceleration",
+        "Create separate S3 Access Points, each with its own access point policy and network origin"
+      ],
+      "correctChoice": "Create separate S3 Access Points, each with its own access point policy and network origin",
+      "explanation": "Access Points are named endpoints attached to a bucket, each with its own policy and network controls (internet or a specific VPC), replacing one large bucket policy. Multi-Region Access Points solve routing across Regions, not per-team access.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "multi-region-access-point",
+      "prompt": "An application runs in three Regions, each with a replicated S3 bucket. The company wants a single global endpoint that routes requests to the bucket with the lowest latency. Which feature should be used?",
+      "choices": [
+        "S3 Multi-Region Access Points",
+        "S3 Transfer Acceleration",
+        "S3 Same-Region Replication",
+        "S3 Object Lambda Access Points"
+      ],
+      "correctChoice": "S3 Multi-Region Access Points",
+      "explanation": "Multi-Region Access Points provide one global endpoint that routes to the lowest-latency bucket across Regions. Replication is needed to keep the buckets consistent but does not provide an endpoint.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Performance"
+      ]
+    },
+    {
+      "id": "gateway-endpoint-private-subnet",
+      "prompt": "EC2 instances in private subnets must access S3 in the same Region without traversing the internet and without a NAT gateway. The company wants to minimise cost. What should the architect choose?",
+      "choices": [
+        "An interface VPC endpoint (AWS PrivateLink) for S3",
+        "A NAT gateway in a public subnet",
+        "A gateway VPC endpoint for S3",
+        "An internet gateway with public IPs on the instances"
+      ],
+      "correctChoice": "A gateway VPC endpoint for S3",
+      "explanation": "Gateway endpoints for S3 keep traffic on the AWS network at no additional charge, using a route-table entry. Interface endpoints incur hourly and data charges, and a NAT gateway or internet gateway sends traffic over the public path.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "interface-endpoint-on-premises",
+      "prompt": "An on-premises data centre connected to a VPC through AWS Direct Connect must reach S3 privately, without using public IP addresses. Which endpoint type enables this?",
+      "choices": [
+        "A gateway VPC endpoint for S3",
+        "An interface VPC endpoint (AWS PrivateLink) for S3",
+        "A VPC peering connection to the S3 service",
+        "An S3 access point with a public network origin"
+      ],
+      "correctChoice": "An interface VPC endpoint (AWS PrivateLink) for S3",
+      "explanation": "Gateway endpoints cannot be used by traffic arriving over VPN or Direct Connect. An interface endpoint provides private IP addresses in the VPC that on-premises networks can reach, at an additional cost.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "sse-kms-audit-control",
+      "prompt": "A regulated company requires control over who can decrypt its S3 data through a key policy, and an audit trail of each use of the encryption key. Which encryption option best fits?",
+      "choices": [
+        "SSE-S3",
+        "SSE-C",
+        "No additional encryption, since default encryption is already on",
+        "SSE-KMS with a customer managed key"
+      ],
+      "correctChoice": "SSE-KMS with a customer managed key",
+      "explanation": "SSE-KMS lets the key policy control decryption and records key usage in AWS CloudTrail. SSE-S3 keys are fully managed by S3 with no customer-level key control, and SSE-C does not use AWS key policies.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "s3-bucket-key",
+      "prompt": "A workload that uses SSE-KMS makes millions of requests to S3 and is incurring high AWS KMS request charges. What is the best way to reduce them without changing the encryption model?",
+      "choices": [
+        "Enable S3 Bucket Keys for the bucket",
+        "Switch to DSSE-KMS",
+        "Enable Transfer Acceleration",
+        "Enable versioning"
+      ],
+      "correctChoice": "Enable S3 Bucket Keys for the bucket",
+      "explanation": "An S3 Bucket Key uses a short-lived bucket-level key to reduce requests from S3 to KMS and so reduces KMS request costs. DSSE-KMS costs more than SSE-KMS.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Cost optimisation"
+      ]
+    },
+    {
+      "id": "sse-c",
+      "prompt": "A company wants S3 to perform the encryption, but its security policy requires that the company supplies the key with each request and that AWS does not store the key itself. Which option meets this?",
+      "choices": [
+        "SSE-S3",
+        "SSE-C",
+        "SSE-KMS with an AWS managed key",
+        "Client-side encryption using a KMS data key"
+      ],
+      "correctChoice": "SSE-C",
+      "explanation": "With SSE-C the customer provides the key on every request; S3 stores only a salted hash to validate later requests. Client-side encryption is performed by the application, not S3.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "client-side-encryption-kms",
+      "prompt": "An application uses client-side encryption with AWS KMS before uploading to S3. What is stored in S3 for each object?",
+      "choices": [
+        "The encrypted object data together with the plaintext data encryption key",
+        "The plaintext object data and the KMS key ID",
+        "The encrypted object data together with the encrypted data encryption key",
+        "Only the encrypted object data, with the key stored in the S3 bucket policy"
+      ],
+      "correctChoice": "The encrypted object data together with the encrypted data encryption key",
+      "explanation": "KMS returns a plaintext and an encrypted data key; the client encrypts the data with the plaintext key, discards it, and stores the encrypted key with the encrypted data. To decrypt, KMS decrypts the stored data key.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "replication-prerequisite",
+      "prompt": "A company sets up replication of a bucket to a bucket in another Region for disaster recovery. Which prerequisite must be met on the buckets?",
+      "choices": [
+        "Versioning must be enabled on both the source and destination buckets",
+        "Object Lock must be enabled on both buckets",
+        "Transfer Acceleration must be enabled on the source bucket",
+        "Both buckets must use the same storage class"
+      ],
+      "correctChoice": "Versioning must be enabled on both the source and destination buckets",
+      "explanation": "S3 replication requires versioning on both buckets. Object Lock, Transfer Acceleration and a matching storage class are not required, and replication can place objects into a different storage class.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "batch-replication-existing",
+      "prompt": "A live replication rule has just been configured on a bucket already holding millions of objects. The company also wants those existing objects replicated, as a one-off operation. What should be used?",
+      "choices": [
+        "A lifecycle rule to transition the objects",
+        "S3 Batch Replication",
+        "S3 Storage Class Analysis",
+        "Enabling Transfer Acceleration"
+      ],
+      "correctChoice": "S3 Batch Replication",
+      "explanation": "Live replication only handles objects written after the rule exists. Batch (on-demand) replication copies existing objects. Lifecycle rules and analysis tools do not trigger replication.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "event-notification-at-least-once",
+      "prompt": "A bucket sends object-created event notifications to an SQS queue that feeds a billing process. Occasionally a duplicate message appears. What is the correct design response?",
+      "choices": [
+        "Assume this is a misconfiguration, because S3 guarantees exactly-once delivery",
+        "Enable versioning so duplicate events are suppressed",
+        "Switch the destination to Lambda, which guarantees exactly-once delivery",
+        "Make the consumer idempotent because S3 event notifications are delivered at least once"
+      ],
+      "correctChoice": "Make the consumer idempotent because S3 event notifications are delivered at least once",
+      "explanation": "S3 event notifications are designed to be delivered at least once, so consumers must tolerate duplicates. Versioning does not suppress events.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "inventory-batch-operations",
+      "prompt": "A company must restore several million archived objects, which are listed in a report generated by S3, and wants to do it as a single managed job. Which combination fits?",
+      "choices": [
+        "S3 Batch Operations using an S3 Inventory report as the manifest",
+        "A lifecycle rule that transitions the objects back to S3 Standard",
+        "S3 Event Notifications invoking a Lambda function for each object",
+        "S3 Transfer Acceleration with byte-range requests"
+      ],
+      "correctChoice": "S3 Batch Operations using an S3 Inventory report as the manifest",
+      "explanation": "Batch Operations performs large-scale operations such as restore, copy, tagging and Lambda invocation on a supplied list, and an S3 Inventory report can serve as the manifest. Lifecycle rules do not move archived objects back to Standard.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Operations"
+      ]
+    },
+    {
+      "id": "requester-pays-anonymous",
+      "prompt": "A data provider enables Requester Pays on a bucket so consumers pay for requests and downloads. A user sends an unauthenticated (anonymous) GET request. What is the result?",
+      "choices": [
+        "The request succeeds and the bucket owner pays",
+        "The request succeeds and the bucket owner pays only for storage",
+        "The request fails with 403 Forbidden because all requesters must authenticate",
+        "The request succeeds and is billed to the anonymous user"
+      ],
+      "correctChoice": "The request fails with 403 Forbidden because all requesters must authenticate",
+      "explanation": "With Requester Pays, anonymous access is disabled and requests must be authenticated so AWS can bill the requester. Storage costs remain with the bucket owner.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Cost optimisation"
+      ]
+    },
+    {
+      "id": "object-ownership-enforced",
+      "prompt": "A partner account uploads objects into the company's bucket. The company wants to own every object and manage access with bucket policies and IAM, without ACLs. What should be configured?",
+      "choices": [
+        "Object Ownership set to Object writer",
+        "Object Ownership set to Bucket owner enforced, which disables ACLs",
+        "An ACL granting the partner account full control",
+        "Enable Requester Pays on the bucket"
+      ],
+      "correctChoice": "Object Ownership set to Bucket owner enforced, which disables ACLs",
+      "explanation": "Bucket owner enforced is the default for new buckets: ACLs are disabled and the bucket owner owns every object. Object writer lets the uploading account own the objects.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "strong-consistency",
+      "prompt": "A developer wants to add a delay and a cache layer because they believe an S3 GET or LIST immediately after a PUT or overwrite may return stale data. What is the correct guidance?",
+      "choices": [
+        "This is unnecessary, because S3 provides strong read-after-write consistency for all reads, writes and deletes",
+        "The delay is needed for overwrite PUTs, which are eventually consistent",
+        "The delay is needed for LIST requests, which are eventually consistent",
+        "The delay is needed only for cross-Region requests"
+      ],
+      "correctChoice": "This is unnecessary, because S3 provides strong read-after-write consistency for all reads, writes and deletes",
+      "explanation": "S3 is strongly consistent for PUT, DELETE, GET and LIST operations, so a subsequent read returns the latest data and no workaround is needed.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Architecture"
+      ]
+    },
+    {
+      "id": "bucket-namespace",
+      "prompt": "Within which scope must an S3 bucket name be unique?",
+      "choices": [
+        "Only within the AWS Region where it is created",
+        "Only within the creating AWS account",
+        "Across all AWS accounts in the partition, so effectively globally",
+        "Only within the VPC that accesses it"
+      ],
+      "correctChoice": "Across all AWS accounts in the partition, so effectively globally",
+      "explanation": "Bucket names share one namespace across all accounts in a partition, even though each bucket is created in a specific Region.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Buckets"
+      ]
+    },
+    {
+      "id": "valid-bucket-name",
+      "prompt": "Which of the following is a valid S3 general purpose bucket name?",
+      "choices": [
+        "Team_Reports_2026",
+        "team-reports.2026",
+        "-team-reports",
+        "192.168.10.4"
+      ],
+      "correctChoice": "team-reports.2026",
+      "explanation": "Names must be 3-63 characters of lowercase letters, numbers, dots and hyphens, begin and end with a letter or number, and must not be formatted like an IP address.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Buckets"
+      ]
+    },
+    {
+      "id": "max-object-size",
+      "prompt": "What is the maximum size of a single object in S3?",
+      "choices": [
+        "5 GB",
+        "50 TB",
+        "There is no limit",
+        "5 TB"
+      ],
+      "correctChoice": "5 TB",
+      "explanation": "Objects can range from 0 bytes to 5 TB. A single PUT is limited to 5 GB, so larger objects need multipart upload.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Buckets"
+      ]
+    },
+    {
+      "id": "versioning-suspend",
+      "prompt": "A bucket owner enables versioning and later decides they no longer want it. What can be done?",
+      "choices": [
+        "Versioning can only be suspended, not disabled again",
+        "Versioning can be switched off and all versions are deleted automatically",
+        "Versioning can be switched off, but only by the root user",
+        "Versioning is removed automatically after 30 days of inactivity"
+      ],
+      "correctChoice": "Versioning can only be suspended, not disabled again",
+      "explanation": "Versioning is disabled by default; once enabled it can only be suspended. Existing versions are retained.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Versioning"
+      ]
+    },
+    {
+      "id": "folders-prefix",
+      "prompt": "How does S3 represent \"folders\" shown in the console?",
+      "choices": [
+        "As key prefixes; S3 has a flat structure and objects do not live inside real folders",
+        "As nested buckets inside the parent bucket",
+        "As separate partitions with their own quotas",
+        "As directory objects that physically contain the files"
+      ],
+      "correctChoice": "As key prefixes; S3 has a flat structure and objects do not live inside real folders",
+      "explanation": "S3 is a flat object store. Folders are a console presentation of shared key prefixes.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Buckets"
+      ]
+    },
+    {
+      "id": "user-metadata-prefix",
+      "prompt": "What must the name of user-defined S3 object metadata begin with?",
+      "choices": [
+        "x-amz-meta-",
+        "x-amz-tag-",
+        "x-amz-system-",
+        "x-amz-user-"
+      ],
+      "correctChoice": "x-amz-meta-",
+      "explanation": "User-defined metadata names start with x-amz-meta-. Metadata is distinct from object tags.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Metadata"
+      ]
+    },
+    {
+      "id": "object-lock-needs-versioning",
+      "prompt": "What is a prerequisite for using S3 Object Lock?",
+      "choices": [
+        "Transfer Acceleration must be enabled",
+        "The bucket must use S3 Glacier storage classes",
+        "Versioning must be enabled on the bucket",
+        "Block Public Access must be disabled"
+      ],
+      "correctChoice": "Versioning must be enabled on the bucket",
+      "explanation": "Object Lock applies to object versions, so it requires versioning.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "governance-mode-bypass",
+      "prompt": "Which S3 Object Lock retention mode can be bypassed by users who have special permissions?",
+      "choices": [
+        "Governance mode",
+        "Compliance mode",
+        "Legal hold",
+        "MFA Delete mode"
+      ],
+      "correctChoice": "Governance mode",
+      "explanation": "Governance mode lets privileged users override or remove retention settings. Compliance mode cannot be bypassed by anyone.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "standard-ia-min-duration",
+      "prompt": "What is the minimum storage duration charged for objects in S3 Standard-IA?",
+      "choices": [
+        "There is no minimum",
+        "30 days",
+        "90 days",
+        "180 days"
+      ],
+      "correctChoice": "30 days",
+      "explanation": "Standard-IA and One Zone-IA have a 30-day minimum. Glacier Instant and Flexible are 90 days, Deep Archive 180 days.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Storage classes"
+      ]
+    },
+    {
+      "id": "deep-archive-lowest-cost",
+      "prompt": "Which S3 storage class has the lowest storage cost?",
+      "choices": [
+        "S3 Glacier Deep Archive",
+        "S3 Glacier Instant Retrieval",
+        "S3 Standard-IA",
+        "S3 One Zone-IA"
+      ],
+      "correctChoice": "S3 Glacier Deep Archive",
+      "explanation": "Deep Archive is the cheapest to store, at the cost of higher retrieval cost and a restore time of hours.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Storage classes"
+      ]
+    },
+    {
+      "id": "rrs-legacy",
+      "prompt": "What is the current status of the Reduced Redundancy Storage (RRS) class?",
+      "choices": [
+        "It is a legacy class and not recommended, because S3 Standard is more cost-effective",
+        "It is the cheapest class for frequently accessed data",
+        "It is the recommended class for archives",
+        "It is the only class that supports Object Lock"
+      ],
+      "correctChoice": "It is a legacy class and not recommended, because S3 Standard is more cost-effective",
+      "explanation": "RRS is legacy; AWS recommends S3 Standard instead.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Storage classes"
+      ]
+    },
+    {
+      "id": "default-encryption-sse-s3",
+      "prompt": "How are new objects uploaded to S3 encrypted by default?",
+      "choices": [
+        "Server-side encryption with KMS keys (SSE-KMS)",
+        "Client-side encryption with a customer supplied key",
+        "They are not encrypted unless a bucket policy requires it",
+        "Server-side encryption with S3 managed keys (SSE-S3)"
+      ],
+      "correctChoice": "Server-side encryption with S3 managed keys (SSE-S3)",
+      "explanation": "S3 applies SSE-S3 (AES-256) by default to new objects at no additional charge.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "tls-in-transit",
+      "prompt": "Which mechanism protects data in transit between a client and S3?",
+      "choices": [
+        "SSE-S3",
+        "S3 Object Lock",
+        "S3 Versioning",
+        "TLS, by using HTTPS endpoints"
+      ],
+      "correctChoice": "TLS, by using HTTPS endpoints",
+      "explanation": "In-transit encryption uses TLS (SSL is deprecated). Server-side encryption protects data at rest.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "kms-same-region",
+      "prompt": "For SSE-KMS, where must the KMS key be located relative to the bucket?",
+      "choices": [
+        "In the same Region as the bucket",
+        "In us-east-1 only",
+        "In any Region",
+        "In the same Availability Zone as the bucket"
+      ],
+      "correctChoice": "In the same Region as the bucket",
+      "explanation": "SSE-KMS (and DSSE-KMS) requires the KMS key to be in the same Region as the bucket.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "s3-select-athena",
+      "prompt": "S3 Select is no longer available to new customers. What does AWS recommend for new workloads that need to query data in S3 using SQL?",
+      "choices": [
+        "Amazon ElastiCache",
+        "Amazon Athena",
+        "AWS Storage Gateway",
+        "Amazon S3 Transfer Acceleration"
+      ],
+      "correctChoice": "Amazon Athena",
+      "explanation": "Athena runs SQL directly over data in S3 and is the recommended replacement for new workloads.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Analytics"
+      ]
+    },
+    {
+      "id": "mountpoint-limits",
+      "prompt": "Which operation is NOT supported by Mountpoint for Amazon S3?",
+      "choices": [
+        "Modifying an existing file in place",
+        "Reading existing files",
+        "Listing files in a directory",
+        "Creating new files"
+      ],
+      "correctChoice": "Modifying an existing file in place",
+      "explanation": "Mountpoint supports reads, listing and creating new files, but not modifying existing files, symbolic links or file locking.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Access"
+      ]
+    },
+    {
+      "id": "static-website-content",
+      "prompt": "What type of content can S3 static website hosting serve?",
+      "choices": [
+        "Server-side rendered PHP pages",
+        "Applications that need server-side sessions",
+        "Content that requires database queries on the server",
+        "Static content only, with any interactivity done client-side"
+      ],
+      "correctChoice": "Static content only, with any interactivity done client-side",
+      "explanation": "Static website hosting has no server-side processing. Client-side scripts can still run in the browser.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Static hosting"
+      ]
+    },
+    {
+      "id": "cors-purpose",
+      "prompt": "What is the purpose of a CORS configuration on an S3 bucket?",
+      "choices": [
+        "To allow web pages from other domains to make browser requests to the bucket's resources",
+        "To encrypt data transferred between Regions",
+        "To block all public access to the bucket",
+        "To replicate objects to other origins"
+      ],
+      "correctChoice": "To allow web pages from other domains to make browser requests to the bucket's resources",
+      "explanation": "CORS defines which origins and methods are permitted for cross-origin browser requests.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "access-analyzer-purpose",
+      "prompt": "What does IAM Access Analyzer do for S3?",
+      "choices": [
+        "Analyses resource policies to identify buckets that may grant access to external or public principals",
+        "Encrypts objects with customer managed keys",
+        "Reports the storage cost per bucket",
+        "Replicates objects across Regions"
+      ],
+      "correctChoice": "Analyses resource policies to identify buckets that may grant access to external or public principals",
+      "explanation": "Access Analyzer reviews resource policies and reports potential unintended access.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "storage-lens-purpose",
+      "prompt": "Which S3 feature provides an organisation-wide dashboard of storage usage and activity trends?",
+      "choices": [
+        "S3 Inventory",
+        "S3 Storage Lens",
+        "S3 Event Notifications",
+        "S3 Batch Operations"
+      ],
+      "correctChoice": "S3 Storage Lens",
+      "explanation": "Storage Lens gives a dashboard of usage and activity metrics across accounts, updated daily.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Operations"
+      ]
+    },
+    {
+      "id": "inventory-purpose",
+      "prompt": "Which S3 feature produces a scheduled report listing objects and their metadata, delivered to another bucket?",
+      "choices": [
+        "S3 Inventory",
+        "S3 Storage Lens",
+        "S3 Event Notifications",
+        "S3 Transfer Acceleration"
+      ],
+      "correctChoice": "S3 Inventory",
+      "explanation": "S3 Inventory delivers daily or weekly reports in CSV, ORC or Parquet format.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Operations"
+      ]
+    },
+    {
+      "id": "event-destinations",
+      "prompt": "Which of the following is NOT a direct S3 Event Notifications destination?",
+      "choices": [
+        "Amazon SNS",
+        "Amazon SQS",
+        "Amazon EventBridge",
+        "Amazon Kinesis Data Streams"
+      ],
+      "correctChoice": "Amazon Kinesis Data Streams",
+      "explanation": "S3 can send events to SNS, SQS, Lambda or EventBridge.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Integration"
+      ]
+    },
+    {
+      "id": "requester-pays-costs",
+      "prompt": "When Requester Pays is enabled on a bucket, who pays for what?",
+      "choices": [
+        "The requester pays for requests and data transfer; the bucket owner still pays for storage",
+        "The requester pays for storage and requests; the owner pays for nothing",
+        "The bucket owner pays for everything",
+        "The requester pays for storage only"
+      ],
+      "correctChoice": "The requester pays for requests and data transfer; the bucket owner still pays for storage",
+      "explanation": "Requester Pays offloads request and download costs only; storage costs remain with the owner.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Cost optimisation"
+      ]
+    },
+    {
+      "id": "bpa-default",
+      "prompt": "What is the default Block Public Access setting for a new S3 bucket?",
+      "choices": [
+        "Block Public Access is disabled",
+        "Block Public Access is enabled",
+        "It is enabled only for versioned buckets",
+        "It is enabled only for buckets with static website hosting"
+      ],
+      "correctChoice": "Block Public Access is enabled",
+      "explanation": "Block Public Access is on by default for new buckets.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "virtual-hosted-style",
+      "prompt": "Which request URL is in virtual-hosted-style?",
+      "choices": [
+        "https://examplebucket.s3.us-east-2.amazonaws.com/image.jpg",
+        "https://s3.us-east-2.amazonaws.com/examplebucket/image.jpg",
+        "https://s3.dualstack.us-east-2.amazonaws.com/examplebucket",
+        "https://s3-website.us-east-2.amazonaws.com/image.jpg"
+      ],
+      "correctChoice": "https://examplebucket.s3.us-east-2.amazonaws.com/image.jpg",
+      "explanation": "In virtual-hosted-style the bucket name is part of the host name. In path-style it is the first element of the path.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Access"
+      ]
+    },
+    {
+      "id": "multipart-threshold",
+      "prompt": "For which object size does AWS recommend considering multipart upload?",
+      "choices": [
+        "Only objects larger than 5 TB",
+        "Objects of about 100 MB or larger",
+        "Only objects smaller than 1 MB",
+        "Only objects stored in Glacier classes"
+      ],
+      "correctChoice": "Objects of about 100 MB or larger",
+      "explanation": "Multipart upload is recommended for objects of 100 MB and larger, and required above 5 GB for a single operation.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Performance"
+      ]
+    },
+    {
+      "id": "byte-range-fetch",
+      "prompt": "Which S3 capability allows a client to download only a specified portion of an object?",
+      "choices": [
+        "Multipart upload",
+        "S3 Select with GZIP",
+        "Byte-range fetches",
+        "Object ownership settings"
+      ],
+      "correctChoice": "Byte-range fetches",
+      "explanation": "Byte-range GET requests retrieve part of an object and can be issued concurrently.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Performance"
+      ]
+    },
+    {
+      "id": "etag-purpose",
+      "prompt": "What is the purpose of an object's ETag?",
+      "choices": [
+        "To store user-defined labels for billing",
+        "To control who can access the object",
+        "To define the object's storage class",
+        "To help detect whether the object's content has changed"
+      ],
+      "correctChoice": "To help detect whether the object's content has changed",
+      "explanation": "An ETag is a hash-based identifier of the object's content.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Metadata"
+      ]
+    },
+    {
+      "id": "lifecycle-purpose",
+      "prompt": "Which S3 feature automatically transitions objects between storage classes and expires them according to rules?",
+      "choices": [
+        "S3 Inventory",
+        "S3 Lifecycle",
+        "S3 Storage Lens",
+        "S3 Event Notifications"
+      ],
+      "correctChoice": "S3 Lifecycle",
+      "explanation": "Lifecycle rules can transition and expire current and noncurrent versions, and can use filters.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Cost optimisation"
+      ]
+    },
+    {
+      "id": "glacier-flexible-retrieval-time",
+      "prompt": "How long does restoring an object from S3 Glacier Flexible Retrieval typically take, depending on the retrieval option?",
+      "choices": [
+        "From minutes to hours",
+        "Milliseconds, with no restore needed",
+        "Always 48 hours or longer",
+        "Instantly, since it is a real-time class"
+      ],
+      "correctChoice": "From minutes to hours",
+      "explanation": "Flexible Retrieval needs a restore; options range from 1-5 minutes up to 5-12 hours. Instant Retrieval offers real-time access.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Storage classes"
+      ]
+    },
+    {
+      "id": "deep-archive-min-duration",
+      "prompt": "What is the minimum storage duration for S3 Glacier Deep Archive?",
+      "choices": [
+        "30 days",
+        "90 days",
+        "180 days",
+        "365 days"
+      ],
+      "correctChoice": "180 days",
+      "explanation": "Deep Archive has a 180-day minimum storage duration.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Storage classes"
+      ]
+    },
+    {
+      "id": "gateway-endpoint-cost",
+      "prompt": "What is true about a gateway VPC endpoint for S3?",
+      "choices": [
+        "It has an hourly charge plus data processing charges",
+        "It has no additional charge and is used through a route table entry",
+        "It places an elastic network interface in each subnet",
+        "It works for any AWS service"
+      ],
+      "correctChoice": "It has no additional charge and is used through a route table entry",
+      "explanation": "Gateway endpoints exist for S3 and DynamoDB and are free. Interface endpoints use ENIs and are charged.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Networking"
+      ]
+    },
+    {
+      "id": "mfa-delete-purpose",
+      "prompt": "Which S3 feature requires multi-factor authentication to permanently delete object versions?",
+      "choices": [
+        "MFA Delete",
+        "Object Lock legal hold",
+        "S3 Lifecycle",
+        "Block Public Access"
+      ],
+      "correctChoice": "MFA Delete",
+      "explanation": "MFA Delete adds an MFA requirement for destructive operations on versioned buckets.",
+      "difficulty": "Easy",
+      "tags": [
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "storage-class-analysis-recommend",
+      "prompt": "A team wants S3 to analyse object access patterns so they can decide when to transition Standard objects to Standard-IA, and prefers rules they control over automatic tiering. Which feature fits?",
+      "choices": [
+        "S3 Intelligent-Tiering",
+        "S3 Storage Class Analysis",
+        "S3 Inventory",
+        "S3 Transfer Acceleration"
+      ],
+      "correctChoice": "S3 Storage Class Analysis",
+      "explanation": "Storage Class Analysis recommends when to move objects between Standard and IA, and is more manual and cheaper than Intelligent-Tiering.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Cost optimisation"
+      ]
+    },
+    {
+      "id": "dsse-kms",
+      "prompt": "A compliance standard requires that data in S3 be protected with two layers of server-side encryption, one using AWS KMS. Which option meets this?",
+      "choices": [
+        "SSE-S3",
+        "SSE-KMS",
+        "DSSE-KMS",
+        "SSE-C"
+      ],
+      "correctChoice": "DSSE-KMS",
+      "explanation": "DSSE-KMS applies two layers of AES-256 encryption server-side, one with a KMS-derived key and one with an S3-managed key. It costs more than SSE-KMS.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "lifecycle-deep-archive",
+      "prompt": "Reports are read daily for 30 days and never again, but must be retained for 5 years. Retrieval within 12 hours is acceptable. Which is the lowest-cost approach?",
+      "choices": [
+        "Store in S3 Standard and use a lifecycle rule to transition to S3 Glacier Deep Archive after 30 days",
+        "Store in S3 Standard-IA for the full 5 years",
+        "Store in S3 Intelligent-Tiering for the full 5 years",
+        "Transition to S3 Glacier Instant Retrieval after 30 days"
+      ],
+      "correctChoice": "Store in S3 Standard and use a lifecycle rule to transition to S3 Glacier Deep Archive after 30 days",
+      "explanation": "Deep Archive has the lowest storage cost and standard retrieval within 12 hours fits the requirement.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Cost optimisation"
+      ]
+    },
+    {
+      "id": "mountpoint-use-case",
+      "prompt": "A Linux-based analytics application needs to read very large datasets in S3 as local files with high throughput. It never modifies files in place and needs no file locking. Which is the simplest fit?",
+      "choices": [
+        "Mountpoint for Amazon S3",
+        "Mount the bucket with Amazon EBS",
+        "Copy the data to instance store volumes before each run",
+        "Use S3 Object Lock"
+      ],
+      "correctChoice": "Mountpoint for Amazon S3",
+      "explanation": "Mountpoint suits apps that need S3's elastic throughput but not full file-system semantics.",
+      "difficulty": "Medium",
+      "tags": [
+        "S3",
+        "Performance"
+      ]
+    },
+    {
+      "id": "it-small-objects",
+      "prompt": "A company stores 200 million objects of about 50 KB each. They are rarely read, and an engineer proposes S3 Intelligent-Tiering to cut storage costs. Why is this unlikely to help?",
+      "choices": [
+        "Objects under 128 KB are not auto-tiered, so they stay at the frequent access rate",
+        "Intelligent-Tiering charges retrieval fees that exceed the savings",
+        "Intelligent-Tiering only supports objects larger than 5 TB",
+        "Intelligent-Tiering moves objects to One Zone, which lowers durability"
+      ],
+      "correctChoice": "Objects under 128 KB are not auto-tiered, so they stay at the frequent access rate",
+      "explanation": "Objects smaller than 128 KB are not tiered, so no saving results. Intelligent-Tiering has no retrieval fees.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Cost optimisation"
+      ]
+    },
+    {
+      "id": "glacier-small-object-overhead",
+      "prompt": "A team archives 300 million 10 KB files directly to S3 Glacier Deep Archive, and the bill is much higher than the raw data size suggests. What is the best fix?",
+      "choices": [
+        "Switch to S3 Standard-IA, which has no per-object overhead",
+        "Combine small files into larger archives before transitioning them",
+        "Enable S3 Transfer Acceleration for the archive uploads",
+        "Enable versioning to deduplicate files"
+      ],
+      "correctChoice": "Combine small files into larger archives before transitioning them",
+      "explanation": "Glacier classes add about 40 KB of metadata per object, so many tiny objects incur large overhead. Aggregating them reduces object count.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Cost optimisation"
+      ]
+    },
+    {
+      "id": "mrap-bidirectional",
+      "prompt": "Users in the US and Europe write to and read from buckets in us-east-1 and eu-west-1. Each Region's writes must appear in the other, and clients should use one global endpoint with the lowest latency. What should the architect configure?",
+      "choices": [
+        "A Multi-Region Access Point with one-way replication from us-east-1 to eu-west-1",
+        "S3 Transfer Acceleration on both buckets with lifecycle rules",
+        "A CloudFront distribution with both buckets as origins",
+        "A Multi-Region Access Point with bi-directional replication between the buckets"
+      ],
+      "correctChoice": "A Multi-Region Access Point with bi-directional replication between the buckets",
+      "explanation": "A Multi-Region Access Point provides routing, but data consistency depends on replication rules. Writes in both Regions need replication in both directions.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "bucket-policy-vpce",
+      "prompt": "A bucket must be accessible only from instances in a VPC that use the S3 gateway endpoint. Which bucket policy approach achieves this?",
+      "choices": [
+        "Allow requests where aws:SourceIp is within the VPC CIDR range",
+        "Enable Transfer Acceleration for the bucket",
+        "Enable Block Public Access only",
+        "Deny requests unless the aws:SourceVpce condition matches the gateway endpoint ID"
+      ],
+      "correctChoice": "Deny requests unless the aws:SourceVpce condition matches the gateway endpoint ID",
+      "explanation": "Requests over a gateway endpoint use private addresses and aws:SourceIp does not apply; aws:SourceVpce identifies the endpoint.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "hybrid-endpoints-cost",
+      "prompt": "EC2 instances in a VPC and an on-premises data centre connected over AWS Direct Connect must both reach S3 privately in the same Region. The company wants to minimise cost. What is the best design?",
+      "choices": [
+        "An interface endpoint for both the VPC and on-premises traffic",
+        "A gateway endpoint only, used by both",
+        "A gateway endpoint for the VPC's instances and an interface endpoint for the on-premises traffic",
+        "A NAT gateway for the VPC and a public virtual interface for on-premises"
+      ],
+      "correctChoice": "A gateway endpoint for the VPC's instances and an interface endpoint for the on-premises traffic",
+      "explanation": "Gateway endpoints are free but unreachable from on-premises. Use an interface endpoint only for traffic that needs it.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Networking"
+      ]
+    },
+    {
+      "id": "governance-bypass-permission",
+      "prompt": "A company wants S3 Object Lock retention to block ordinary users from deleting versions, but a small admin team must be able to remove retention if it is misconfigured. Which design fits?",
+      "choices": [
+        "Compliance mode, with the admin role given s3:DeleteObjectVersion",
+        "Legal holds, applied by every user",
+        "Governance mode, with MFA Delete disabled",
+        "Governance mode, with the s3:BypassGovernanceRetention permission granted only to the admin role"
+      ],
+      "correctChoice": "Governance mode, with the s3:BypassGovernanceRetention permission granted only to the admin role",
+      "explanation": "Governance mode can be bypassed by users with the bypass permission. Compliance mode cannot be bypassed by anyone.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "object-lock-access-logs",
+      "prompt": "A team enables S3 server access logging with an Object Lock-enabled bucket as the target, and log delivery does not work. What is the cause and fix?",
+      "choices": [
+        "Object Lock buckets need Transfer Acceleration to receive logs",
+        "Server access logs require Compliance mode and a seven-day retention",
+        "Logging works only for buckets with versioning disabled",
+        "Object Lock-enabled buckets cannot be server access log destinations, so use a bucket without Object Lock"
+      ],
+      "correctChoice": "Object Lock-enabled buckets cannot be server access log destinations, so use a bucket without Object Lock",
+      "explanation": "Object Lock buckets cannot be used as destinations for server access logs.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "kms-roles-permissions",
+      "prompt": "A bucket uses SSE-KMS. An upload role must be able to write objects and a reporting role must read them. Which KMS permissions do the roles need?",
+      "choices": [
+        "kms:Decrypt for the upload role and kms:GenerateDataKey for the reporting role",
+        "kms:CreateKey for both roles",
+        "kms:GenerateDataKey for the upload role and kms:Decrypt for the reporting role",
+        "No KMS permissions, because S3 permissions are enough"
+      ],
+      "correctChoice": "kms:GenerateDataKey for the upload role and kms:Decrypt for the reporting role",
+      "explanation": "Writing to SSE-KMS requires generating a data key; reading requires decrypting it. S3 permissions alone are not enough.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "sse-c-lost-key",
+      "prompt": "A company uses SSE-C and loses the customer-provided key for some older object versions. What is the result?",
+      "choices": [
+        "AWS Support can recover the key from S3",
+        "S3 re-encrypts the versions with SSE-S3",
+        "Those versions cannot be decrypted, because S3 stores only a salted hash of the key",
+        "KMS decrypts them using the key ARN"
+      ],
+      "correctChoice": "Those versions cannot be decrypted, because S3 stores only a salted hash of the key",
+      "explanation": "With SSE-C the customer supplies the key on every request, and S3 does not store it. Different versions can use different keys.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "client-side-no-plaintext",
+      "prompt": "A policy states that AWS services must never receive plaintext data from the application. The data should be encrypted with KMS-managed keys before upload. Which approach meets this?",
+      "choices": [
+        "SSE-KMS",
+        "Client-side encryption using a KMS-generated data key",
+        "SSE-S3",
+        "DSSE-KMS"
+      ],
+      "correctChoice": "Client-side encryption using a KMS-generated data key",
+      "explanation": "With client-side encryption the data is encrypted before it leaves the application. All server-side options encrypt after S3 receives the data.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "cloudfront-oac-private",
+      "prompt": "A company wants HTTPS on a custom domain for static content in S3 while the bucket remains private. What is the best design?",
+      "choices": [
+        "Enable HTTPS on the S3 website endpoint and make the bucket public",
+        "CloudFront with the S3 REST endpoint as origin, origin access control, and a bucket policy allowing only CloudFront",
+        "Use a gateway VPC endpoint with a public bucket policy",
+        "Enable Transfer Acceleration and a presigned URL for every page"
+      ],
+      "correctChoice": "CloudFront with the S3 REST endpoint as origin, origin access control, and a bucket policy allowing only CloudFront",
+      "explanation": "The S3 website endpoint supports HTTP only and must be public. CloudFront adds HTTPS and can access a private bucket through OAC.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "cors-fix",
+      "prompt": "A web app at app.example.com loads JSON from an S3 bucket in a browser, and the browser blocks the request with a cross-origin error. The objects are otherwise accessible. What is the correct fix?",
+      "choices": [
+        "Enable S3 Transfer Acceleration",
+        "Add a CORS configuration to the bucket that allows the origin https://app.example.com and the GET method",
+        "Turn on versioning",
+        "Change the objects to the Standard-IA class"
+      ],
+      "correctChoice": "Add a CORS configuration to the bucket that allows the origin https://app.example.com and the GET method",
+      "explanation": "Cross-origin browser requests need a CORS configuration on the bucket that lists permitted origins and methods.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "presigned-signer-permissions",
+      "prompt": "A presigned GET URL created by an application role returns AccessDenied before it expires. What is the most likely cause?",
+      "choices": [
+        "The role that signed the URL lacks s3:GetObject permission for the object",
+        "Presigned URLs cannot be used with private buckets",
+        "The URL must also be used with a KMS key ARN",
+        "The bucket must have versioning enabled"
+      ],
+      "correctChoice": "The role that signed the URL lacks s3:GetObject permission for the object",
+      "explanation": "A presigned URL carries the permissions of its signer, so if the signer lacks access the URL fails.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "standard-ia-only-copy",
+      "prompt": "The only copy of a dataset is stored in S3. It is read about once a month, needs immediate access, and must survive the loss of an Availability Zone. Which class is the lowest-cost fit?",
+      "choices": [
+        "S3 One Zone-IA",
+        "S3 Express One Zone",
+        "S3 Standard-IA",
+        "S3 Glacier Flexible Retrieval"
+      ],
+      "correctChoice": "S3 Standard-IA",
+      "explanation": "Standard-IA stores data across multiple AZs. One Zone-IA and Express One Zone use a single AZ. Glacier Flexible Retrieval requires a restore.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "express-directory-bucket",
+      "prompt": "A team tries to store S3 Express One Zone objects in an existing general purpose bucket. What must they do?",
+      "choices": [
+        "Enable Transfer Acceleration on the bucket",
+        "Enable versioning on the bucket",
+        "Apply a lifecycle rule to the bucket",
+        "Create a directory bucket in a chosen Availability Zone"
+      ],
+      "correctChoice": "Create a directory bucket in a chosen Availability Zone",
+      "explanation": "Express One Zone objects are stored in directory buckets in one user-selected Availability Zone.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Performance"
+      ]
+    },
+    {
+      "id": "replication-owner-override",
+      "prompt": "Objects in a production account's bucket must be replicated to a bucket in a security account, and the security account must own the replicas. What should be configured?",
+      "choices": [
+        "An ACL on every source object granting the security account read access",
+        "Requester Pays on the destination bucket",
+        "A replication rule with ownership change so that the destination bucket owner owns the replicas",
+        "An S3 Batch Operations job to run daily"
+      ],
+      "correctChoice": "A replication rule with ownership change so that the destination bucket owner owns the replicas",
+      "explanation": "Replication can place objects under different ownership, which fits this cross-account requirement.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "srr-residency",
+      "prompt": "Regulation requires a second copy of data in a separate account, in the same Region as the source, without leaving it. Which approach fits?",
+      "choices": [
+        "Cross-Region replication to a bucket in another Region",
+        "Multi-Region Access Point with a second Region",
+        "Transfer Acceleration to the bucket",
+        "Same-Region replication to a bucket in the other account"
+      ],
+      "correctChoice": "Same-Region replication to a bucket in the other account",
+      "explanation": "Same-Region replication is a live replication option that stays in one Region.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "eventbridge-multi-consumer",
+      "prompt": "Object-created events must be delivered to three separate consumers, filtered on object attributes beyond prefix and suffix, with some routed to other AWS accounts. Which is the best destination?",
+      "choices": [
+        "Direct S3 notification to one SQS queue",
+        "S3 Inventory reports",
+        "Amazon EventBridge",
+        "S3 Storage Lens"
+      ],
+      "correctChoice": "Amazon EventBridge",
+      "explanation": "EventBridge supports advanced filtering and multiple targets and routing rules. Native S3 notifications filter only on prefix and suffix.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Integration"
+      ]
+    },
+    {
+      "id": "inventory-athena",
+      "prompt": "An auditor needs a daily, queryable list of all objects, including encryption and replication status. The solution must be low-effort and low-cost. Which approach fits?",
+      "choices": [
+        "S3 Inventory in Parquet or ORC format delivered to a bucket, queried with Amazon Athena",
+        "Run LIST requests daily and keep results in a spreadsheet",
+        "Use S3 Event Notifications for every request",
+        "Use S3 Select on each object"
+      ],
+      "correctChoice": "S3 Inventory in Parquet or ORC format delivered to a bucket, queried with Amazon Athena",
+      "explanation": "Inventory provides scheduled reports with optional metadata fields; Parquet and ORC are efficient to query with Athena.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Operations"
+      ]
+    },
+    {
+      "id": "storage-lens-org",
+      "prompt": "A company with many accounts wants one dashboard to identify cost-saving opportunities, such as buckets with incomplete multipart uploads, without writing custom code. What should it use?",
+      "choices": [
+        "S3 Storage Lens with an organisation-level dashboard",
+        "S3 Storage Class Analysis on each bucket",
+        "S3 Event Notifications on all buckets",
+        "S3 Select across all buckets"
+      ],
+      "correctChoice": "S3 Storage Lens with an organisation-level dashboard",
+      "explanation": "Storage Lens provides organisation-wide usage and activity metrics, including multipart upload indicators.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Operations"
+      ]
+    },
+    {
+      "id": "bpa-any-policies",
+      "prompt": "A bucket already has a policy that makes it public. Which Block Public Access setting stops that policy from granting public access without deleting the policy?",
+      "choices": [
+        "Block public access to buckets and objects granted through new public bucket or access point policies",
+        "Block public access granted through new ACLs",
+        "Block public access granted through any ACLs",
+        "Block public and cross-account access to buckets and objects through any public bucket or access point policies"
+      ],
+      "correctChoice": "Block public and cross-account access to buckets and objects through any public bucket or access point policies",
+      "explanation": "The \"new\" settings only affect policies created afterwards. The \"any\" setting applies to existing public policies too.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "acl-put-fails",
+      "prompt": "A legacy application sets a custom ACL on each PutObject request into a newly created bucket and the requests fail. What is the most likely cause?",
+      "choices": [
+        "Block Public Access prevents all uploads",
+        "New buckets default to Bucket owner enforced, which disables ACLs",
+        "Versioning must be enabled before ACLs can be used",
+        "ACLs work only in Glacier storage classes"
+      ],
+      "correctChoice": "New buckets default to Bucket owner enforced, which disables ACLs",
+      "explanation": "ACLs are disabled by default for new buckets. Changing Object Ownership re-enables them, but policies are preferred.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "requester-pays-website",
+      "prompt": "A provider serves a dataset through an S3 static website endpoint and wants consumers to pay for downloads. What is the correct conclusion?",
+      "choices": [
+        "Enable Requester Pays and anonymous users pay automatically",
+        "Enable Requester Pays with Transfer Acceleration",
+        "It is not possible; Requester Pays cannot be used with static website hosting, so use authenticated REST requests",
+        "Enable Requester Pays and storage costs are also transferred"
+      ],
+      "correctChoice": "It is not possible; Requester Pays cannot be used with static website hosting, so use authenticated REST requests",
+      "explanation": "Requester Pays requires authenticated requests and cannot be combined with website endpoints.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Cost optimisation"
+      ]
+    },
+    {
+      "id": "accelerate-virtual-hosted",
+      "prompt": "A client configured to use path-style addressing fails when it uses the S3 Transfer Acceleration endpoint. Why?",
+      "choices": [
+        "Transfer Acceleration requires SSE-C",
+        "Transfer Acceleration works only with virtual-hosted-style requests",
+        "Transfer Acceleration needs versioning disabled",
+        "Transfer Acceleration is available only for downloads"
+      ],
+      "correctChoice": "Transfer Acceleration works only with virtual-hosted-style requests",
+      "explanation": "The s3-accelerate host works only with virtual-hosted-style requests, and acceleration can take about 20 minutes to become active.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "byte-range-parallel",
+      "prompt": "A 200 GB object must be downloaded over a link that drops often. The download should run in parallel and only failed portions should be repeated. What should be used?",
+      "choices": [
+        "Multipart upload",
+        "A presigned URL with a longer expiry",
+        "Moving the object to S3 Standard-IA",
+        "Concurrent byte-range GET requests"
+      ],
+      "correctChoice": "Concurrent byte-range GET requests",
+      "explanation": "Byte-range requests let each part be fetched and retried independently, and be combined later.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Performance"
+      ]
+    },
+    {
+      "id": "glacier-restore",
+      "prompt": "A GET on an object in S3 Glacier Flexible Retrieval fails with an error stating that the object is archived. What must be done?",
+      "choices": [
+        "Enable versioning on the bucket",
+        "Retry the GET with Transfer Acceleration",
+        "Enable an S3 Bucket Key",
+        "Initiate a restore request, wait for completion, then access the restored copy"
+      ],
+      "correctChoice": "Initiate a restore request, wait for completion, then access the restored copy",
+      "explanation": "Flexible Retrieval objects are not accessible in real time; they need a restore, unlike Glacier Instant Retrieval.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "efs-vs-mountpoint",
+      "prompt": "Several Linux EC2 instances need a shared POSIX file system in which files are modified in place and locked during updates. Which choice fits best?",
+      "choices": [
+        "Amazon EFS",
+        "Mountpoint for Amazon S3",
+        "S3 Standard with byte-range fetches",
+        "S3 Glacier Instant Retrieval"
+      ],
+      "correctChoice": "Amazon EFS",
+      "explanation": "Mountpoint does not support modifying existing files or file locking, so apps needing a shared file system need EFS.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Storage selection"
+      ]
+    },
+    {
+      "id": "delete-marker-recovery",
+      "prompt": "In a versioned bucket, a user deletes an object and it no longer appears in listings. The data must be recovered. What is the correct action?",
+      "choices": [
+        "Remove the delete marker or restore the previous version",
+        "Recover it from the S3 Transfer Acceleration cache",
+        "Re-enable versioning, which restores the object",
+        "Nothing; deleted objects are permanently gone"
+      ],
+      "correctChoice": "Remove the delete marker or restore the previous version",
+      "explanation": "In a versioned bucket a delete adds a delete marker; earlier versions remain and can be restored.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Versioning"
+      ]
+    },
+    {
+      "id": "outposts",
+      "prompt": "A workload requires S3 APIs, but the data must stay on premises for local processing. Which option fits?",
+      "choices": [
+        "S3 One Zone-IA",
+        "S3 Express One Zone",
+        "S3 on Outposts",
+        "S3 Standard with a gateway endpoint"
+      ],
+      "correctChoice": "S3 on Outposts",
+      "explanation": "S3 on Outposts uses AWS-provided servers hosted by the customer, with a flat upfront cost.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Storage selection"
+      ]
+    },
+    {
+      "id": "class-analysis-limit",
+      "prompt": "A team wants S3 Storage Class Analysis to tell them which objects to archive to S3 Glacier. What is the limitation?",
+      "choices": [
+        "It only works for Glacier objects",
+        "It works only with buckets of fewer than 1,000 objects",
+        "It only recommends moving objects between Standard and Standard-IA, not to Glacier classes",
+        "It automatically moves objects without lifecycle rules"
+      ],
+      "correctChoice": "It only recommends moving objects between Standard and Standard-IA, not to Glacier classes",
+      "explanation": "Storage Class Analysis helps decide when to transition Standard objects to IA. Archive decisions need other analysis.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Cost optimisation"
+      ]
+    },
+    {
+      "id": "metadata-not-encrypted",
+      "prompt": "A developer stores customer names in user-defined object metadata, relying on SSE-KMS for protection. What is the problem?",
+      "choices": [
+        "SSE-KMS encrypts metadata only for versioned buckets",
+        "User-defined metadata is automatically encrypted with SSE-S3",
+        "Server-side encryption covers object content but not metadata, so sensitive values should not be placed in metadata",
+        "The metadata is deleted when SSE-KMS is enabled"
+      ],
+      "correctChoice": "Server-side encryption covers object content but not metadata, so sensitive values should not be placed in metadata",
+      "explanation": "Content is encrypted; metadata is not.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Security"
+      ]
+    },
+    {
+      "id": "accelerate-dualstack",
+      "prompt": "IPv6 clients far from the bucket's Region need faster uploads. Which endpoint should they use?",
+      "choices": [
+        "The standard s3 endpoint with path-style requests",
+        "The s3-website endpoint",
+        "The standard regional endpoint, since it supports IPv6",
+        "The s3-accelerate.dualstack endpoint with a virtual-hosted-style request"
+      ],
+      "correctChoice": "The s3-accelerate.dualstack endpoint with a virtual-hosted-style request",
+      "explanation": "Dualstack supports IPv4 and IPv6, and the standard endpoint is IPv4 only. Transfer Acceleration uses the s3-accelerate(.dualstack) host.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Networking"
+      ]
+    },
+    {
+      "id": "ia-frequent-access",
+      "prompt": "A team moves data accessed several times each week to S3 Standard-IA to save money, and costs rise. Why?",
+      "choices": [
+        "Standard-IA has no durability for frequently accessed data",
+        "Standard-IA objects cannot be read more than once per month",
+        "Standard-IA doubles the number of requests",
+        "Standard-IA charges retrieval fees, so frequently accessed data is cheaper in Standard"
+      ],
+      "correctChoice": "Standard-IA charges retrieval fees, so frequently accessed data is cheaper in Standard",
+      "explanation": "IA classes have lower storage prices but charge retrieval fees and a 30-day minimum, suiting infrequently accessed data.",
+      "difficulty": "Hard",
+      "tags": [
+        "S3",
+        "Cost optimisation"
+      ]
+    }
+  ]
+}

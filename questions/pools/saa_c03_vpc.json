@@ -1,0 +1,1721 @@
+{
+  "$schema": "../pool.schema.json",
+  "poolName": "VPC & Network Connectivity: Subnets, Routing, SGs/NACLs, NAT, Endpoints, Peering, Transit Gateway, VPN & Direct Connect (Mixed Difficulty)",
+  "description": "SAA-C03 revision questions on Amazon VPC at Easy, Medium and Hard difficulty: subnets and routing, security groups and NACLs, internet/NAT/egress-only gateways, VPC endpoints and PrivateLink, peering and Transit Gateway, Site-to-Site and Client VPN, Direct Connect, VPC Lattice, Flow Logs, Traffic Mirroring and Network Firewall.",
+  "category": "Networking & Content Delivery",
+  "version": 1,
+  "questions": [
+    {
+      "id": "vpc-scope-region-az",
+      "prompt": "What is the scope of a VPC and of the subnets inside it?",
+      "choices": [
+        "A VPC spans all Regions, and each subnet spans all Availability Zones",
+        "A VPC spans every Availability Zone in a Region, and each subnet spans multiple Regions",
+        "A VPC is tied to one Availability Zone, and each subnet spans the whole Region",
+        "A VPC is tied to one Region, and each subnet is created in a single Availability Zone"
+      ],
+      "correctChoice": "A VPC is tied to one Region, and each subnet is created in a single Availability Zone",
+      "explanation": "VPCs are regional and cannot span Regions (use peering or similar to connect them). A VPC covers the Availability Zones of its Region, but each subnet lives in exactly one AZ.",
+      "difficulty": "Easy",
+      "tags": [
+        "VPC",
+        "Fundamentals"
+      ]
+    },
+    {
+      "id": "vpc-default-vpc-contents",
+      "prompt": "Which statement about the default VPC in an AWS Region is correct?",
+      "choices": [
+        "It cannot be deleted, so every Region always keeps exactly one",
+        "It uses the 172.31.0.0/16 IPv4 CIDR, has a subnet in each AZ, and comes with an internet gateway and a route to it",
+        "It uses the 10.0.0.0/16 IPv4 CIDR and has only private subnets, with no route to the internet",
+        "It is created only in the account's first Region and has one subnet spanning all AZs"
+      ],
+      "correctChoice": "It uses the 172.31.0.0/16 IPv4 CIDR, has a subnet in each AZ, and comes with an internet gateway and a route to it",
+      "explanation": "The default VPC comes with a 172.31.0.0/16 CIDR, one default subnet per AZ, an IGW, a default SG, NACL, DHCP options set and a route table with a route out via the IGW. It can be deleted and recreated.",
+      "difficulty": "Easy",
+      "tags": [
+        "VPC",
+        "Default VPC"
+      ]
+    },
+    {
+      "id": "vpc-free-vs-paid-components",
+      "prompt": "Which VPC component incurs hourly and data-processing charges?",
+      "choices": [
+        "An internet gateway",
+        "A NAT gateway",
+        "A route table",
+        "A security group"
+      ],
+      "correctChoice": "A NAT gateway",
+      "explanation": "NAT gateways are billed per hour and per GB processed. VPCs, subnets, route tables, NACLs, security groups and internet gateways have no charge themselves.",
+      "difficulty": "Easy",
+      "tags": [
+        "VPC",
+        "Cost"
+      ]
+    },
+    {
+      "id": "vpc-s3-gateway-endpoint-cost",
+      "prompt": "EC2 instances in private subnets download several terabytes a month from Amazon S3 through a NAT gateway, and the NAT data-processing charges are high. The traffic must stay off the public internet. What is the most cost-effective change?",
+      "choices": [
+        "Create an S3 gateway endpoint and add it to the private subnets' route tables",
+        "Create an S3 interface endpoint and keep the NAT gateway as a fallback route",
+        "Replace the NAT gateway with a NAT instance",
+        "Add an internet gateway and assign Elastic IP addresses to the instances"
+      ],
+      "correctChoice": "Create an S3 gateway endpoint and add it to the private subnets' route tables",
+      "explanation": "Gateway endpoints for S3 (and DynamoDB) have no hourly or data-processing charge and keep traffic on the AWS network. Interface endpoints and NAT gateways are billed per hour and per GB.",
+      "difficulty": "Medium",
+      "tags": [
+        "VPC Endpoints",
+        "Gateway endpoint",
+        "Cost"
+      ]
+    },
+    {
+      "id": "vpc-gateway-endpoint-services",
+      "prompt": "Which pair of services is supported by VPC gateway endpoints?",
+      "choices": [
+        "AWS Lambda and Amazon CloudWatch",
+        "Amazon EC2 and Amazon RDS",
+        "Amazon S3 and Amazon DynamoDB",
+        "Amazon SQS and Amazon SNS"
+      ],
+      "correctChoice": "Amazon S3 and Amazon DynamoDB",
+      "explanation": "Gateway endpoints exist only for S3 and DynamoDB. Other AWS services are reached privately with interface endpoints (AWS PrivateLink).",
+      "difficulty": "Easy",
+      "tags": [
+        "VPC Endpoints",
+        "Gateway endpoint"
+      ]
+    },
+    {
+      "id": "vpc-interface-endpoint-privatelink",
+      "prompt": "How does an interface VPC endpoint provide private access to a supported service?",
+      "choices": [
+        "It adds a route-table entry that points to a managed prefix list for the service",
+        "It creates a VPN tunnel between the VPC and the service",
+        "It assigns a public IP address to each instance so traffic can use the internet gateway",
+        "It places elastic network interfaces with private IP addresses in your subnets, powered by AWS PrivateLink"
+      ],
+      "correctChoice": "It places elastic network interfaces with private IP addresses in your subnets, powered by AWS PrivateLink",
+      "explanation": "Interface endpoints are ENIs with private IPs that act as the entry point to a PrivateLink-powered service. Gateway endpoints are the type that works through route-table entries.",
+      "difficulty": "Easy",
+      "tags": [
+        "VPC Endpoints",
+        "Interface endpoint",
+        "PrivateLink"
+      ]
+    },
+    {
+      "id": "vpc-igw-route-missing",
+      "prompt": "A new custom VPC has an internet gateway attached. An EC2 instance in one subnet has a public IPv4 address and a security group that allows inbound HTTP, but it is unreachable from the internet. What is the most likely missing configuration?",
+      "choices": [
+        "An outbound security group rule that allows HTTP responses",
+        "A virtual private gateway attached to the VPC",
+        "A 0.0.0.0/0 route to the internet gateway in the subnet's route table",
+        "A NAT gateway in the same subnet"
+      ],
+      "correctChoice": "A 0.0.0.0/0 route to the internet gateway in the subnet's route table",
+      "explanation": "Attaching an IGW is not enough; the subnet's route table needs a default route targeting it. Security groups are stateful, so no outbound rule is needed for responses.",
+      "difficulty": "Medium",
+      "tags": [
+        "Internet gateway",
+        "Route tables",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "vpc-default-route-meaning",
+      "prompt": "What does the destination 0.0.0.0/0 in a route table represent?",
+      "choices": [
+        "Only private RFC 1918 address ranges used inside the VPC",
+        "All possible IPv6 addresses (the IPv6 default route)",
+        "All possible IPv4 addresses (the catch-all or default route)",
+        "Only addresses inside the VPC's own IPv4 CIDR block (the local range)"
+      ],
+      "correctChoice": "All possible IPv4 addresses (the catch-all or default route)",
+      "explanation": "0.0.0.0/0 matches every IPv4 address; ::/0 is the IPv6 equivalent. A route to an IGW or NAT gateway on this destination sends all non-local traffic there.",
+      "difficulty": "Easy",
+      "tags": [
+        "Route tables",
+        "Default route"
+      ]
+    },
+    {
+      "id": "vpc-sharing-what-is-shared",
+      "prompt": "A networking account wants other accounts in the same AWS Organization to launch resources into its VPC. What does VPC sharing with AWS RAM actually share?",
+      "choices": [
+        "The entire VPC including its security groups",
+        "Internet gateways only",
+        "Subnets",
+        "Route tables only"
+      ],
+      "correctChoice": "Subnets",
+      "explanation": "VPC sharing shares subnets (via a RAM resource share) with accounts in the same organization. Default subnets cannot be shared.",
+      "difficulty": "Easy",
+      "tags": [
+        "Shared VPC",
+        "RAM"
+      ]
+    },
+    {
+      "id": "vpc-secondary-cidr",
+      "prompt": "A production VPC is running out of private IPv4 addresses. The team wants to add capacity without rebuilding the VPC or moving existing workloads. What should they do?",
+      "choices": [
+        "Associate an additional (secondary) IPv4 CIDR block with the VPC and create new subnets in it",
+        "Delete and recreate the VPC with a larger primary CIDR block",
+        "Create a second VPC with the same CIDR range and peer it with the first VPC",
+        "Resize the CIDR blocks of the existing subnets to make them larger"
+      ],
+      "correctChoice": "Associate an additional (secondary) IPv4 CIDR block with the VPC and create new subnets in it",
+      "explanation": "A VPC can have multiple IPv4 CIDR blocks (quota adjustable), so you can associate another block and add subnets from it. Existing subnet CIDRs cannot be changed, and overlapping ranges break routing between VPCs.",
+      "difficulty": "Medium",
+      "tags": [
+        "VPC",
+        "CIDR"
+      ]
+    },
+    {
+      "id": "vpc-sg-stateful-response",
+      "prompt": "A security group allows inbound TCP 443 and has no outbound rules that match the reply traffic. What happens to the responses sent by the instance?",
+      "choices": [
+        "They are allowed automatically because security groups are stateful",
+        "They are allowed only if the subnet's NACL has an outbound allow rule",
+        "They are dropped because security groups only evaluate inbound traffic",
+        "They are blocked until an outbound rule for the ephemeral ports is added"
+      ],
+      "correctChoice": "They are allowed automatically because security groups are stateful",
+      "explanation": "Security groups track connection state, so replies to allowed inbound requests are returned regardless of outbound rules. (A NACL could still block them, but the stem asks about the security group.)",
+      "difficulty": "Easy",
+      "tags": [
+        "Security groups",
+        "Stateful"
+      ]
+    },
+    {
+      "id": "vpc-nacl-single-association",
+      "prompt": "How many network ACLs can a subnet be associated with at one time?",
+      "choices": [
+        "None; NACLs attach to instances, not subnets",
+        "Exactly one",
+        "Any number, evaluated together",
+        "Up to five"
+      ],
+      "correctChoice": "Exactly one",
+      "explanation": "Each subnet is associated with exactly one NACL, while one NACL can be associated with many subnets in the same VPC.",
+      "difficulty": "Easy",
+      "tags": [
+        "NACL"
+      ]
+    },
+    {
+      "id": "vpc-block-ip-nacl",
+      "prompt": "A team needs to explicitly deny traffic from a specific malicious IP address range to a subnet. Which feature supports an explicit deny rule?",
+      "choices": [
+        "A route table",
+        "A network ACL",
+        "A security group",
+        "An Elastic IP address"
+      ],
+      "correctChoice": "A network ACL",
+      "explanation": "NACLs support both allow and deny rules. Security groups only contain allow rules.",
+      "difficulty": "Easy",
+      "tags": [
+        "NACL",
+        "Security groups"
+      ]
+    },
+    {
+      "id": "vpc-nacl-rule-order",
+      "prompt": "A subnet's inbound NACL has rule 90 DENY TCP 443 from 203.0.113.0/24 and rule 100 ALLOW TCP 443 from 0.0.0.0/0. What happens to an HTTPS request from 203.0.113.25?",
+      "choices": [
+        "It is denied only if the security group also denies it",
+        "It is allowed because the higher-numbered allow rule overrides a deny rule",
+        "It is allowed because allow rules always take precedence over deny rules",
+        "It is denied because the lower-numbered rule 90 is evaluated first and matches"
+      ],
+      "correctChoice": "It is denied because the lower-numbered rule 90 is evaluated first and matches",
+      "explanation": "NACL rules are evaluated in ascending rule-number order and the first match is applied. Rule 90 matches first, so the request is denied.",
+      "difficulty": "Medium",
+      "tags": [
+        "NACL",
+        "Rule evaluation"
+      ]
+    },
+    {
+      "id": "vpc-nacl-ephemeral-ports",
+      "prompt": "A web server in a public subnet is reachable on HTTPS until the team associates a new custom NACL with an inbound rule allowing TCP 443 from 0.0.0.0/0. Clients now time out. What is missing?",
+      "choices": [
+        "An inbound NACL rule allowing ICMP so clients can test the path",
+        "An outbound security group rule allowing TCP 443 to the clients",
+        "A second NACL associated with the subnet for the return path",
+        "An outbound rule for the clients' ephemeral ports, as NACLs are stateless"
+      ],
+      "correctChoice": "An outbound rule for the clients' ephemeral ports, as NACLs are stateless",
+      "explanation": "NACLs do not track connection state, so return traffic must be explicitly allowed by an outbound rule covering the client's ephemeral port range.",
+      "difficulty": "Medium",
+      "tags": [
+        "NACL",
+        "Stateless",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "vpc-sg-reference-sg",
+      "prompt": "An application tier must accept traffic only from instances in the web tier, which scale in and out and change IP addresses frequently. How should the application tier's security group be configured?",
+      "choices": [
+        "Allow inbound traffic from the web subnet's CIDR block in the NACL only",
+        "Allow inbound traffic from 0.0.0.0/0 and rely on the OS firewall",
+        "Assign Elastic IP addresses to the web tier and allow those addresses",
+        "Allow inbound traffic with the web tier's security group as the source"
+      ],
+      "correctChoice": "Allow inbound traffic with the web tier's security group as the source",
+      "explanation": "Security group rules can reference another security group, so membership rather than IP addresses defines who is allowed. It tracks scaling automatically.",
+      "difficulty": "Medium",
+      "tags": [
+        "Security groups"
+      ]
+    },
+    {
+      "id": "vpc-custom-nacl-default-deny",
+      "prompt": "An engineer creates a new custom NACL, associates it with a working subnet and adds no rules. What is the effect on traffic in that subnet?",
+      "choices": [
+        "All traffic is allowed, as with the default NACL",
+        "Traffic is controlled by the security groups alone because the NACL has no rules",
+        "All inbound and outbound traffic is denied until allow rules are added",
+        "Only inbound traffic is denied"
+      ],
+      "correctChoice": "All inbound and outbound traffic is denied until allow rules are added",
+      "explanation": "The default NACL allows all traffic, but a newly created custom NACL denies everything (including the implicit final * deny rule) until you add rules.",
+      "difficulty": "Medium",
+      "tags": [
+        "NACL",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "vpc-block-ip-nacl-rule-number",
+      "prompt": "A subnet's NACL has an inbound rule 100 allowing TCP 443 from 0.0.0.0/0. The security team must block one abusive /24 range from reaching every instance in the subnet while keeping HTTPS open to everyone else. Which action meets the requirement?",
+      "choices": [
+        "Add an inbound NACL DENY rule for that range with a rule number lower than 100",
+        "Remove the 0.0.0.0/0 allow from the NACL and rely on the security group",
+        "Add an inbound NACL DENY rule for that range with a rule number higher than 100",
+        "Add a deny rule for that range to the instances' security group"
+      ],
+      "correctChoice": "Add an inbound NACL DENY rule for that range with a rule number lower than 100",
+      "explanation": "Only NACLs can deny, and they are evaluated lowest number first. A deny numbered above 100 would never be reached for HTTPS traffic because rule 100 matches first. Security groups have no deny rules.",
+      "difficulty": "Hard",
+      "tags": [
+        "NACL",
+        "Security groups",
+        "Rule evaluation"
+      ]
+    },
+    {
+      "id": "vpc-sg-default-behaviour",
+      "prompt": "What is the traffic behaviour of a newly created custom security group that has had no rules edited?",
+      "choices": [
+        "All inbound and all outbound traffic is allowed",
+        "All inbound and all outbound traffic is denied",
+        "All inbound traffic is allowed and all outbound traffic is denied",
+        "All inbound traffic is denied and all outbound traffic is allowed"
+      ],
+      "correctChoice": "All inbound traffic is denied and all outbound traffic is allowed",
+      "explanation": "Security groups are allow-list only. A new custom group has no inbound rules (implicit deny) and a default rule allowing all outbound traffic.",
+      "difficulty": "Easy",
+      "tags": [
+        "Security groups"
+      ]
+    },
+    {
+      "id": "vpc-sg-multi-subnet-same-vpc",
+      "prompt": "Which statement about associating a single security group with instances is correct?",
+      "choices": [
+        "It can only be used by instances in one subnet",
+        "It can only be associated with one instance at a time",
+        "It can be used by instances in different subnets of the same VPC",
+        "It can be used by instances in any VPC in the same Region"
+      ],
+      "correctChoice": "It can be used by instances in different subnets of the same VPC",
+      "explanation": "Security groups operate at the instance (ENI) level, are not tied to a subnet or AZ, but are scoped to a single VPC.",
+      "difficulty": "Medium",
+      "tags": [
+        "Security groups"
+      ]
+    },
+    {
+      "id": "vpc-nat-gateway-purpose",
+      "prompt": "Instances in a private subnet need to download OS patches from the internet but must not accept unsolicited inbound connections from the internet. Which component should be used?",
+      "choices": [
+        "An egress-only internet gateway",
+        "A NAT gateway",
+        "A Gateway Load Balancer endpoint",
+        "A virtual private gateway"
+      ],
+      "correctChoice": "A NAT gateway",
+      "explanation": "A NAT gateway lets private IPv4 instances initiate outbound connections and does not allow unsolicited inbound connections. An egress-only IGW does the equivalent only for IPv6.",
+      "difficulty": "Easy",
+      "tags": [
+        "NAT gateway"
+      ]
+    },
+    {
+      "id": "vpc-nat-gateway-placement",
+      "prompt": "Where should a zonal public NAT gateway be placed, and what must private subnets do to use it?",
+      "choices": [
+        "In a private subnet; public subnets route 0.0.0.0/0 to it",
+        "In the same private subnet as the instances; no route change is needed",
+        "In a public subnet; private subnets route 0.0.0.0/0 to the internet gateway",
+        "In a public subnet with an Elastic IP; private subnets route 0.0.0.0/0 to it"
+      ],
+      "correctChoice": "In a public subnet with an Elastic IP; private subnets route 0.0.0.0/0 to it",
+      "explanation": "A public NAT gateway needs an Elastic IP and sits in a public subnet (route to an IGW). Private subnets send their default route to the NAT gateway.",
+      "difficulty": "Easy",
+      "tags": [
+        "NAT gateway",
+        "Route tables"
+      ]
+    },
+    {
+      "id": "vpc-nat-per-az",
+      "prompt": "A workload runs in private subnets across three AZs and uses a single zonal NAT gateway in one AZ. During an outage of that AZ, instances in the other AZs lose outbound internet access. What is the best design to improve availability?",
+      "choices": [
+        "Deploy a NAT gateway in each AZ and route each private subnet to its own AZ's NAT gateway",
+        "Keep one NAT gateway and attach a second Elastic IP address to it for redundancy",
+        "Move the NAT gateway to a private subnet in a different AZ",
+        "Add a second route table entry in each private subnet pointing to the same NAT gateway"
+      ],
+      "correctChoice": "Deploy a NAT gateway in each AZ and route each private subnet to its own AZ's NAT gateway",
+      "explanation": "A zonal NAT gateway is confined to one AZ, so the recommended pattern is one per AZ with AZ-local routing. This also avoids cross-AZ data charges.",
+      "difficulty": "Medium",
+      "tags": [
+        "NAT gateway",
+        "High availability"
+      ]
+    },
+    {
+      "id": "vpc-egress-only-igw",
+      "prompt": "Which gateway allows instances with IPv6 addresses to initiate outbound internet connections while preventing the internet from initiating connections to them?",
+      "choices": [
+        "A virtual private gateway",
+        "An egress-only internet gateway",
+        "A NAT gateway",
+        "An internet gateway"
+      ],
+      "correctChoice": "An egress-only internet gateway",
+      "explanation": "The egress-only internet gateway is the IPv6 equivalent of a NAT gateway for outbound-only access. A standard IGW would allow inbound connections too.",
+      "difficulty": "Easy",
+      "tags": [
+        "Egress-only internet gateway",
+        "IPv6"
+      ]
+    },
+    {
+      "id": "vpc-elastic-ip-static",
+      "prompt": "A partner has allow-listed the public IPv4 address of an EC2 instance, but the address changes every time the instance is stopped and started. What should be used?",
+      "choices": [
+        "An Elastic IP address associated with the instance",
+        "An egress-only internet gateway",
+        "A larger instance type with a public subnet",
+        "A second ENI with a private IP address"
+      ],
+      "correctChoice": "An Elastic IP address associated with the instance",
+      "explanation": "An Elastic IP is a static public IPv4 address that remains the same across restarts and can be remapped to another instance or ENI.",
+      "difficulty": "Easy",
+      "tags": [
+        "Elastic IP"
+      ]
+    },
+    {
+      "id": "vpc-route-most-specific",
+      "prompt": "A route table contains: 10.0.0.0/16 -> local; 0.0.0.0/0 -> igw; 192.168.0.0/16 -> vgw; 192.168.10.0/24 -> tgw. Where is traffic destined for 192.168.10.5 sent?",
+      "choices": [
+        "To the transit gateway, because the most specific matching route wins",
+        "To the virtual private gateway, because it was added first",
+        "To the local target, because it has the highest priority",
+        "To the internet gateway, because 0.0.0.0/0 is the default route"
+      ],
+      "correctChoice": "To the transit gateway, because the most specific matching route wins",
+      "explanation": "Route selection uses the longest prefix match. 192.168.10.0/24 is more specific than 192.168.0.0/16 and 0.0.0.0/0.",
+      "difficulty": "Medium",
+      "tags": [
+        "Route tables"
+      ]
+    },
+    {
+      "id": "vpc-main-route-table",
+      "prompt": "A new subnet is created in a VPC without any explicit route table association. Which route table does it use?",
+      "choices": [
+        "No route table; it can only communicate within the subnet",
+        "The VPC's main (default) route table",
+        "The route table of the nearest subnet in the same AZ",
+        "A new empty route table created for the subnet"
+      ],
+      "correctChoice": "The VPC's main (default) route table",
+      "explanation": "Subnets without an explicit association implicitly use the main route table, which can't be deleted. A subnet is associated with only one route table at a time.",
+      "difficulty": "Easy",
+      "tags": [
+        "Route tables"
+      ]
+    },
+    {
+      "id": "vpc-main-route-table-practice",
+      "prompt": "A team added a default route to an internet gateway in the VPC's main route table. Later, new subnets created for databases unexpectedly became public. What is the best practice to prevent this?",
+      "choices": [
+        "Change the main route table's default route target from the IGW to a NAT gateway",
+        "Add a deny entry for 0.0.0.0/0 to the main route table for database subnets",
+        "Keep the main route table private and explicitly associate public subnets with a custom route table holding the IGW route",
+        "Delete the main route table so each subnet must be associated explicitly"
+      ],
+      "correctChoice": "Keep the main route table private and explicitly associate public subnets with a custom route table holding the IGW route",
+      "explanation": "New subnets default to the main route table, so a public main route table makes every new subnet public. Use explicit associations for public subnets instead.",
+      "difficulty": "Medium",
+      "tags": [
+        "Route tables",
+        "Security"
+      ]
+    },
+    {
+      "id": "vpc-ipv6-dual-stack-steps",
+      "prompt": "An IPv4-only VPC must be updated so instances can also communicate over IPv6. Which set of actions is required?",
+      "choices": [
+        "Add IPv6 CIDRs to the VPC and subnets, route ::/0 to the IGW, update security group rules for IPv6 and use IPv6-capable instance types",
+        "Create a new IPv6-only VPC, peer it with the old VPC and move the IPv4 addresses to it",
+        "Replace the internet gateway with a NAT gateway so that IPv6 addresses are translated to IPv4",
+        "Disable IPv4 on the VPC first, then enable IPv6 on the existing subnets"
+      ],
+      "correctChoice": "Add IPv6 CIDRs to the VPC and subnets, route ::/0 to the IGW, update security group rules for IPv6 and use IPv6-capable instance types",
+      "explanation": "Dual-stack requires adding IPv6 CIDRs, routing IPv6 (::/0) to the IGW, allowing IPv6 in SG/NACL rules and using instance types that support IPv6. IPv4 cannot be disabled on a VPC.",
+      "difficulty": "Medium",
+      "tags": [
+        "IPv6",
+        "Dual stack"
+      ]
+    },
+    {
+      "id": "vpc-private-nat-gateway",
+      "prompt": "Workloads in private subnets must reach an on-premises system over a Site-to-Site VPN attached to a transit gateway. The on-premises firewall allows traffic only from one approved private IP. Which solution satisfies this?",
+      "choices": [
+        "An egress-only internet gateway in the VPC, with the on-premises firewall allowing the VPC's IPv6 range",
+        "A private NAT gateway routed through the transit gateway, translating sources to its own private IP",
+        "A public NAT gateway with an Elastic IP in a public subnet, with the on-premises firewall allowing that address",
+        "An interface VPC endpoint that targets the on-premises system's private IP address"
+      ],
+      "correctChoice": "A private NAT gateway routed through the transit gateway, translating sources to its own private IP",
+      "explanation": "Private NAT gateways connect private subnets to other VPCs or on-premises networks through a transit gateway or virtual private gateway and cannot have an Elastic IP. Public NAT gateways are for internet access.",
+      "difficulty": "Hard",
+      "tags": [
+        "NAT gateway",
+        "Private NAT",
+        "Hybrid"
+      ]
+    },
+    {
+      "id": "vpc-nat-gateway-vs-instance",
+      "prompt": "What is the main advantage of a NAT gateway over a self-managed NAT instance?",
+      "choices": [
+        "It accepts unsolicited inbound connections from the internet to private instances",
+        "It is managed, so there is no instance to patch or size",
+        "It can also double as a bastion host for SSH access to private instances",
+        "It has no hourly or data-processing charge compared with an instance"
+      ],
+      "correctChoice": "It is managed, so there is no instance to patch or size",
+      "explanation": "NAT gateways are AWS-managed and recommended over NAT instances, which require you to handle scaling, patching and disabling the source/destination check. NAT gateways are billed and cannot act as bastions.",
+      "difficulty": "Easy",
+      "tags": [
+        "NAT gateway",
+        "NAT instance"
+      ]
+    },
+    {
+      "id": "vpc-session-manager-private-access",
+      "prompt": "Administrators need shell access to EC2 instances in private subnets. Security policy forbids opening inbound SSH from the internet and the team wants to avoid operating bastion hosts. Which option fits best?",
+      "choices": [
+        "An Elastic IP address on each private instance",
+        "A NAT gateway with an inbound rule allowing port 22",
+        "An additional internet gateway attached to the VPC",
+        "AWS Systems Manager Session Manager"
+      ],
+      "correctChoice": "AWS Systems Manager Session Manager",
+      "explanation": "Session Manager provides access without inbound ports, public IPs or bastions. NAT gateways are for outbound access only and cannot be used as bastions.",
+      "difficulty": "Medium",
+      "tags": [
+        "Bastion",
+        "Systems Manager",
+        "Security"
+      ]
+    },
+    {
+      "id": "vpc-bastion-purpose",
+      "prompt": "What is the purpose of a bastion host (jump box) in a VPC?",
+      "choices": [
+        "A managed service that translates private IPv4 addresses for outbound internet access",
+        "A hosted connection that links on-premises networks to AWS",
+        "A hardened instance that provides controlled administrative access, such as SSH, into private subnets",
+        "A gateway that distributes traffic to third-party firewall appliances"
+      ],
+      "correctChoice": "A hardened instance that provides controlled administrative access, such as SSH, into private subnets",
+      "explanation": "A bastion is a security-hardened VM that acts as the entry point for admin access to private resources. AWS has no managed bastion; Session Manager or EC2 Instance Connect Endpoint can replace it.",
+      "difficulty": "Easy",
+      "tags": [
+        "Bastion"
+      ]
+    },
+    {
+      "id": "vpc-public-ipv4-charge",
+      "prompt": "Which statement about charges for public IPv4 addresses is correct?",
+      "choices": [
+        "Only Elastic IPs that are not associated with a running instance are charged",
+        "Public IPv4 addresses are free; only NAT gateways are charged for them",
+        "Public IPv4 addresses are free while attached to a running instance and charged only when released",
+        "Every public IPv4 address, including Elastic IPs that are idle, is charged per hour"
+      ],
+      "correctChoice": "Every public IPv4 address, including Elastic IPs that are idle, is charged per hour",
+      "explanation": "AWS charges per hour for all public IPv4 addresses, whether in use or idle. This encourages IPv6 adoption and releasing unused addresses.",
+      "difficulty": "Medium",
+      "tags": [
+        "Elastic IP",
+        "Cost",
+        "IPv4"
+      ]
+    },
+    {
+      "id": "vpc-egress-only-cost-saving",
+      "prompt": "Application servers in private subnets make very high volumes of outbound calls to internet APIs that support IPv6. NAT gateway data-processing charges are significant, and the servers must not accept inbound connections from the internet. What should the architect do to reduce cost?",
+      "choices": [
+        "Replace each NAT gateway with an interface VPC endpoint for the APIs",
+        "Enable IPv6 on the VPC and subnets and route ::/0 to an egress-only internet gateway",
+        "Route ::/0 to an internet gateway",
+        "Add a second NAT gateway per AZ to spread the data processing"
+      ],
+      "correctChoice": "Enable IPv6 on the VPC and subnets and route ::/0 to an egress-only internet gateway",
+      "explanation": "An egress-only internet gateway gives outbound-only IPv6 access with no hourly or data-processing charge. An IGW would also allow inbound connections, and additional NAT gateways increase cost.",
+      "difficulty": "Hard",
+      "tags": [
+        "Egress-only internet gateway",
+        "NAT gateway",
+        "Cost",
+        "IPv6"
+      ]
+    },
+    {
+      "id": "vpc-shared-vpc-participant-limits",
+      "prompt": "A VPC subnet is shared with a participant account through AWS RAM. What can the participant account do?",
+      "choices": [
+        "Modify the shared subnet's route tables and NACLs to suit its workloads",
+        "View and manage all resources created by other participants in the shared subnet",
+        "Create and manage its own resources, such as EC2 instances, in the shared subnet but not the owner's route tables or others' resources",
+        "Delete the shared subnet and attach its own internet gateway to the VPC"
+      ],
+      "correctChoice": "Create and manage its own resources, such as EC2 instances, in the shared subnet but not the owner's route tables or others' resources",
+      "explanation": "The VPC owner manages subnets, route tables, NACLs and gateways. Participants can only see and manage their own resources in the shared subnet.",
+      "difficulty": "Medium",
+      "tags": [
+        "Shared VPC",
+        "RAM"
+      ]
+    },
+    {
+      "id": "vpc-nat-wrong-subnet",
+      "prompt": "A public NAT gateway with an Elastic IP was created and the private subnet's route table has 0.0.0.0/0 -> nat-gateway. The private instances still cannot reach the internet. The NAT gateway's subnet is associated with a route table that has only the local route. What is the problem?",
+      "choices": [
+        "The NAT gateway must be placed in the same subnet as the instances",
+        "The NAT gateway's subnet has no route to an internet gateway, so it must be moved to a public subnet",
+        "The NAT gateway needs a virtual private gateway attached to the VPC",
+        "The private instances need public IPv4 addresses for the NAT gateway to translate"
+      ],
+      "correctChoice": "The NAT gateway's subnet has no route to an internet gateway, so it must be moved to a public subnet",
+      "explanation": "A public NAT gateway reaches the internet through an IGW, so its own subnet needs a 0.0.0.0/0 route to the IGW. Instances behind NAT use private IPs only.",
+      "difficulty": "Hard",
+      "tags": [
+        "NAT gateway",
+        "Route tables",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "vpc-three-tier-secure-design",
+      "prompt": "A web application must be highly available across two AZs. Users reach it over the internet through a load balancer. The application servers need outbound internet access for updates, and the database must have no internet path at all. Which subnet design meets these requirements?",
+      "choices": [
+        "Load balancer in private subnets with a NAT gateway providing inbound access for users",
+        "Load balancer, application servers and database all in public subnets with security groups",
+        "Load balancer in public subnets, application servers in private subnets with a NAT gateway per AZ, and database in private subnets with no default route",
+        "Load balancer in public subnets, application servers and database in private subnets sharing one NAT gateway route for all tiers"
+      ],
+      "correctChoice": "Load balancer in public subnets, application servers in private subnets with a NAT gateway per AZ, and database in private subnets with no default route",
+      "explanation": "Public subnets host internet-facing entry points, private app subnets reach the internet via NAT (one per AZ for resilience), and database subnets have no default route. NAT gateways cannot provide inbound access.",
+      "difficulty": "Hard",
+      "tags": [
+        "Subnets",
+        "NAT gateway",
+        "Architecture"
+      ]
+    },
+    {
+      "id": "vpc-eni-failover",
+      "prompt": "A licence server is bound to a specific private IP address and Elastic IP. If the instance fails, a standby instance must take over the same addresses quickly. Which approach works?",
+      "choices": [
+        "Associate a second NACL with the subnet that allows the standby's addresses",
+        "Move the ENI holding the addresses to the standby (or remap the Elastic IP)",
+        "Launch the standby in another Region and connect it to the VPC using VPC peering",
+        "Create a new subnet in the same AZ with the same CIDR range and move the standby there"
+      ],
+      "correctChoice": "Move the ENI holding the addresses to the standby (or remap the Elastic IP)",
+      "explanation": "ENIs and Elastic IPs can be moved between instances, so a standby can take over fixed IP addresses without clients changing configuration.",
+      "difficulty": "Medium",
+      "tags": [
+        "ENI",
+        "Elastic IP",
+        "High availability"
+      ]
+    },
+    {
+      "id": "vpc-eni-definition",
+      "prompt": "What is an elastic network interface (ENI)?",
+      "choices": [
+        "A dedicated physical connection from a data centre to AWS",
+        "A managed virtual router that connects multiple VPCs and on-premises networks",
+        "A virtual network card in a VPC that attaches to compute resources",
+        "A stateless firewall that filters traffic at the subnet level"
+      ],
+      "correctChoice": "A virtual network card in a VPC that attaches to compute resources",
+      "explanation": "ENIs are virtual network cards with IP addresses used by EC2 and other compute types. They are also the basis of interface endpoints and transit gateway attachments.",
+      "difficulty": "Easy",
+      "tags": [
+        "ENI"
+      ]
+    },
+    {
+      "id": "vpc-peering-non-transitive",
+      "prompt": "VPC A is peered with VPC B, and VPC B is peered with VPC C. Can instances in VPC A reach instances in VPC C through VPC B?",
+      "choices": [
+        "Yes, because peering relationships are automatically shared",
+        "No, because VPC peering is not transitive",
+        "Yes, if the route tables in VPC B allow it",
+        "Only if all three VPCs are in the same account"
+      ],
+      "correctChoice": "No, because VPC peering is not transitive",
+      "explanation": "VPC peering is a one-to-one relationship with no transitive routing. Connect A and C directly, or use a transit gateway.",
+      "difficulty": "Easy",
+      "tags": [
+        "VPC peering"
+      ]
+    },
+    {
+      "id": "vpc-peering-overlapping-cidr",
+      "prompt": "Which condition prevents two VPCs from being peered?",
+      "choices": [
+        "Their CIDR blocks overlap",
+        "One of them uses IPv6 and the other IPv4",
+        "They are in different AWS accounts",
+        "They are in different Regions"
+      ],
+      "correctChoice": "Their CIDR blocks overlap",
+      "explanation": "Peered VPCs must have non-overlapping CIDR blocks. Peering works across accounts and Regions.",
+      "difficulty": "Easy",
+      "tags": [
+        "VPC peering",
+        "CIDR"
+      ]
+    },
+    {
+      "id": "vpc-peering-routes-missing",
+      "prompt": "A peering connection between two VPCs shows as active, yet instances cannot reach each other using private IPs. Security groups and NACLs allow the traffic. What is the most likely cause?",
+      "choices": [
+        "The peering connection needs an internet gateway attached to each VPC",
+        "The VPCs need a transit gateway attachment for each subnet to forward the traffic",
+        "The peering connection requires a NAT gateway in each VPC to translate addresses",
+        "Routes to the peer's CIDR via the peering connection are missing from the route tables"
+      ],
+      "correctChoice": "Routes to the peer's CIDR via the peering connection are missing from the route tables",
+      "explanation": "After creating and accepting the peering connection, you must add routes in the route table of each VPC targeting the peering connection.",
+      "difficulty": "Medium",
+      "tags": [
+        "VPC peering",
+        "Route tables",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "vpc-peering-sg-reference-region",
+      "prompt": "A VPC in us-east-1 is peered with a VPC in eu-west-1. How can the security group in us-east-1 allow traffic from the instances in eu-west-1?",
+      "choices": [
+        "Attach the eu-west-1 security group to the us-east-1 instances through the peering connection",
+        "Use the peer VPC's CIDR range as the source, as SG references across peering work only within a Region",
+        "Reference the eu-west-1 security group ID as the source in the inbound rule",
+        "Reference the eu-west-1 security group by name in an outbound rule on the us-east-1 group"
+      ],
+      "correctChoice": "Use the peer VPC's CIDR range as the source, as SG references across peering work only within a Region",
+      "explanation": "A security group rule can reference a peer VPC's security group only for same-Region peering. For inter-Region peering, use CIDR ranges.",
+      "difficulty": "Medium",
+      "tags": [
+        "VPC peering",
+        "Security groups"
+      ]
+    },
+    {
+      "id": "vpc-peering-cross-account-region-cost",
+      "prompt": "Which statement about VPC peering is correct?",
+      "choices": [
+        "It supports transitive routing when a central hub VPC is used",
+        "It works only within one Region and the connection itself is billed hourly",
+        "It relies on separate hardware and can become a bandwidth bottleneck",
+        "It can link VPCs across accounts and Regions; cross-AZ or cross-Region data transfer is charged"
+      ],
+      "correctChoice": "It can link VPCs across accounts and Regions; cross-AZ or cross-Region data transfer is charged",
+      "explanation": "Peering supports cross-account and inter-Region connections, has no single point of failure or bandwidth bottleneck, and has no charge itself, but cross-AZ and cross-Region data transfer is billed.",
+      "difficulty": "Medium",
+      "tags": [
+        "VPC peering",
+        "Cost"
+      ]
+    },
+    {
+      "id": "vpc-tgw-vs-mesh-peering",
+      "prompt": "A company has 30 VPCs in one Region that must all communicate with each other and with an on-premises network via a Site-to-Site VPN. The team wants minimal ongoing operational overhead. Which solution is best?",
+      "choices": [
+        "Attach all VPCs and the VPN to a transit gateway",
+        "Create a full mesh of VPC peering connections and a VPN for each VPC",
+        "Create a virtual private gateway in each VPC and connect them to each other",
+        "Peer all VPCs to one central VPC and route through it"
+      ],
+      "correctChoice": "Attach all VPCs and the VPN to a transit gateway",
+      "explanation": "A transit gateway is a regional hub-and-spoke router for many VPCs and VPN/Direct Connect attachments. Peering is non-transitive, so a full mesh scales poorly (hundreds of connections and route entries).",
+      "difficulty": "Hard",
+      "tags": [
+        "Transit Gateway",
+        "VPC peering",
+        "Architecture"
+      ]
+    },
+    {
+      "id": "vpc-tgw-purpose",
+      "prompt": "What is the primary purpose of AWS Transit Gateway?",
+      "choices": [
+        "To act as a regional hub that interconnects many VPCs and on-premises networks",
+        "To provide private access to S3 and DynamoDB from a VPC",
+        "To provide a static public IPv4 address for instances",
+        "To filter traffic at the subnet level with allow and deny rules"
+      ],
+      "correctChoice": "To act as a regional hub that interconnects many VPCs and on-premises networks",
+      "explanation": "Transit Gateway is a regional virtual router that connects VPCs, VPN and Direct Connect attachments in a hub-and-spoke model.",
+      "difficulty": "Easy",
+      "tags": [
+        "Transit Gateway"
+      ]
+    },
+    {
+      "id": "vpc-tgw-inter-region-peering",
+      "prompt": "A company has a transit gateway in us-east-1 connecting several VPCs and another in eu-west-1 connecting several more. The two groups of VPCs must communicate. What should they do?",
+      "choices": [
+        "Attach the eu-west-1 VPCs directly to the us-east-1 transit gateway",
+        "Use a gateway endpoint in each Region",
+        "Create a transit gateway peering attachment between the two transit gateways",
+        "Create a virtual private gateway in each Region and connect them"
+      ],
+      "correctChoice": "Create a transit gateway peering attachment between the two transit gateways",
+      "explanation": "Transit gateways are Regional resources, so cross-Region connectivity uses transit gateway peering.",
+      "difficulty": "Medium",
+      "tags": [
+        "Transit Gateway"
+      ]
+    },
+    {
+      "id": "vpc-tgw-central-inspection",
+      "prompt": "A security team requires all traffic between 15 VPCs, and between those VPCs and on-premises, to be inspected by third-party firewall appliances. The appliances must scale and be managed centrally. Which architecture fits?",
+      "choices": [
+        "Peer every VPC with the inspection VPC and rely on transitive routing through it",
+        "Use VPC gateway endpoints in each VPC to reach the appliances",
+        "Deploy a NAT gateway in each VPC and send traffic through it to the appliances",
+        "Route VPC and on-premises traffic via a transit gateway to an inspection VPC with appliances behind a Gateway Load Balancer"
+      ],
+      "correctChoice": "Route VPC and on-premises traffic via a transit gateway to an inspection VPC with appliances behind a Gateway Load Balancer",
+      "explanation": "A transit gateway centralises routing; appliances in an inspection VPC behind a GWLB scale and distribute flows. Peering is not transitive, and NAT gateways and gateway endpoints do not inspect traffic.",
+      "difficulty": "Hard",
+      "tags": [
+        "Transit Gateway",
+        "Gateway Load Balancer",
+        "Security"
+      ]
+    },
+    {
+      "id": "vpc-peering-no-edge-to-edge",
+      "prompt": "VPC A is peered with VPC B, and VPC B has a Site-to-Site VPN to the corporate network. Instances in VPC A cannot reach on-premises resources through VPC B even though routes were added. What is the correct fix?",
+      "choices": [
+        "Add a second peering connection between VPC A and VPC B for the on-premises traffic",
+        "Enable transitive routing on the peering connection and add a route to the on-premises CIDR",
+        "Attach both VPCs and the VPN to a transit gateway, as peering cannot forward traffic to B's VPN connection",
+        "Associate VPC B's virtual private gateway with VPC A's route table and add the on-premises CIDR"
+      ],
+      "correctChoice": "Attach both VPCs and the VPN to a transit gateway, as peering cannot forward traffic to B's VPN connection",
+      "explanation": "Peering does not support transitive (edge-to-edge) routing through the peer's VPN, so traffic from A cannot use B's gateways. A transit gateway provides this hub connectivity.",
+      "difficulty": "Hard",
+      "tags": [
+        "VPC peering",
+        "Transit Gateway",
+        "VPN"
+      ]
+    },
+    {
+      "id": "vpc-endpoint-purpose",
+      "prompt": "What is the main benefit of a VPC endpoint?",
+      "choices": [
+        "It provides a static public IP address for outbound traffic from private subnets",
+        "It connects two VPCs, including those that have overlapping CIDR blocks, over the AWS network",
+        "Instances without public IPs reach supported AWS services privately, without an IGW, NAT, VPN or Direct Connect",
+        "It encrypts all traffic between a VPC and an on-premises network using IPsec"
+      ],
+      "correctChoice": "Instances without public IPs reach supported AWS services privately, without an IGW, NAT, VPN or Direct Connect",
+      "explanation": "VPC endpoints keep traffic on the AWS network and remove the need for IGW, NAT, VPN or Direct Connect to reach supported services.",
+      "difficulty": "Easy",
+      "tags": [
+        "VPC Endpoints"
+      ]
+    },
+    {
+      "id": "vpc-interface-endpoint-sqs",
+      "prompt": "Application servers in a VPC with no internet gateway or NAT must send messages to Amazon SQS. Which solution provides private connectivity?",
+      "choices": [
+        "An egress-only internet gateway",
+        "A gateway VPC endpoint for SQS",
+        "An interface VPC endpoint for SQS",
+        "A VPC peering connection to the SQS service"
+      ],
+      "correctChoice": "An interface VPC endpoint for SQS",
+      "explanation": "Gateway endpoints support only S3 and DynamoDB. Most other services, including SQS, are reached privately via interface endpoints (PrivateLink).",
+      "difficulty": "Medium",
+      "tags": [
+        "VPC Endpoints",
+        "Interface endpoint"
+      ]
+    },
+    {
+      "id": "vpc-s3-on-premises-interface-endpoint",
+      "prompt": "An on-premises application accesses Amazon S3 over an existing Direct Connect connection and the security team wants the traffic to use private IP addresses rather than public S3 endpoints. Which solution fits?",
+      "choices": [
+        "Create a NAT gateway in the VPC and route on-premises traffic to S3 through it",
+        "Create an S3 interface endpoint and have on-premises clients use its private IP addresses",
+        "Create an S3 gateway endpoint and attach it to the Direct Connect gateway for on-premises access",
+        "Create an S3 gateway endpoint in the VPC and route on-premises traffic to it"
+      ],
+      "correctChoice": "Create an S3 interface endpoint and have on-premises clients use its private IP addresses",
+      "explanation": "Gateway endpoints are used through VPC route tables and cannot be extended to on-premises networks. S3 interface endpoints have private IPs that are reachable over Direct Connect or VPN.",
+      "difficulty": "Hard",
+      "tags": [
+        "VPC Endpoints",
+        "S3",
+        "Direct Connect"
+      ]
+    },
+    {
+      "id": "vpc-gateway-endpoint-route-table",
+      "prompt": "A team creates an S3 gateway endpoint, but instances in a private subnet still send S3 traffic through the NAT gateway. What should they check?",
+      "choices": [
+        "That the endpoint is associated with the private subnet's route table",
+        "That a second internet gateway is attached to the VPC for S3 traffic",
+        "That an Elastic IP address is attached to the endpoint",
+        "That the endpoint was created inside a public subnet"
+      ],
+      "correctChoice": "That the endpoint is associated with the private subnet's route table",
+      "explanation": "Gateway endpoints work through route-table entries, so the endpoint must be associated with the route tables of the subnets that should use it.",
+      "difficulty": "Medium",
+      "tags": [
+        "VPC Endpoints",
+        "Gateway endpoint",
+        "Route tables",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "vpc-privatelink-saas-provider",
+      "prompt": "A SaaS provider hosts its service in its own VPC and must give hundreds of customer VPCs private access to it. Customers use overlapping CIDR ranges, and the provider does not want customers to reach anything else in its VPC. Which solution should the provider use?",
+      "choices": [
+        "Give each customer a Site-to-Site VPN connection into the provider's VPC over the internet",
+        "Attach every customer VPC to a transit gateway owned by the provider and share it through RAM",
+        "Create a VPC peering connection between the provider VPC and each customer VPC",
+        "Put the service behind a Network Load Balancer as a PrivateLink endpoint service that customers reach through interface endpoints"
+      ],
+      "correctChoice": "Put the service behind a Network Load Balancer as a PrivateLink endpoint service that customers reach through interface endpoints",
+      "explanation": "PrivateLink exposes a single service to consumers, works with overlapping CIDRs and does not expose the rest of the provider VPC. Peering and transit gateways need non-overlapping CIDRs and give network-level access.",
+      "difficulty": "Hard",
+      "tags": [
+        "PrivateLink",
+        "VPC peering",
+        "Architecture"
+      ]
+    },
+    {
+      "id": "vpc-gwlb-purpose",
+      "prompt": "Which service is designed to deploy, scale and manage a fleet of third-party virtual appliances, such as firewalls, in the network path?",
+      "choices": [
+        "Gateway Load Balancer",
+        "AWS Storage Gateway",
+        "Amazon API Gateway",
+        "Application Load Balancer"
+      ],
+      "correctChoice": "Gateway Load Balancer",
+      "explanation": "A Gateway Load Balancer operates at the network layer (layer 3) and distributes traffic to virtual appliances such as firewalls and intrusion detection/prevention systems.",
+      "difficulty": "Easy",
+      "tags": [
+        "Gateway Load Balancer"
+      ]
+    },
+    {
+      "id": "vpc-gwlb-endpoint-routing",
+      "prompt": "A Gateway Load Balancer endpoint has been created in an application VPC. How is traffic sent to the appliances behind the Gateway Load Balancer?",
+      "choices": [
+        "Route table entries use the Gateway Load Balancer endpoint as the target",
+        "Security group rules redirect traffic to the endpoint",
+        "The NACL is configured to forward packets to the appliances",
+        "The application's DNS records are updated to the appliance IP addresses"
+      ],
+      "correctChoice": "Route table entries use the Gateway Load Balancer endpoint as the target",
+      "explanation": "Traffic reaches the GWLB endpoint through route table changes; the endpoint sends it over PrivateLink to the GWLB, which distributes it to the appliances and returns it.",
+      "difficulty": "Medium",
+      "tags": [
+        "Gateway Load Balancer",
+        "Route tables"
+      ]
+    },
+    {
+      "id": "vpc-lattice-hard",
+      "prompt": "Microservices run in dozens of VPCs across several accounts, some with overlapping CIDR blocks. The team wants IAM-based authorisation per service, HTTPS between services, and weighted routing for canary releases, without managing peering or transit routing. Which service should they use?",
+      "choices": [
+        "AWS Transit Gateway with a shared route table",
+        "Amazon VPC Lattice",
+        "VPC peering with security group references",
+        "A Gateway Load Balancer with a GWLB endpoint in each VPC"
+      ],
+      "correctChoice": "Amazon VPC Lattice",
+      "explanation": "VPC Lattice is an application networking layer that connects services across VPCs and accounts, handles overlapping addressing, integrates with IAM and supports weighted routing. Transit gateways and peering are network-level and require non-overlapping CIDRs.",
+      "difficulty": "Hard",
+      "tags": [
+        "VPC Lattice",
+        "Architecture"
+      ]
+    },
+    {
+      "id": "vpc-lattice-purpose",
+      "prompt": "What is Amazon VPC Lattice?",
+      "choices": [
+        "A managed application networking service that connects, secures and monitors services across VPCs and accounts",
+        "A service that mirrors network traffic from ENIs to security monitoring appliances",
+        "A dedicated physical connection from on-premises to AWS through a Direct Connect location",
+        "A managed firewall that performs deep packet inspection at the VPC perimeter using Suricata rules"
+      ],
+      "correctChoice": "A managed application networking service that connects, secures and monitors services across VPCs and accounts",
+      "explanation": "VPC Lattice provides service-to-service connectivity, authentication and observability for microservices without managing the underlying network plumbing.",
+      "difficulty": "Easy",
+      "tags": [
+        "VPC Lattice"
+      ]
+    },
+    {
+      "id": "vpc-lattice-service-network",
+      "prompt": "In VPC Lattice, which construct is the logical container that groups services so that associated VPCs can communicate with them?",
+      "choices": [
+        "A listener",
+        "A resource share",
+        "A target group",
+        "A service network"
+      ],
+      "correctChoice": "A service network",
+      "explanation": "A service network is the logical boundary for services; VPCs associated with it can reach its services. Target groups hold targets and listeners define protocol and port.",
+      "difficulty": "Medium",
+      "tags": [
+        "VPC Lattice"
+      ]
+    },
+    {
+      "id": "vpc-s2s-vpn-basics",
+      "prompt": "A company wants to connect its branch office network to a VPC over the internet with encrypted tunnels, and have it running quickly at low cost. Which service fits?",
+      "choices": [
+        "VPC peering",
+        "AWS Site-to-Site VPN",
+        "AWS Direct Connect",
+        "AWS Client VPN"
+      ],
+      "correctChoice": "AWS Site-to-Site VPN",
+      "explanation": "Site-to-Site VPN uses IPsec tunnels over the internet to connect an on-premises network or branch office to a VPC. Client VPN is for individual users.",
+      "difficulty": "Easy",
+      "tags": [
+        "Site-to-Site VPN"
+      ]
+    },
+    {
+      "id": "vpc-vgw-cgw-sides",
+      "prompt": "In a Site-to-Site VPN, which component is the VPN endpoint on the Amazon side attached to a single VPC?",
+      "choices": [
+        "The virtual private gateway",
+        "The egress-only internet gateway",
+        "The customer gateway",
+        "The customer gateway device"
+      ],
+      "correctChoice": "The virtual private gateway",
+      "explanation": "The virtual private gateway is the AWS-side VPN endpoint attached to one VPC. The customer gateway is the AWS resource that describes your on-premises device (the customer gateway device).",
+      "difficulty": "Easy",
+      "tags": [
+        "Site-to-Site VPN",
+        "Virtual private gateway",
+        "Customer gateway"
+      ]
+    },
+    {
+      "id": "vpc-vpn-two-tunnels",
+      "prompt": "Why does AWS provide two tunnels for each Site-to-Site VPN connection?",
+      "choices": [
+        "To separate IPv4 traffic from IPv6 traffic across the two tunnels",
+        "To keep production traffic and test traffic isolated from each other",
+        "For redundancy, because the tunnels terminate in different Availability Zones",
+        "To double throughput by automatically combining both tunnels into one"
+      ],
+      "correctChoice": "For redundancy, because the tunnels terminate in different Availability Zones",
+      "explanation": "Each connection has two tunnels, each with its own endpoint in a different AZ, so connectivity survives an AZ or endpoint failure.",
+      "difficulty": "Easy",
+      "tags": [
+        "Site-to-Site VPN"
+      ]
+    },
+    {
+      "id": "vpc-vpn-ipv6-transit-gateway",
+      "prompt": "A company needs to send IPv6 traffic between its data centre and its VPCs over a Site-to-Site VPN. How must the VPN be terminated?",
+      "choices": [
+        "On a customer gateway with IPv6 enabled in its BGP ASN configuration",
+        "On a transit gateway, as a virtual private gateway does not carry IPv6 over Site-to-Site VPN",
+        "On a virtual private gateway with an ::/0 route to the VPN connection",
+        "On an internet gateway combined with an egress-only internet gateway"
+      ],
+      "correctChoice": "On a transit gateway, as a virtual private gateway does not carry IPv6 over Site-to-Site VPN",
+      "explanation": "IPv6 traffic is not supported on a Site-to-Site VPN that terminates on a virtual private gateway; a transit gateway attachment is required.",
+      "difficulty": "Medium",
+      "tags": [
+        "Site-to-Site VPN",
+        "Transit Gateway",
+        "IPv6"
+      ]
+    },
+    {
+      "id": "vpc-client-vpn-purpose",
+      "prompt": "Which AWS service lets individual remote users securely connect from their laptops to resources in a VPC using an OpenVPN-based client?",
+      "choices": [
+        "AWS Transit Gateway",
+        "AWS Direct Connect",
+        "AWS Site-to-Site VPN",
+        "AWS Client VPN"
+      ],
+      "correctChoice": "AWS Client VPN",
+      "explanation": "Client VPN is a managed client-based VPN for users. Site-to-Site VPN connects whole networks.",
+      "difficulty": "Easy",
+      "tags": [
+        "Client VPN"
+      ]
+    },
+    {
+      "id": "vpc-client-vpn-saml",
+      "prompt": "Remote developers must reach a database in a private subnet using their corporate SSO credentials, with no public exposure of the database. Which solution meets this?",
+      "choices": [
+        "An egress-only internet gateway",
+        "A NAT gateway with a security group allowing the developers' IP addresses",
+        "AWS Site-to-Site VPN with a customer gateway on each laptop",
+        "AWS Client VPN with federated (SAML) authentication"
+      ],
+      "correctChoice": "AWS Client VPN with federated (SAML) authentication",
+      "explanation": "Client VPN supports certificate, Active Directory and SAML federated authentication and can give users access to private resources such as an RDS instance in a private subnet.",
+      "difficulty": "Medium",
+      "tags": [
+        "Client VPN",
+        "Authentication"
+      ]
+    },
+    {
+      "id": "vpc-direct-connect-purpose",
+      "prompt": "A company needs a dedicated, private network connection between its data centre and AWS that gives consistent performance and does not traverse the public internet. What should it use?",
+      "choices": [
+        "VPC peering",
+        "AWS Direct Connect",
+        "AWS Site-to-Site VPN over the internet",
+        "An internet gateway"
+      ],
+      "correctChoice": "AWS Direct Connect",
+      "explanation": "Direct Connect provides dedicated network connections from on-premises to AWS with consistent bandwidth and latency characteristics.",
+      "difficulty": "Easy",
+      "tags": [
+        "Direct Connect"
+      ]
+    },
+    {
+      "id": "vpc-vpn-vs-dx-timeline",
+      "prompt": "A company needs encrypted hybrid connectivity to AWS within a few days and has a modest budget. It can tolerate internet-based latency variation. Which option is most suitable?",
+      "choices": [
+        "A VPC peering connection",
+        "A Gateway Load Balancer endpoint",
+        "A dedicated AWS Direct Connect connection",
+        "AWS Site-to-Site VPN"
+      ],
+      "correctChoice": "AWS Site-to-Site VPN",
+      "explanation": "A Site-to-Site VPN can be created in minutes over the internet at low cost. Direct Connect requires physical provisioning with a location or partner and has higher cost.",
+      "difficulty": "Medium",
+      "tags": [
+        "Site-to-Site VPN",
+        "Direct Connect"
+      ]
+    },
+    {
+      "id": "vpc-dx-encryption",
+      "prompt": "A company uses Direct Connect to reach its VPCs. A new compliance rule requires IPsec encryption of all in-transit traffic between the data centre and AWS. Which approach satisfies this?",
+      "choices": [
+        "Run a Site-to-Site VPN over the Direct Connect connection",
+        "Enable VPC Flow Logs on the Direct Connect virtual interface",
+        "Create a gateway endpoint for the traffic",
+        "Assume Direct Connect traffic is already encrypted with IPsec by default"
+      ],
+      "correctChoice": "Run a Site-to-Site VPN over the Direct Connect connection",
+      "explanation": "Direct Connect is private but not IPsec-encrypted by default. An IPsec Site-to-Site VPN running over Direct Connect adds encryption.",
+      "difficulty": "Hard",
+      "tags": [
+        "Direct Connect",
+        "Site-to-Site VPN",
+        "Security"
+      ]
+    },
+    {
+      "id": "vpc-dx-with-vpn-backup",
+      "prompt": "A company uses a Direct Connect connection as the primary link to its VPCs. The link is critical, but a second Direct Connect circuit is too expensive and slow to provision. What is the most cost-effective way to improve availability?",
+      "choices": [
+        "Add a Site-to-Site VPN as a backup path over the internet",
+        "Use a gateway endpoint as the failover path",
+        "Replace Direct Connect with VPC peering",
+        "Add a second route table association to the subnets"
+      ],
+      "correctChoice": "Add a Site-to-Site VPN as a backup path over the internet",
+      "explanation": "A Site-to-Site VPN is a quick, inexpensive backup that takes over if Direct Connect fails. The others do not provide hybrid connectivity.",
+      "difficulty": "Hard",
+      "tags": [
+        "Direct Connect",
+        "Site-to-Site VPN",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "vpc-dx-pricing-factors",
+      "prompt": "Which statement about Direct Connect charges is correct?",
+      "choices": [
+        "Charges depend only on the number of VPCs connected to the connection",
+        "Port-hours are charged regardless of usage, outbound data transfer is charged and inbound transfer is free",
+        "Inbound and outbound data transfer are both charged at the same per-GB rate",
+        "Only data transferred is charged, and there is no charge for the provisioned port"
+      ],
+      "correctChoice": "Port-hours are charged regardless of usage, outbound data transfer is charged and inbound transfer is free",
+      "explanation": "Direct Connect pricing includes port capacity and port-hours (regardless of usage) plus data transfer out. Data transfer in is free.",
+      "difficulty": "Medium",
+      "tags": [
+        "Direct Connect",
+        "Cost"
+      ]
+    },
+    {
+      "id": "vpc-dx-hosted-connection",
+      "prompt": "A company needs only about 200 Mbps of dedicated connectivity and wants to obtain it through an AWS Direct Connect partner. Which connection type is appropriate?",
+      "choices": [
+        "A transit gateway peering attachment",
+        "A Client VPN endpoint",
+        "A dedicated connection",
+        "A hosted connection"
+      ],
+      "correctChoice": "A hosted connection",
+      "explanation": "Hosted connections are provisioned via APN partners at lower capacities (from 50 Mbps). Dedicated connections are physical ports of 1, 10, 100 or 400 Gbps.",
+      "difficulty": "Easy",
+      "tags": [
+        "Direct Connect"
+      ]
+    },
+    {
+      "id": "vpc-accelerated-vpn",
+      "prompt": "A company's Site-to-Site VPN to AWS suffers from variable latency over the public internet. It wants better performance without buying Direct Connect and without changing the IPsec-based approach. Which action fits?",
+      "choices": [
+        "Replace the VPN with VPC peering between the VPC and the on-premises network",
+        "Attach the VPN to a virtual private gateway and enable Traffic Mirroring on the tunnels",
+        "Enable acceleration (AWS Global Accelerator) on a VPN connection attached to a transit gateway",
+        "Add a NAT gateway in the VPC in front of the customer gateway device to speed up traffic"
+      ],
+      "correctChoice": "Enable acceleration (AWS Global Accelerator) on a VPN connection attached to a transit gateway",
+      "explanation": "Accelerated Site-to-Site VPN routes traffic over the AWS global network via Global Accelerator and is supported on VPN attachments to a transit gateway.",
+      "difficulty": "Hard",
+      "tags": [
+        "Site-to-Site VPN",
+        "Global Accelerator",
+        "Transit Gateway"
+      ]
+    },
+    {
+      "id": "vpc-flow-logs-purpose",
+      "prompt": "What does VPC Flow Logs capture?",
+      "choices": [
+        "Operating-system and application logs from instances in the VPC",
+        "Metadata about IP traffic to and from network interfaces: addresses, ports, protocol and accept or reject action",
+        "The full packet payloads of traffic flowing through the VPC's network interfaces",
+        "API calls made to VPC resources, including who made them and when"
+      ],
+      "correctChoice": "Metadata about IP traffic to and from network interfaces: addresses, ports, protocol and accept or reject action",
+      "explanation": "Flow logs record metadata about IP traffic (addresses, ports, protocol, bytes, packets, action) but not payloads. API activity is recorded by CloudTrail.",
+      "difficulty": "Easy",
+      "tags": [
+        "VPC Flow Logs"
+      ]
+    },
+    {
+      "id": "vpc-flow-logs-destination",
+      "prompt": "A security team wants to retain VPC Flow Logs cheaply for long-term analysis with a query service. Where should the logs be delivered?",
+      "choices": [
+        "A Gateway Load Balancer",
+        "An EBS volume attached to a bastion",
+        "An Amazon S3 bucket",
+        "An Elastic IP address"
+      ],
+      "correctChoice": "An Amazon S3 bucket",
+      "explanation": "Flow logs can be delivered to S3, CloudWatch Logs or Amazon Data Firehose. S3 is the low-cost option for retention and querying.",
+      "difficulty": "Medium",
+      "tags": [
+        "VPC Flow Logs",
+        "S3"
+      ]
+    },
+    {
+      "id": "vpc-flow-logs-nacl-reject",
+      "prompt": "A flow log for a web server's ENI shows inbound traffic on port 443 recorded as ACCEPT, but the return traffic to the client's ephemeral port is recorded as REJECT. The security group allows inbound 443. What is the most likely cause?",
+      "choices": [
+        "The subnet's NACL outbound rules do not allow the ephemeral port range",
+        "The internet gateway is blocking stateful replies",
+        "The route table is missing a local route",
+        "The security group is missing an outbound rule for the ephemeral port range"
+      ],
+      "correctChoice": "The subnet's NACL outbound rules do not allow the ephemeral port range",
+      "explanation": "Security groups are stateful, so responses are not rejected by them. A stateless NACL without an outbound rule for the client's ephemeral ports rejects the reply.",
+      "difficulty": "Hard",
+      "tags": [
+        "VPC Flow Logs",
+        "NACL",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "vpc-traffic-mirroring-purpose",
+      "prompt": "A security team needs copies of actual network packets from specific instances, forwarded to an intrusion detection appliance for analysis. Which feature should they use?",
+      "choices": [
+        "A NAT gateway with logging enabled",
+        "VPC Traffic Mirroring",
+        "VPC Flow Logs",
+        "A security group rule that logs packets"
+      ],
+      "correctChoice": "VPC Traffic Mirroring",
+      "explanation": "Traffic Mirroring copies packets (encapsulated with VXLAN) from a source ENI to a target for inspection. Flow logs capture only metadata.",
+      "difficulty": "Medium",
+      "tags": [
+        "Traffic Mirroring"
+      ]
+    },
+    {
+      "id": "vpc-network-firewall-domain-filtering",
+      "prompt": "An application in a VPC must be restricted to making outbound HTTPS requests only to a list of approved domain names, with managed deep packet inspection at the VPC perimeter. Which service meets this?",
+      "choices": [
+        "Security groups",
+        "Elastic IP addresses",
+        "Network ACLs",
+        "AWS Network Firewall"
+      ],
+      "correctChoice": "AWS Network Firewall",
+      "explanation": "Network Firewall is a managed stateful firewall that can filter by domain name and protocol and perform deep packet inspection. Security groups and NACLs filter only by IP, port and protocol.",
+      "difficulty": "Medium",
+      "tags": [
+        "Network Firewall"
+      ]
+    },
+    {
+      "id": "vpc-network-firewall-vs-appliances",
+      "prompt": "A company needs intrusion prevention with custom Suricata-compatible rules for traffic entering and leaving a VPC. The team wants a managed, automatically scaling service and does not want to deploy or patch appliances. Which solution fits best?",
+      "choices": [
+        "Network ACLs with high-numbered allow rules",
+        "Third-party firewall appliances on EC2 behind a Gateway Load Balancer",
+        "Security groups with deny rules for known-bad addresses",
+        "AWS Network Firewall"
+      ],
+      "correctChoice": "AWS Network Firewall",
+      "explanation": "Network Firewall is managed, scales automatically, uses the open-source Suricata engine and provides IDS/IPS. GWLB-based appliances also work but add management overhead; SGs and NACLs cannot do deep inspection.",
+      "difficulty": "Hard",
+      "tags": [
+        "Network Firewall",
+        "Gateway Load Balancer",
+        "Security"
+      ]
+    },
+    {
+      "id": "vpc-traffic-mirroring-targets",
+      "prompt": "Mirrored traffic from many instances must be sent to a scalable group of monitoring appliances rather than a single ENI. Which can be used as a Traffic Mirroring target?",
+      "choices": [
+        "A UDP-enabled Network Load Balancer (or a Gateway Load Balancer)",
+        "A transit gateway attachment in the VPC",
+        "An Application Load Balancer with an HTTPS listener",
+        "An internet gateway attached to the VPC"
+      ],
+      "correctChoice": "A UDP-enabled Network Load Balancer (or a Gateway Load Balancer)",
+      "explanation": "Traffic Mirroring targets can be an ENI, a UDP-enabled Network Load Balancer or a Gateway Load Balancer. ALBs do not accept the VXLAN/UDP mirrored traffic.",
+      "difficulty": "Medium",
+      "tags": [
+        "Traffic Mirroring"
+      ]
+    },
+    {
+      "id": "vpc-nau-monitoring",
+      "prompt": "A large VPC with many ENIs, interface endpoints and NAT gateways may approach its Network Address Usage (NAU) quota. How can the team track NAU proactively?",
+      "choices": [
+        "Enable NAU monitoring on the VPC and use CloudWatch NAU metrics",
+        "Enable VPC Flow Logs and count the unique source addresses in the logs",
+        "Enable Traffic Mirroring on the VPC's ENIs and inspect the packet counts",
+        "Use AWS CloudTrail to count the API calls made against the VPC"
+      ],
+      "correctChoice": "Enable NAU monitoring on the VPC and use CloudWatch NAU metrics",
+      "explanation": "NAU measures the resources in a VPC (e.g. ENI IPs, endpoints per AZ, NAT gateways). Once NAU monitoring is enabled on the VPC, CloudWatch metrics can be used to track it.",
+      "difficulty": "Medium",
+      "tags": [
+        "Network Address Usage",
+        "CloudWatch"
+      ]
+    },
+    {
+      "id": "vpc-eic-endpoint",
+      "prompt": "A team needs SSH access to instances in private subnets. The instances have no public IP addresses, the team does not want to run bastion hosts, and the SSM Agent cannot be installed. Which option meets these needs?",
+      "choices": [
+        "A NAT gateway with port forwarding to the instances",
+        "A bastion host with an Elastic IP in a public subnet",
+        "An EC2 Instance Connect Endpoint",
+        "An egress-only internet gateway"
+      ],
+      "correctChoice": "An EC2 Instance Connect Endpoint",
+      "explanation": "EC2 Instance Connect Endpoint lets you connect to private instances without a bastion or public IPs and without needing the SSM Agent. NAT gateways and egress-only gateways do not allow inbound access.",
+      "difficulty": "Medium",
+      "tags": [
+        "Bastion",
+        "EC2 Instance Connect Endpoint"
+      ]
+    },
+    {
+      "id": "vpc-flow-logs-scope",
+      "prompt": "A team wants to capture IP traffic information only for one specific EC2 instance rather than an entire VPC. At which level can they create the flow log?",
+      "choices": [
+        "The instance's network interface (ENI)",
+        "The route table of the instance's subnet",
+        "The internet gateway attached to the VPC",
+        "The security group attached to the instance"
+      ],
+      "correctChoice": "The instance's network interface (ENI)",
+      "explanation": "Flow logs can be created for a VPC, a subnet or an individual ENI (and for transit gateways or attachments).",
+      "difficulty": "Easy",
+      "tags": [
+        "VPC Flow Logs"
+      ]
+    },
+    {
+      "id": "vpc-endpoint-types-combo",
+      "prompt": "A VPC has no internet gateway or NAT device. Workloads must privately reach Amazon S3, Amazon SQS, and a partner's service offered through AWS PrivateLink, at the lowest cost. Which combination should be used?",
+      "choices": [
+        "A gateway endpoint for S3 and interface endpoints for SQS and the partner service",
+        "A gateway endpoint for SQS and interface endpoints for S3 and the partner service",
+        "Gateway endpoints for S3, SQS and the partner service",
+        "Interface endpoints for all three services"
+      ],
+      "correctChoice": "A gateway endpoint for S3 and interface endpoints for SQS and the partner service",
+      "explanation": "S3 gateway endpoints are free; SQS and PrivateLink partner services are available only through interface endpoints (charged per hour and per GB).",
+      "difficulty": "Hard",
+      "tags": [
+        "VPC Endpoints",
+        "PrivateLink",
+        "Cost"
+      ]
+    },
+    {
+      "id": "vpc-central-egress-tgw",
+      "prompt": "A company runs 20 VPCs, each with its own NAT gateways in several AZs, and NAT hourly charges are high. The VPCs are in one Region and need only outbound IPv4 internet access. Which design reduces cost while keeping connectivity?",
+      "choices": [
+        "Replace the NAT gateways with interface endpoints in each VPC for internet destinations",
+        "Peer all VPCs with one VPC that has NAT gateways and route 0.0.0.0/0 through the peering",
+        "Attach the VPCs to a transit gateway and route 0.0.0.0/0 to a central egress VPC with NAT gateways",
+        "Route 0.0.0.0/0 in each VPC to a virtual private gateway attached to that VPC"
+      ],
+      "correctChoice": "Attach the VPCs to a transit gateway and route 0.0.0.0/0 to a central egress VPC with NAT gateways",
+      "explanation": "A transit gateway lets many VPCs share a centralised egress VPC. VPC peering is not transitive, so peered VPCs cannot use another VPC's NAT gateway.",
+      "difficulty": "Hard",
+      "tags": [
+        "Transit Gateway",
+        "NAT gateway",
+        "Cost"
+      ]
+    },
+    {
+      "id": "vpc-gwlb-multi-vpc",
+      "prompt": "A central security account runs a scalable fleet of third-party firewall appliances. Application VPCs in many accounts must have their traffic transparently inspected by this fleet. Which approach fits?",
+      "choices": [
+        "Place a NAT gateway in each application VPC that forwards all traffic to the appliances",
+        "Peer each application VPC with the security VPC and route traffic to the appliances' IP addresses",
+        "Share the appliances' ENIs with each application account using AWS RAM and route to them",
+        "Expose the GWLB as an endpoint service, create a GWLB endpoint in each application VPC and route traffic to it"
+      ],
+      "correctChoice": "Expose the GWLB as an endpoint service, create a GWLB endpoint in each application VPC and route traffic to it",
+      "explanation": "GWLB endpoints use PrivateLink to reach the GWLB in the provider VPC, which distributes flows across the appliances. Route table entries send traffic to the endpoint.",
+      "difficulty": "Hard",
+      "tags": [
+        "Gateway Load Balancer",
+        "PrivateLink",
+        "Security"
+      ]
+    },
+    {
+      "id": "vpc-nat-eip-allowlist",
+      "prompt": "Workloads in private subnets in two AZs call a partner API that allows traffic only from a small set of fixed public IP addresses. What is the best approach?",
+      "choices": [
+        "Use an interface VPC endpoint for the partner's public API and give the partner its address",
+        "Use a public NAT gateway with an Elastic IP in each AZ and give the partner those addresses",
+        "Assign auto-assigned public IPv4 addresses to the instances and give the partner those addresses",
+        "Use an egress-only internet gateway and give the partner the gateway's address"
+      ],
+      "correctChoice": "Use a public NAT gateway with an Elastic IP in each AZ and give the partner those addresses",
+      "explanation": "Public NAT gateways have static Elastic IPs and present them as the source address of outbound traffic. Auto-assigned public IPs change on stop/start.",
+      "difficulty": "Hard",
+      "tags": [
+        "NAT gateway",
+        "Elastic IP"
+      ]
+    },
+    {
+      "id": "vpc-regional-nat-gateway",
+      "prompt": "A team wants outbound internet access for private subnets in several AZs using a single NAT gateway resource that automatically spans AZs, without placing and maintaining a NAT gateway in a public subnet for each AZ. Which option fits?",
+      "choices": [
+        "A zonal NAT gateway in one AZ",
+        "A regional NAT gateway",
+        "A NAT instance in an Auto Scaling group",
+        "A private NAT gateway"
+      ],
+      "correctChoice": "A regional NAT gateway",
+      "explanation": "A regional NAT gateway spans AZs automatically and does not require a public subnet, providing public connectivity. Zonal NAT gateways are tied to one AZ.",
+      "difficulty": "Hard",
+      "tags": [
+        "NAT gateway",
+        "High availability"
+      ]
+    },
+    {
+      "id": "vpc-ssm-private-endpoints",
+      "prompt": "Private subnets have no internet gateway or NAT, and policy forbids adding them. Administrators still need to use Systems Manager Session Manager to reach the instances. What must be added?",
+      "choices": [
+        "A virtual private gateway attached to the VPC",
+        "Interface VPC endpoints for the Systems Manager services",
+        "An Elastic IP on each instance",
+        "A gateway VPC endpoint for Systems Manager"
+      ],
+      "correctChoice": "Interface VPC endpoints for the Systems Manager services",
+      "explanation": "Systems Manager is reached privately via interface endpoints (PrivateLink); gateway endpoints exist only for S3 and DynamoDB.",
+      "difficulty": "Hard",
+      "tags": [
+        "VPC Endpoints",
+        "Systems Manager",
+        "Security"
+      ]
+    },
+    {
+      "id": "vpc-dx-data-transfer-cost",
+      "prompt": "A company moves tens of terabytes a month from AWS to its data centre on a steady basis. Internet data-transfer-out charges are high and performance consistency matters. Which solution is most appropriate?",
+      "choices": [
+        "A NAT gateway in a public subnet",
+        "AWS Direct Connect",
+        "A Site-to-Site VPN over the internet",
+        "VPC peering to the on-premises network"
+      ],
+      "correctChoice": "AWS Direct Connect",
+      "explanation": "Direct Connect reduces network costs for sustained large transfers (lower data-transfer-out rates) and provides consistent throughput. VPN traffic is charged at internet transfer rates.",
+      "difficulty": "Hard",
+      "tags": [
+        "Direct Connect",
+        "Cost"
+      ]
+    },
+    {
+      "id": "vpc-sg-no-outbound-rules",
+      "prompt": "A web server's security group allows inbound TCP 443 from anywhere, and an engineer removes every outbound rule from it. The NACLs allow all traffic. What is the effect?",
+      "choices": [
+        "Nothing changes, because security groups ignore outbound rules by default",
+        "The server can initiate outbound connections, but inbound HTTPS connections fail",
+        "Clients cannot connect because responses are blocked by the missing outbound rule",
+        "Clients can still connect and get responses, but the server cannot start new outbound connections"
+      ],
+      "correctChoice": "Clients can still connect and get responses, but the server cannot start new outbound connections",
+      "explanation": "Because security groups are stateful, replies to allowed inbound connections are returned automatically. With no outbound rules, new connections initiated by the instance are denied.",
+      "difficulty": "Hard",
+      "tags": [
+        "Security groups",
+        "Stateful"
+      ]
+    },
+    {
+      "id": "vpc-igw-route-private-instances",
+      "prompt": "To give database-tier instances internet access for patches, an engineer adds a 0.0.0.0/0 route to the internet gateway in their private subnet's route table. The instances have only private IPv4 addresses and still cannot reach the internet. What is the correct fix?",
+      "choices": [
+        "Replace the IGW route with a route to an egress-only internet gateway",
+        "Remove the IGW route and route 0.0.0.0/0 to a NAT gateway in a public subnet",
+        "Attach a second internet gateway to the VPC",
+        "Associate the subnet with the main route table"
+      ],
+      "correctChoice": "Remove the IGW route and route 0.0.0.0/0 to a NAT gateway in a public subnet",
+      "explanation": "An IGW performs translation only for instances that have a public or Elastic IPv4 address. Keeping instances private requires a NAT gateway in a public subnet. An egress-only IGW is for IPv6.",
+      "difficulty": "Hard",
+      "tags": [
+        "Internet gateway",
+        "NAT gateway",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "vpc-peering-vs-tgw-two-vpcs",
+      "prompt": "Two VPCs in the same Region exchange tens of terabytes of data each month. The company wants the lowest-cost private connectivity with no bandwidth bottleneck between them. No other VPCs are involved. Which option is best?",
+      "choices": [
+        "VPC peering",
+        "An AWS PrivateLink endpoint service in front of each VPC",
+        "A transit gateway with an attachment from each VPC",
+        "A Site-to-Site VPN between the two VPCs"
+      ],
+      "correctChoice": "VPC peering",
+      "explanation": "Peering has no hourly charge and no bandwidth bottleneck, so it is cheapest for two VPCs. Transit gateways add hourly and per-GB charges, and VPN tunnels have limited throughput.",
+      "difficulty": "Hard",
+      "tags": [
+        "VPC peering",
+        "Transit Gateway",
+        "Cost"
+      ]
+    },
+    {
+      "id": "vpc-shared-vpc-design",
+      "prompt": "A central network team wants to control subnets, route tables and gateways, while 12 workload accounts in the same AWS Organization launch their own EC2 instances into those same subnets without VPC peering. Which approach should they take?",
+      "choices": [
+        "Share the default subnets of the network account's default VPC with the workload accounts using RAM and route tables",
+        "Create a VPC peering connection between each workload account's own VPC and the network account's VPC and manage routes centrally",
+        "Enable RAM sharing in the organization and share non-default subnets of the network account's VPC with workload accounts",
+        "Create a transit gateway and attach every workload account's VPC to it"
+      ],
+      "correctChoice": "Enable RAM sharing in the organization and share non-default subnets of the network account's VPC with workload accounts",
+      "explanation": "VPC sharing via RAM shares subnets within an Organization; participants manage only their own resources. Default subnets cannot be shared, and peering or transit gateways connect separate VPCs rather than sharing subnets.",
+      "difficulty": "Hard",
+      "tags": [
+        "Shared VPC",
+        "RAM",
+        "Architecture"
+      ]
+    },
+    {
+      "id": "vpc-mirroring-forensics",
+      "prompt": "For forensic analysis, a security team needs full packet captures from a production instance. They cannot install agents or change software on the instance and want minimal impact on it. Which solution fits?",
+      "choices": [
+        "Enable VPC Flow Logs with the ALL filter on the instance's ENI",
+        "Enable AWS Network Firewall alert logging for the VPC",
+        "Configure VPC Traffic Mirroring from the instance's ENI to a monitoring target",
+        "Install a packet-capture tool on the instance and ship the files to S3"
+      ],
+      "correctChoice": "Configure VPC Traffic Mirroring from the instance's ENI to a monitoring target",
+      "explanation": "Traffic Mirroring copies packets at the ENI level without touching the instance. Flow logs record only metadata, not packet contents.",
+      "difficulty": "Hard",
+      "tags": [
+        "Traffic Mirroring",
+        "VPC Flow Logs",
+        "Security"
+      ]
+    },
+    {
+      "id": "vpc-dual-stack-private-egress",
+      "prompt": "Dual-stack instances in private subnets must reach both IPv4 and IPv6 internet destinations but must not accept connections initiated from the internet. Which route table configuration meets this?",
+      "choices": [
+        "0.0.0.0/0 and ::/0 both to an internet gateway",
+        "0.0.0.0/0 to an egress-only internet gateway and ::/0 to a NAT gateway",
+        "0.0.0.0/0 and ::/0 both to a NAT gateway",
+        "0.0.0.0/0 to a NAT gateway and ::/0 to an egress-only internet gateway"
+      ],
+      "correctChoice": "0.0.0.0/0 to a NAT gateway and ::/0 to an egress-only internet gateway",
+      "explanation": "NAT gateways handle outbound IPv4 and egress-only internet gateways handle outbound-only IPv6. An internet gateway would permit inbound connections.",
+      "difficulty": "Hard",
+      "tags": [
+        "NAT gateway",
+        "Egress-only internet gateway",
+        "IPv6"
+      ]
+    },
+    {
+      "id": "vpc-client-vpn-group-access",
+      "prompt": "Remote engineers and finance staff must connect from their laptops. Engineers need access to the application subnets, finance staff to a reporting subnet only. The company already uses Active Directory. Which solution gives least-privilege access with the least overhead?",
+      "choices": [
+        "A Site-to-Site VPN with a customer gateway on each user's laptop",
+        "AWS Client VPN with Active Directory authentication and authorization rules per AD group",
+        "A bastion host with a shared SSH key and a public IP address",
+        "A single Client VPN certificate shared by all users with one security group"
+      ],
+      "correctChoice": "AWS Client VPN with Active Directory authentication and authorization rules per AD group",
+      "explanation": "Client VPN supports AD authentication, and AD groups or security groups provide granular, per-user-group network access. Site-to-Site VPN is for networks, not individual users.",
+      "difficulty": "Hard",
+      "tags": [
+        "Client VPN",
+        "Active Directory",
+        "Security"
+      ]
+    },
+    {
+      "id": "vpc-sg-nacl-layers",
+      "prompt": "A web server's security group allows inbound HTTPS only from 198.51.100.0/24 and 192.0.2.0/24. Its subnet's NACL has inbound rule 100 DENY all from 192.0.2.0/24 and rule 110 ALLOW all from 0.0.0.0/0 (outbound allows all). Which clients can connect over HTTPS?",
+      "choices": [
+        "Clients from any address, because the NACL allows all traffic",
+        "Clients in both 198.51.100.0/24 and 192.0.2.0/24",
+        "Only clients in 198.51.100.0/24",
+        "Only clients in 192.0.2.0/24"
+      ],
+      "correctChoice": "Only clients in 198.51.100.0/24",
+      "explanation": "Traffic must be permitted by both the NACL and the security group. The NACL denies 192.0.2.0/24 and the security group rejects other sources, so only 198.51.100.0/24 passes.",
+      "difficulty": "Hard",
+      "tags": [
+        "Security groups",
+        "NACL",
+        "Rule evaluation"
+      ]
+    },
+    {
+      "id": "vpc-lattice-weighted-routing",
+      "prompt": "A service currently runs on EC2 instances. A new version is built on AWS Lambda and traffic must shift gradually (for example 10% then 50%) between the two across accounts without changing clients. Which solution fits?",
+      "choices": [
+        "A VPC Lattice service whose listener rule weights traffic between an EC2 and a Lambda target group",
+        "A VPC peering connection between the accounts, using weighted route table entries",
+        "A transit gateway route table with equal-cost routes to each version of the service",
+        "A Gateway Load Balancer with two GWLB endpoints, one for each version of the service"
+      ],
+      "correctChoice": "A VPC Lattice service whose listener rule weights traffic between an EC2 and a Lambda target group",
+      "explanation": "VPC Lattice target groups can hold EC2, IP, Lambda or ALB targets, and listener rules can weight traffic for blue/green or canary deployments.",
+      "difficulty": "Hard",
+      "tags": [
+        "VPC Lattice",
+        "Deployment"
+      ]
+    },
+    {
+      "id": "vpc-vpn-vs-dx-bandwidth",
+      "prompt": "A company needs sustained private connectivity of about 10 Gbps from its data centre to AWS. A Site-to-Site VPN tunnel supports up to about 1.25 Gbps. Which option meets the throughput requirement with dependable performance?",
+      "choices": [
+        "A dedicated 10 Gbps Direct Connect connection",
+        "An AWS Client VPN endpoint with certificate-based authentication",
+        "A VPC peering connection between the VPC and the data centre network",
+        "A single Site-to-Site VPN connection using one IPsec tunnel"
+      ],
+      "correctChoice": "A dedicated 10 Gbps Direct Connect connection",
+      "explanation": "Dedicated Direct Connect connections are available at 1, 10, 100 and 400 Gbps with consistent performance. A VPN tunnel is capped near 1.25 Gbps.",
+      "difficulty": "Hard",
+      "tags": [
+        "Direct Connect",
+        "Site-to-Site VPN"
+      ]
+    }
+  ]
+}

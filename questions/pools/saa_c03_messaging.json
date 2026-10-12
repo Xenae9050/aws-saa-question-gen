@@ -1,0 +1,1746 @@
+{
+  "$schema": "../pool.schema.json",
+  "poolName": "Messaging & Integration: SNS, SQS, Amazon MQ, MSK & AppFlow (Mixed Difficulty)",
+  "description": "SAA-C03 revision questions on Amazon SNS, Amazon SQS, Amazon MQ, Amazon MSK and Amazon AppFlow at Easy, Medium and Hard difficulty: decoupling, fanout, ordering and delivery guarantees, filtering, visibility and polling, protocols, streaming and SaaS data integration.",
+  "category": "Application Integration",
+  "version": 1,
+  "questions": [
+    {
+      "id": "appflow-purpose",
+      "prompt": "A marketing team wants to copy data from a SaaS application into Amazon S3 on a regular basis without writing or maintaining integration code. Which service is designed for this?",
+      "choices": [
+        "Amazon SQS",
+        "Amazon AppFlow",
+        "Amazon MSK",
+        "Amazon MQ"
+      ],
+      "correctChoice": "Amazon AppFlow",
+      "explanation": "AppFlow is a managed integration service that transfers data between SaaS applications and AWS services such as S3 through configured flows, with no custom code needed.",
+      "difficulty": "Easy",
+      "tags": [
+        "AppFlow",
+        "Integration"
+      ]
+    },
+    {
+      "id": "appflow-trigger-types",
+      "prompt": "Which set lists the ways an Amazon AppFlow flow can be triggered?",
+      "choices": [
+        "On a schedule or by an SQS queue message, but never on demand",
+        "Only on demand, started manually by an administrator in the console",
+        "On demand, on a schedule, or on an event from a SaaS application",
+        "Only on a recurring schedule that is defined with a cron expression"
+      ],
+      "correctChoice": "On demand, on a schedule, or on an event from a SaaS application",
+      "explanation": "AppFlow flows can be run manually (on demand), on a recurring schedule, or on an event from a supported SaaS application.",
+      "difficulty": "Easy",
+      "tags": [
+        "AppFlow",
+        "Integration"
+      ]
+    },
+    {
+      "id": "appflow-event-trigger",
+      "prompt": "A company wants customer data copied to AWS immediately whenever a record changes in its SaaS CRM, rather than waiting for a nightly job. Which AppFlow configuration fits best?",
+      "choices": [
+        "A flow that runs on an event from the SaaS application",
+        "A flow that runs on a schedule every 24 hours",
+        "A flow that runs on demand each morning",
+        "A flow that runs only when an administrator chooses to start it"
+      ],
+      "correctChoice": "A flow that runs on an event from the SaaS application",
+      "explanation": "Event-triggered flows run in response to an event in the SaaS application, giving near-real-time transfer. Scheduled and on-demand flows are not driven by data changes.",
+      "difficulty": "Medium",
+      "tags": [
+        "AppFlow",
+        "Integration"
+      ]
+    },
+    {
+      "id": "appflow-privatelink",
+      "prompt": "Security policy forbids sending SaaS data over the public internet. A team still wants to move data from a supported SaaS application into AWS using AppFlow. Which feature helps?",
+      "choices": [
+        "Flows that disable encryption to reduce latency",
+        "Flows that use a Lambda function to open a public endpoint",
+        "Flows that run on a schedule only",
+        "Private flows that use AWS PrivateLink"
+      ],
+      "correctChoice": "Private flows that use AWS PrivateLink",
+      "explanation": "AppFlow can create private flows over AWS PrivateLink so that data stays on the AWS network rather than crossing the public internet. Data can also be encrypted in transit and at rest.",
+      "difficulty": "Medium",
+      "tags": [
+        "AppFlow",
+        "Security"
+      ]
+    },
+    {
+      "id": "appflow-glue-catalog",
+      "prompt": "A company ingests SaaS data into S3 with AppFlow and wants analysts to query it with SQL-based tools without hand-defining table schemas. What should be configured?",
+      "choices": [
+        "Use Amazon MQ to hold the schema definitions",
+        "Catalogue the transferred data in the AWS Glue Data Catalog from the flow settings",
+        "Attach an SQS queue to the S3 bucket and read the table definitions from messages",
+        "Send the data through an SNS topic with a filter policy"
+      ],
+      "correctChoice": "Catalogue the transferred data in the AWS Glue Data Catalog from the flow settings",
+      "explanation": "AppFlow can register data it writes to S3 in the AWS Glue Data Catalog, making it discoverable for query services. Partition and aggregation settings can also improve query performance.",
+      "difficulty": "Hard",
+      "tags": [
+        "AppFlow",
+        "Glue",
+        "Analytics"
+      ]
+    },
+    {
+      "id": "appflow-vs-custom-code",
+      "prompt": "A team needs a scheduled, encrypted transfer of SaaS records to S3, with partitioning and aggregation applied, and wants the least operational overhead. Which option is best?",
+      "choices": [
+        "Run Apache Kafka on EC2 and build a connector for the SaaS application",
+        "Write a Lambda function with scheduled invocations and custom API logic for the SaaS application",
+        "Configure an AppFlow flow with a schedule trigger and the partition and aggregation settings",
+        "Run a custom polling application on EC2 with an SQS queue buffering the records"
+      ],
+      "correctChoice": "Configure an AppFlow flow with a schedule trigger and the partition and aggregation settings",
+      "explanation": "AppFlow provides scheduled flows, encryption, and partition and aggregation options as managed features. The alternatives all require building and operating custom integration code or infrastructure.",
+      "difficulty": "Hard",
+      "tags": [
+        "AppFlow",
+        "Operational Overhead"
+      ]
+    },
+    {
+      "id": "sns-pubsub-purpose",
+      "prompt": "What is the main purpose of Amazon SNS in an architecture?",
+      "choices": [
+        "Streaming ordered logs in partitions so consumers can replay them",
+        "Running containerised workloads without managing the servers",
+        "Holding messages in a queue until one consumer polls for them",
+        "Pub/sub messaging that decouples publishers from subscribers"
+      ],
+      "correctChoice": "Pub/sub messaging that decouples publishers from subscribers",
+      "explanation": "SNS is a fully managed publish/subscribe service. Publishers send to a topic and SNS pushes copies to all subscribers, so publishers need not know who receives the messages.",
+      "difficulty": "Easy",
+      "tags": [
+        "SNS",
+        "Decoupling"
+      ]
+    },
+    {
+      "id": "sns-topic-concept",
+      "prompt": "In Amazon SNS, what is a topic?",
+      "choices": [
+        "A logical channel that publishers send to and subscribers attach to",
+        "A rule that filters messages according to their attribute values",
+        "A Kafka partition that stores streaming records in order",
+        "A queue from which consumers poll for their messages in batches"
+      ],
+      "correctChoice": "A logical channel that publishers send to and subscribers attach to",
+      "explanation": "The SNS topic acts as the event bus: publishers send to it, and each subscription on the topic receives the messages. Publishers need not care about the subscribers' protocols.",
+      "difficulty": "Easy",
+      "tags": [
+        "SNS"
+      ]
+    },
+    {
+      "id": "sns-a2a-vs-a2p",
+      "prompt": "Which of these SNS subscriber types is classed as application-to-person (A2P) rather than application-to-application (A2A)?",
+      "choices": [
+        "An AWS Lambda function that is triggered by the topic",
+        "An HTTPS endpoint that is registered as a webhook",
+        "An SMS text message sent to a mobile phone number",
+        "An SQS queue that receives the messages"
+      ],
+      "correctChoice": "An SMS text message sent to a mobile phone number",
+      "explanation": "A2P destinations deliver to people: SMS, email and mobile push. A2A destinations include SQS, Lambda, Firehose and HTTP/S endpoints.",
+      "difficulty": "Easy",
+      "tags": [
+        "SNS",
+        "Subscriptions"
+      ]
+    },
+    {
+      "id": "sns-standard-vs-fifo",
+      "prompt": "Which statement correctly contrasts SNS standard topics with SNS FIFO topics?",
+      "choices": [
+        "FIFO topics preserve message order and deduplicate, with lower throughput than standard topics",
+        "Standard topics have lower throughput than FIFO topics",
+        "FIFO topics deliver at least once and may duplicate, whereas standard topics never duplicate",
+        "Standard topics preserve strict order, whereas FIFO topics do not"
+      ],
+      "correctChoice": "FIFO topics preserve message order and deduplicate, with lower throughput than standard topics",
+      "explanation": "Standard topics offer very high throughput with at-least-once delivery and no guaranteed order. FIFO topics guarantee ordering within a message group and deduplicate, at lower throughput.",
+      "difficulty": "Easy",
+      "tags": [
+        "SNS",
+        "FIFO"
+      ]
+    },
+    {
+      "id": "sns-fifo-naming",
+      "prompt": "A developer creates an SNS FIFO topic. Which requirement applies to the topic name?",
+      "choices": [
+        "It must include the Region code",
+        "It must be exactly 10 characters long",
+        "It must begin with the prefix fifo-",
+        "It must end with the .fifo suffix"
+      ],
+      "correctChoice": "It must end with the .fifo suffix",
+      "explanation": "FIFO topics (and FIFO queues) must have names ending in .fifo, and the topic is created with the FifoTopic attribute set to true.",
+      "difficulty": "Easy",
+      "tags": [
+        "SNS",
+        "FIFO"
+      ]
+    },
+    {
+      "id": "sns-standard-duplicates",
+      "prompt": "A Lambda function subscribed to a standard SNS topic occasionally processes the same notification twice. What is the best way to keep the results correct?",
+      "choices": [
+        "Move the Lambda subscription into a different Availability Zone",
+        "Make processing idempotent, because standard topics deliver at least once",
+        "Enable raw message delivery on the Lambda subscription to the topic",
+        "Raise the topic's throughput limit so that duplicates stop occurring"
+      ],
+      "correctChoice": "Make processing idempotent, because standard topics deliver at least once",
+      "explanation": "Standard SNS topics guarantee at-least-once delivery, so duplicates are possible. Idempotent consumers handle them safely; otherwise use a FIFO topic with deduplication.",
+      "difficulty": "Medium",
+      "tags": [
+        "SNS",
+        "Reliability"
+      ]
+    },
+    {
+      "id": "sns-sqs-fanout",
+      "prompt": "An order service must send each new order to three independent systems (billing, inventory, shipping). Each system processes at its own pace and must not lose orders if it is temporarily down. Which design fits best?",
+      "choices": [
+        "Publish to one shared SQS queue that all three systems poll",
+        "Publish to an SNS topic with the three systems subscribed by email",
+        "Have the order service call each of the systems directly over HTTP",
+        "Publish to an SNS topic with one subscribed SQS queue per system"
+      ],
+      "correctChoice": "Publish to an SNS topic with one subscribed SQS queue per system",
+      "explanation": "The SNS-to-SQS fanout pattern gives each consumer its own durable buffer. With a single shared queue, each message would go to only one consumer.",
+      "difficulty": "Medium",
+      "tags": [
+        "SNS",
+        "SQS",
+        "Fanout"
+      ]
+    },
+    {
+      "id": "sns-filter-policy-basic",
+      "prompt": "Only one of five subscribers on an SNS topic wants messages where the attribute eventType equals \"refund\". How can this be achieved without changing the publisher?",
+      "choices": [
+        "Attach a dead-letter queue to the topic itself",
+        "Enable raw message delivery on that one subscriber",
+        "Apply a subscription filter policy to that one subscriber",
+        "Create five separate topics and make the publisher send to each"
+      ],
+      "correctChoice": "Apply a subscription filter policy to that one subscriber",
+      "explanation": "Filter policies are applied per subscription, so SNS delivers only matching messages to that subscriber. The publisher still publishes once.",
+      "difficulty": "Medium",
+      "tags": [
+        "SNS",
+        "Filtering"
+      ]
+    },
+    {
+      "id": "sns-filter-scope-body",
+      "prompt": "Messages published to an SNS topic carry the values to filter on inside the JSON message body, not in message attributes. Which setting lets a subscription filter policy match on them?",
+      "choices": [
+        "Set the filter policy scope to MessageBody",
+        "Set the filter policy scope to MessageAttributes",
+        "Enable FIFO on the topic",
+        "Enable server-side encryption on the topic"
+      ],
+      "correctChoice": "Set the filter policy scope to MessageBody",
+      "explanation": "A filter policy applies to message attributes by default (MessageAttributes scope). Setting the scope to MessageBody lets it match on fields in the payload.",
+      "difficulty": "Medium",
+      "tags": [
+        "SNS",
+        "Filtering"
+      ]
+    },
+    {
+      "id": "sns-filter-numeric",
+      "prompt": "A subscription should receive only order messages whose numeric attribute price is greater than 100. Which type of filter policy matching supports this?",
+      "choices": [
+        "Prefix matching on a string value",
+        "Numeric range matching",
+        "IP address matching",
+        "Case-insensitive string matching"
+      ],
+      "correctChoice": "Numeric range matching",
+      "explanation": "Filter policies support numeric matching, including exact, anything-but and range comparisons. String matching options such as prefix operate on text rather than on numbers.",
+      "difficulty": "Medium",
+      "tags": [
+        "SNS",
+        "Filtering"
+      ]
+    },
+    {
+      "id": "sns-raw-delivery",
+      "prompt": "An SQS queue subscribed to an SNS topic receives the message wrapped in an SNS JSON envelope, and the consumer wants only the original payload. What should be enabled?",
+      "choices": [
+        "A larger visibility timeout on the queue",
+        "A FIFO topic instead of a standard topic",
+        "Long polling on the receiving queue",
+        "Raw message delivery on the subscription"
+      ],
+      "correctChoice": "Raw message delivery on the subscription",
+      "explanation": "With raw message delivery enabled for SQS, Firehose or HTTP/S subscriptions, SNS sends the message as-is without the JSON envelope, which avoids parsing and reduces payload size.",
+      "difficulty": "Medium",
+      "tags": [
+        "SNS",
+        "SQS"
+      ]
+    },
+    {
+      "id": "sns-dlq-match-type",
+      "prompt": "A team wants undeliverable messages from an SNS subscription kept in a dead-letter queue. The subscribed endpoint is a standard SQS queue. Which dead-letter queue configuration is valid?",
+      "choices": [
+        "A FIFO SQS queue, because dead-letter queues must always be FIFO",
+        "A standard SQS queue whose access policy lets SNS send messages to it",
+        "A second SNS topic that is subscribed to the first one",
+        "A Kinesis data stream that is attached to the subscription"
+      ],
+      "correctChoice": "A standard SQS queue whose access policy lets SNS send messages to it",
+      "explanation": "The SNS DLQ must be an SQS queue of the same type as the topic (standard for standard, FIFO for FIFO), and its queue policy must permit SNS to send to it.",
+      "difficulty": "Hard",
+      "tags": [
+        "SNS",
+        "DLQ"
+      ]
+    },
+    {
+      "id": "sns-https-endpoint-down",
+      "prompt": "An SNS topic delivers to an HTTPS webhook that is sometimes down for extended periods. Operations must be able to inspect and replay the messages SNS could not deliver, with little custom code. What should they do?",
+      "choices": [
+        "Enable Message Data Protection on the topic",
+        "Switch the topic to FIFO so that retries are unlimited",
+        "Attach an SQS dead-letter queue to the subscription",
+        "Increase the topic's maximum message size"
+      ],
+      "correctChoice": "Attach an SQS dead-letter queue to the subscription",
+      "explanation": "After the delivery policy's retries are exhausted, SNS can move undeliverable messages into an SQS DLQ attached to the subscription, where they can be inspected and reprocessed.",
+      "difficulty": "Hard",
+      "tags": [
+        "SNS",
+        "DLQ",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "sns-fifo-sqs-fifo",
+      "prompt": "A trading app must send each customer's transactions to several downstream systems in the exact order they were created, with no duplicates, and each system must process at its own pace. Which design meets this?",
+      "choices": [
+        "An SNS FIFO topic with SQS FIFO queues, using customer ID as the message group ID",
+        "A standard SNS topic with Lambda subscribers and a DynamoDB table for deduplication",
+        "An SNS FIFO topic with email subscriptions for each downstream team",
+        "A standard SNS topic with SQS standard queues, relying on timestamps for order"
+      ],
+      "correctChoice": "An SNS FIFO topic with SQS FIFO queues, using customer ID as the message group ID",
+      "explanation": "FIFO topics preserve order within a message group and deduplicate, and SQS FIFO subscribers let each system consume at its own pace. Standard topics give no ordering guarantee.",
+      "difficulty": "Hard",
+      "tags": [
+        "SNS",
+        "SQS",
+        "FIFO"
+      ]
+    },
+    {
+      "id": "sns-fifo-dedup-window",
+      "prompt": "A publisher retries a publish to an SNS FIFO topic after a timeout, sending the same message with the same deduplication ID about 2 minutes after the first attempt. What happens?",
+      "choices": [
+        "SNS rejects the publish with an error and stops the topic",
+        "SNS treats it as a duplicate and does not deliver it a second time",
+        "SNS delivers it twice, because FIFO topics never deduplicate",
+        "SNS delivers it twice, but marks the second copy as a duplicate"
+      ],
+      "correctChoice": "SNS treats it as a duplicate and does not deliver it a second time",
+      "explanation": "FIFO topics deduplicate messages, using a deduplication ID or content-based deduplication, within a 5-minute interval, so the retry is not delivered again.",
+      "difficulty": "Hard",
+      "tags": [
+        "SNS",
+        "FIFO"
+      ]
+    },
+    {
+      "id": "sns-fanout-filter-orders",
+      "prompt": "An e-commerce platform publishes all order events to one SNS topic with a message attribute orderType (standard, express, international). Three fulfilment SQS queues should each receive only their own order type, and new order types must be added without changing the publisher. What is the best design?",
+      "choices": [
+        "Three separate topics, with the publisher deciding which one to use",
+        "One SQS queue with three consumers that skip the wrong order types",
+        "One topic with a filter policy on each queue's subscription matching its orderType",
+        "One topic where each consumer discards messages that are not theirs after receiving"
+      ],
+      "correctChoice": "One topic with a filter policy on each queue's subscription matching its orderType",
+      "explanation": "Subscription filter policies let SNS route messages based on attributes, keeping the publisher simple and unaware of consumers. Discarding after receipt wastes processing and queue capacity.",
+      "difficulty": "Hard",
+      "tags": [
+        "SNS",
+        "SQS",
+        "Filtering",
+        "Fanout"
+      ]
+    },
+    {
+      "id": "sns-filter-anything-but",
+      "prompt": "A subscriber should receive every message published to an SNS topic except those whose attribute env equals \"test\". Which filter policy matching type supports this?",
+      "choices": [
+        "Anything-but matching on the env attribute",
+        "IP address matching on the env attribute using the value test",
+        "Numeric range matching on the env attribute using the value test",
+        "Prefix matching on the env attribute set to the value test"
+      ],
+      "correctChoice": "Anything-but matching on the env attribute",
+      "explanation": "Filter policies support anything-but matching for numeric and string values, which delivers all messages except those matching the listed values. Prefix, range and IP address matching select matches rather than excluding them.",
+      "difficulty": "Medium",
+      "tags": [
+        "SNS",
+        "Filtering"
+      ]
+    },
+    {
+      "id": "sns-firehose-archive",
+      "prompt": "A company must archive every message published to an SNS topic into S3 for audit, and must also trigger a Lambda function for each message, with no custom archiving code. Which design fits best?",
+      "choices": [
+        "Subscribe an email address and forward the messages from the mailbox into S3",
+        "Subscribe an HTTP endpoint that stores each message in S3 using a script running on EC2",
+        "Subscribe only the Lambda function and have it write each message to an SQS queue for archiving",
+        "Subscribe both an Amazon Data Firehose delivery stream to S3 and the Lambda function to the topic"
+      ],
+      "correctChoice": "Subscribe both an Amazon Data Firehose delivery stream to S3 and the Lambda function to the topic",
+      "explanation": "Firehose is a supported SNS subscriber that can deliver messages to S3, and the same topic can also invoke Lambda, since one published message reaches all subscriptions. The other options need custom code or manual steps.",
+      "difficulty": "Hard",
+      "tags": [
+        "SNS",
+        "Firehose",
+        "S3"
+      ]
+    },
+    {
+      "id": "sns-kms-encryption",
+      "prompt": "How can the messages stored in an SNS topic be encrypted at rest?",
+      "choices": [
+        "Enable long polling on the topic with a 20-second wait time",
+        "Apply a filter policy to every subscription on the topic",
+        "Add a .fifo suffix to the topic name to switch on encryption",
+        "Enable server-side encryption on the topic with an AWS KMS key"
+      ],
+      "correctChoice": "Enable server-side encryption on the topic with an AWS KMS key",
+      "explanation": "SNS topics support server-side encryption with AWS KMS keys. Filter policies, long polling and FIFO have nothing to do with encryption.",
+      "difficulty": "Easy",
+      "tags": [
+        "SNS",
+        "Encryption",
+        "KMS"
+      ]
+    },
+    {
+      "id": "sns-large-message",
+      "prompt": "A publisher must send payloads of several hundred megabytes through SNS, well beyond the maximum message size. What is the supported approach?",
+      "choices": [
+        "Raise the SNS message size limit to 2 GB in the topic settings",
+        "Compress the payload and then enable raw message delivery",
+        "Use the SNS Extended Client Library, which stores the payload in S3",
+        "Split the payload across messages by using a FIFO topic"
+      ],
+      "correctChoice": "Use the SNS Extended Client Library, which stores the payload in S3",
+      "explanation": "The Extended Client Library uses S3 to hold large payloads (up to 2 GB) and publishes a pointer. The plain message size limit is far smaller and cannot be raised to 2 GB.",
+      "difficulty": "Medium",
+      "tags": [
+        "SNS",
+        "Large Messages"
+      ]
+    },
+    {
+      "id": "sns-mobile-push",
+      "prompt": "Which SNS subscription protocol delivers push notifications to apps installed on mobile devices?",
+      "choices": [
+        "HTTP/S",
+        "Platform application endpoint",
+        "Email-JSON",
+        "Amazon SQS"
+      ],
+      "correctChoice": "Platform application endpoint",
+      "explanation": "Mobile push uses the platform application endpoint protocol. Email, SMS and HTTP/S deliver through other channels.",
+      "difficulty": "Easy",
+      "tags": [
+        "SNS",
+        "Mobile"
+      ]
+    },
+    {
+      "id": "sns-http-custom-retry",
+      "prompt": "Which SNS subscriber type allows its delivery retry policy, including the backoff function, to be customised?",
+      "choices": [
+        "HTTP/S endpoints",
+        "Amazon Data Firehose streams",
+        "SQS queues",
+        "AWS Lambda functions"
+      ],
+      "correctChoice": "HTTP/S endpoints",
+      "explanation": "Delivery policies for SQS, Lambda and Firehose are fixed by SNS, whereas HTTP/S endpoints can use a custom policy, including linear, arithmetic, geometric or exponential backoff.",
+      "difficulty": "Easy",
+      "tags": [
+        "SNS",
+        "Delivery Policy"
+      ]
+    },
+    {
+      "id": "sns-subscription-one-topic",
+      "prompt": "An operations mailbox must receive alerts from two different SNS topics. How must this be set up?",
+      "choices": [
+        "Create one email subscription and use a filter policy to add the second topic",
+        "Create a separate email subscription on each topic",
+        "Create one email subscription that is attached to both topics",
+        "Create one topic subscription and attach the second topic to it"
+      ],
+      "correctChoice": "Create a separate email subscription on each topic",
+      "explanation": "A subscription belongs to exactly one topic and uses exactly one protocol, so receiving from two topics needs two subscriptions.",
+      "difficulty": "Medium",
+      "tags": [
+        "SNS",
+        "Subscriptions"
+      ]
+    },
+    {
+      "id": "sns-publish-batch",
+      "prompt": "A publisher sends many small messages to SNS and wants to reduce API request costs. What can it do?",
+      "choices": [
+        "Batch publishing, sending up to 10 messages per request",
+        "Using short polling on the topic itself",
+        "Publishing every message twice so that one copy succeeds",
+        "Using long polling on the publisher's side"
+      ],
+      "correctChoice": "Batch publishing, sending up to 10 messages per request",
+      "explanation": "SNS supports batching up to 10 messages per publish request, which lowers the number of API requests and therefore the cost.",
+      "difficulty": "Easy",
+      "tags": [
+        "SNS",
+        "Cost"
+      ]
+    },
+    {
+      "id": "sqs-decouple-purpose",
+      "prompt": "A web tier accepts uploads and a separate worker tier processes them. Traffic is spiky, and the web tier must not be slowed down or fail when workers are busy. Which service best decouples the two tiers?",
+      "choices": [
+        "AWS Service Catalog",
+        "Amazon Cognito",
+        "Amazon SQS",
+        "AWS Certificate Manager"
+      ],
+      "correctChoice": "Amazon SQS",
+      "explanation": "SQS provides asynchronous communication between producers and consumers. Messages wait safely in the queue until workers are ready, absorbing traffic spikes.",
+      "difficulty": "Easy",
+      "tags": [
+        "SQS",
+        "Decoupling"
+      ]
+    },
+    {
+      "id": "sqs-pull-model",
+      "prompt": "How do consumers receive messages from an Amazon SQS queue?",
+      "choices": [
+        "SQS invokes the consumers through an HTTP webhook",
+        "SQS broadcasts each message to all consumers at once",
+        "SQS pushes messages to consumers in real time",
+        "They poll the queue to pull messages"
+      ],
+      "correctChoice": "They poll the queue to pull messages",
+      "explanation": "SQS is pull-based: consumers must poll. SNS is the service that pushes messages to its subscribers.",
+      "difficulty": "Easy",
+      "tags": [
+        "SQS"
+      ]
+    },
+    {
+      "id": "sqs-standard-vs-fifo",
+      "prompt": "Which statement about SQS standard queues versus FIFO queues is correct?",
+      "choices": [
+        "Standard queues guarantee strict ordering, but FIFO queues do not guarantee ordering",
+        "Standard queues have nearly unlimited throughput, at-least-once delivery and best-effort ordering",
+        "FIFO queues have unlimited throughput by default, but standard queues are limited to 300 per second",
+        "Standard queues guarantee exactly-once processing, but FIFO queues may deliver duplicates"
+      ],
+      "correctChoice": "Standard queues have nearly unlimited throughput, at-least-once delivery and best-effort ordering",
+      "explanation": "Standard queues maximise throughput but can deliver duplicates and out-of-order messages. FIFO queues preserve order and avoid duplicates, with lower throughput.",
+      "difficulty": "Easy",
+      "tags": [
+        "SQS",
+        "FIFO"
+      ]
+    },
+    {
+      "id": "sqs-retention-period",
+      "prompt": "A message in a standard SQS queue has not been consumed after 4 days, and the retention period was never changed. What happens to the message?",
+      "choices": [
+        "It is deleted, because the default retention period is 4 days",
+        "It is deleted after 30 seconds, the default visibility timeout",
+        "It is moved to a dead-letter queue automatically",
+        "It stays until a consumer processes it, because queues store messages indefinitely"
+      ],
+      "correctChoice": "It is deleted, because the default retention period is 4 days",
+      "explanation": "Retention defaults to 4 days and can be set from 60 seconds to 14 days. After that, SQS deletes the message.",
+      "difficulty": "Easy",
+      "tags": [
+        "SQS",
+        "Retention"
+      ]
+    },
+    {
+      "id": "sqs-visibility-timeout-purpose",
+      "prompt": "What does the SQS visibility timeout do?",
+      "choices": [
+        "It defines how long the messages are stored before they are deleted",
+        "It sets how long a consumer waits for new messages to arrive in the queue",
+        "It delays a newly sent message from appearing in the queue at all",
+        "It hides a message from other consumers for a time after one receives it"
+      ],
+      "correctChoice": "It hides a message from other consumers for a time after one receives it",
+      "explanation": "After a consumer receives a message, it is invisible to others for the visibility timeout so it is not processed twice. If it is not deleted in time, it becomes visible again.",
+      "difficulty": "Easy",
+      "tags": [
+        "SQS",
+        "Visibility Timeout"
+      ]
+    },
+    {
+      "id": "sqs-delete-after-processing",
+      "prompt": "A consumer receives a message from an SQS queue and finishes processing it. What must the consumer do next?",
+      "choices": [
+        "Re-send the message with a new ID",
+        "Wait for the retention period to expire",
+        "Delete the message from the queue",
+        "Nothing, because SQS removes a message when it is read"
+      ],
+      "correctChoice": "Delete the message from the queue",
+      "explanation": "Receiving a message does not remove it. The consumer must explicitly delete it; otherwise it reappears after the visibility timeout and is processed again.",
+      "difficulty": "Easy",
+      "tags": [
+        "SQS"
+      ]
+    },
+    {
+      "id": "sqs-visibility-too-short",
+      "prompt": "Each message takes about 90 seconds to process, but some messages are being processed twice by different workers. The queue uses the default settings. What is the most likely cause and fix?",
+      "choices": [
+        "Short polling is the cause, so the queue should be switched to FIFO",
+        "The retention period is too long, so it should be reduced to 60 seconds",
+        "The queue's delay is too short, so DelaySeconds should be raised above 90",
+        "The 30-second visibility timeout is too short; raise it above 90 seconds"
+      ],
+      "correctChoice": "The 30-second visibility timeout is too short; raise it above 90 seconds",
+      "explanation": "If a message is not deleted before the visibility timeout (default 30 seconds) ends, it becomes visible again and another worker takes it. Setting the timeout above the processing time prevents this.",
+      "difficulty": "Hard",
+      "tags": [
+        "SQS",
+        "Visibility Timeout",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "sqs-consumer-crash",
+      "prompt": "A worker receives a message and then crashes before finishing. What happens to that message?",
+      "choices": [
+        "It is deleted automatically as soon as the first worker has received it",
+        "It stays hidden from all consumers until the queue's retention period ends",
+        "It becomes visible again after the visibility timeout and another worker takes it",
+        "It is lost permanently, because it was already received one time before"
+      ],
+      "correctChoice": "It becomes visible again after the visibility timeout and another worker takes it",
+      "explanation": "Because the message was never deleted, it becomes visible again after the visibility timeout expires, which is what makes SQS processing resilient to worker failures.",
+      "difficulty": "Medium",
+      "tags": [
+        "SQS",
+        "Reliability"
+      ]
+    },
+    {
+      "id": "sqs-visibility-max",
+      "prompt": "What is the maximum value that can be set for an SQS queue's visibility timeout?",
+      "choices": [
+        "24 hours",
+        "12 hours",
+        "15 minutes",
+        "14 days"
+      ],
+      "correctChoice": "12 hours",
+      "explanation": "Visibility timeout ranges from 0 seconds to 12 hours (default 30 seconds). Fifteen minutes is the maximum delay queue setting and 14 days is the maximum retention.",
+      "difficulty": "Easy",
+      "tags": [
+        "SQS",
+        "Visibility Timeout"
+      ]
+    },
+    {
+      "id": "sqs-long-polling-cost",
+      "prompt": "A worker fleet polls an SQS queue that is empty most of the day, and the bill shows a very high number of empty receives. What is the simplest fix?",
+      "choices": [
+        "Enable long polling so that receive calls wait for messages to arrive",
+        "Reduce the retention period of the queue to a few minutes",
+        "Switch the queue to a FIFO queue with the .fifo suffix",
+        "Increase the delay of the queue to the maximum of 15 minutes"
+      ],
+      "correctChoice": "Enable long polling so that receive calls wait for messages to arrive",
+      "explanation": "Short polling (the default) returns immediately even when empty, creating many billable empty responses. Long polling waits (up to 20 seconds) for messages, reducing empty receives and cost.",
+      "difficulty": "Medium",
+      "tags": [
+        "SQS",
+        "Polling",
+        "Cost"
+      ]
+    },
+    {
+      "id": "sqs-short-vs-long-use",
+      "prompt": "Which statement about SQS short polling and long polling is correct?",
+      "choices": [
+        "Long polling returns at once even if the queue is empty, while short polling waits for a message",
+        "Long polling is available only on standard queues, while short polling is available on all queues",
+        "Short polling is available only on FIFO queues, while long polling is available on all queues",
+        "Short polling returns at once even if the queue is empty, while long polling waits for a message or the timeout"
+      ],
+      "correctChoice": "Short polling returns at once even if the queue is empty, while long polling waits for a message or the timeout",
+      "explanation": "Short polling is the default and returns immediately. Long polling waits until a message arrives or the wait time ends, which lowers cost by reducing empty receives.",
+      "difficulty": "Easy",
+      "tags": [
+        "SQS",
+        "Polling"
+      ]
+    },
+    {
+      "id": "sqs-delay-queue",
+      "prompt": "A producer sends messages that consumers should not see for the first 5 minutes after they are sent. Which SQS feature applies to all messages in the queue?",
+      "choices": [
+        "Long polling with a wait time of 5 minutes",
+        "A delay queue with DelaySeconds set to 300",
+        "A retention period of 5 minutes on the queue",
+        "A visibility timeout of 300 seconds on the queue"
+      ],
+      "correctChoice": "A delay queue with DelaySeconds set to 300",
+      "explanation": "A delay queue keeps newly added messages invisible for the configured delay (up to 15 minutes). Visibility timeout, by contrast, applies after a message has been received.",
+      "difficulty": "Easy",
+      "tags": [
+        "SQS",
+        "Delay Queue"
+      ]
+    },
+    {
+      "id": "sqs-delay-vs-visibility",
+      "prompt": "Which statement correctly distinguishes a delay queue from the visibility timeout?",
+      "choices": [
+        "A delay hides a message when it is first added, whereas the visibility timeout hides it after it is consumed",
+        "Both hide messages only after they are consumed, but for different lengths of time",
+        "A delay hides a message after it is consumed, whereas the visibility timeout hides it when first added",
+        "Both hide messages when first added, but one is set per message"
+      ],
+      "correctChoice": "A delay hides a message when it is first added, whereas the visibility timeout hides it after it is consumed",
+      "explanation": "DelaySeconds postpones when a new message first becomes available, while the visibility timeout hides a message that a consumer has already received.",
+      "difficulty": "Hard",
+      "tags": [
+        "SQS",
+        "Delay Queue",
+        "Visibility Timeout"
+      ]
+    },
+    {
+      "id": "sqs-message-timer",
+      "prompt": "Most messages in a standard queue should be available immediately, but one message type should become visible only after 10 minutes. Which feature is best?",
+      "choices": [
+        "A visibility timeout of 600 seconds on the queue",
+        "A queue-level delay of 600 seconds that applies to every message",
+        "A message timer that sets DelaySeconds on just those messages",
+        "A retention period of 10 minutes on the whole queue"
+      ],
+      "correctChoice": "A message timer that sets DelaySeconds on just those messages",
+      "explanation": "Message timers set an initial invisibility period per message using DelaySeconds at the message level. A queue-level delay would delay every message.",
+      "difficulty": "Medium",
+      "tags": [
+        "SQS",
+        "Message Timers"
+      ]
+    },
+    {
+      "id": "sqs-visibility-extend",
+      "prompt": "Most messages in a queue take 20 seconds to process, but a few take up to 10 minutes. A global 10-minute visibility timeout would delay retries of failed ordinary messages. What is a better approach?",
+      "choices": [
+        "Set the retention period to 10 minutes so that slow messages are never lost",
+        "Convert the queue to FIFO so that slow messages are processed more quickly",
+        "Keep a short timeout and have consumers extend the visibility of long-running messages while working",
+        "Turn on long polling so slow messages are held by the consumer"
+      ],
+      "correctChoice": "Keep a short timeout and have consumers extend the visibility of long-running messages while working",
+      "explanation": "A consumer can extend the visibility timeout of an individual message it is still processing (ChangeMessageVisibility), so retries of failed ordinary messages stay quick while slow messages are not picked up by another worker.",
+      "difficulty": "Medium",
+      "tags": [
+        "SQS",
+        "Visibility Timeout"
+      ]
+    },
+    {
+      "id": "sqs-fifo-group-id",
+      "prompt": "What is the role of the message group ID in an SQS FIFO queue?",
+      "choices": [
+        "It determines how long the messages in that group are kept in the queue",
+        "Messages in a group stay in order, and different groups can be consumed in parallel",
+        "It makes the queue use a separate encryption key for every group of messages",
+        "It identifies the one consumer that is the only one allowed to read each message"
+      ],
+      "correctChoice": "Messages in a group stay in order, and different groups can be consumed in parallel",
+      "explanation": "FIFO ordering is preserved per message group, which allows multiple ordered streams within one queue and parallel consumption across groups.",
+      "difficulty": "Medium",
+      "tags": [
+        "SQS",
+        "FIFO"
+      ]
+    },
+    {
+      "id": "sqs-fifo-per-customer-parallel",
+      "prompt": "A FIFO queue must keep each customer's events in order, but a single consumer is too slow for overall volume. Which design scales consumption while preserving per-customer order?",
+      "choices": [
+        "Use one constant message group ID for all messages and run multiple consumers",
+        "Use a message timer on each message to stagger processing",
+        "Switch to a standard queue and run multiple consumers",
+        "Use the customer ID as the message group ID and run multiple consumers"
+      ],
+      "correctChoice": "Use the customer ID as the message group ID and run multiple consumers",
+      "explanation": "Ordering applies within a message group, so grouping by customer lets consumers process different customers in parallel. A single group ID would serialise everything.",
+      "difficulty": "Hard",
+      "tags": [
+        "SQS",
+        "FIFO",
+        "Scaling"
+      ]
+    },
+    {
+      "id": "sqs-standard-to-fifo",
+      "prompt": "A team realises an existing standard queue needs strict ordering. What must they do?",
+      "choices": [
+        "Create a new FIFO queue and move the producers and consumers over to it",
+        "Enable long polling on the existing queue so that its messages are ordered",
+        "Edit the existing queue's attributes so that its type is changed to FIFO",
+        "Add a .fifo suffix to the name of the existing standard queue"
+      ],
+      "correctChoice": "Create a new FIFO queue and move the producers and consumers over to it",
+      "explanation": "A queue's type cannot be converted. A new FIFO queue (with a name ending in .fifo) must be created and the applications pointed to it.",
+      "difficulty": "Medium",
+      "tags": [
+        "SQS",
+        "FIFO"
+      ]
+    },
+    {
+      "id": "sqs-fifo-throughput",
+      "prompt": "A FIFO queue handling order events is limiting throughput as volume grows. Ordering and no duplicates must be kept. Which option should be tried first?",
+      "choices": [
+        "Use batching and turn on high throughput mode for the FIFO queue",
+        "Switch every one of the consumers over to short polling",
+        "Convert the queue into a standard queue to remove its limits",
+        "Raise the visibility timeout on the queue up to the 12-hour maximum"
+      ],
+      "correctChoice": "Use batching and turn on high throughput mode for the FIFO queue",
+      "explanation": "FIFO queues have lower throughput than standard queues, but batching (up to 10 messages per request) and high throughput mode raise the limits while retaining ordering and deduplication.",
+      "difficulty": "Hard",
+      "tags": [
+        "SQS",
+        "FIFO",
+        "Performance"
+      ]
+    },
+    {
+      "id": "sqs-fifo-vs-standard-banking",
+      "prompt": "A payment system must process transactions for each account strictly in the order submitted and must never apply a transaction twice. Peak volume is moderate. Which option is best?",
+      "choices": [
+        "An SQS standard queue with a 12-hour visibility timeout",
+        "An SQS standard queue, because order is usually preserved",
+        "An SQS FIFO queue with message group IDs based on the account",
+        "An SNS standard topic, because it guarantees delivery order"
+      ],
+      "correctChoice": "An SQS FIFO queue with message group IDs based on the account",
+      "explanation": "FIFO queues guarantee ordering within a group and avoid duplicates. Standard queues only give best-effort ordering and can deliver duplicates; a longer visibility timeout does not provide ordering.",
+      "difficulty": "Hard",
+      "tags": [
+        "SQS",
+        "FIFO",
+        "Service Selection"
+      ]
+    },
+    {
+      "id": "sqs-large-payload",
+      "prompt": "A producer must send messages up to 1 GB through SQS. How can this be done?",
+      "choices": [
+        "Enable long polling so that large messages are accepted",
+        "Raise the queue's maximum message size to 2 GB",
+        "Switch to a FIFO queue, which has no limit on message size",
+        "Use the SQS Extended Client Library, which keeps the payload in S3"
+      ],
+      "correctChoice": "Use the SQS Extended Client Library, which keeps the payload in S3",
+      "explanation": "The Extended Client Library stores the payload in an S3 bucket and places a pointer in the queue, supporting payloads up to 2 GB. The built-in message size limit is far smaller.",
+      "difficulty": "Medium",
+      "tags": [
+        "SQS",
+        "Large Messages"
+      ]
+    },
+    {
+      "id": "sqs-encryption-kms-audit",
+      "prompt": "A compliance team requires that messages at rest in an SQS queue be encrypted with a key whose usage can be audited and controlled by the company. What should be configured?",
+      "choices": [
+        "A FIFO queue that uses content-based deduplication",
+        "Server-side encryption with a customer managed KMS key",
+        "A message timer applied to every message in the queue",
+        "Long polling configured with a custom wait time"
+      ],
+      "correctChoice": "Server-side encryption with a customer managed KMS key",
+      "explanation": "SQS supports server-side encryption using SQS-managed keys or AWS KMS keys. A customer managed KMS key gives control over the key policy and auditable key usage through CloudTrail.",
+      "difficulty": "Medium",
+      "tags": [
+        "SQS",
+        "Encryption",
+        "KMS"
+      ]
+    },
+    {
+      "id": "sqs-queue-policy-sns",
+      "prompt": "An SNS topic is subscribed to an SQS queue in the same account, but messages never arrive. Subscription settings look correct. What is the most likely missing piece?",
+      "choices": [
+        "The queue's access policy does not allow the SNS topic to send messages",
+        "The queue needs a longer retention period so messages can arrive",
+        "The topic needs a visibility timeout configured",
+        "The queue needs to be converted to a FIFO queue"
+      ],
+      "correctChoice": "The queue's access policy does not allow the SNS topic to send messages",
+      "explanation": "SQS access policies are resource-based policies. The queue must grant sqs:SendMessage to the topic (for example, with the topic ARN as a condition) before SNS can deliver messages to it.",
+      "difficulty": "Hard",
+      "tags": [
+        "SQS",
+        "SNS",
+        "Access Policy",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "sqs-abac-condition-keys",
+      "prompt": "Which set contains condition keys that SQS attribute-based access control (ABAC) uses to control access based on tags?",
+      "choices": [
+        "kms:ViaService, kms:CallerAccount and kms:KeySpec",
+        "sqs:VisibilityTimeout, sqs:DelaySeconds and sqs:MessageGroupId",
+        "aws:ResourceTag, aws:RequestTag and aws:TagKeys",
+        "aws:SourceIp, aws:UserAgent and aws:MultiFactorAuthAge"
+      ],
+      "correctChoice": "aws:ResourceTag, aws:RequestTag and aws:TagKeys",
+      "explanation": "ABAC authorises actions using tags on users and resources, with the global condition keys aws:ResourceTag, aws:RequestTag and aws:TagKeys.",
+      "difficulty": "Medium",
+      "tags": [
+        "SQS",
+        "IAM",
+        "ABAC"
+      ]
+    },
+    {
+      "id": "sqs-abac-prod-deny",
+      "prompt": "A company tags queues with environment=prod or environment=dev. Developers' IAM roles must not send, receive or delete messages on queues tagged prod, even if other policies allow it, and the rule must apply to queues created in future. What is the best approach?",
+      "choices": [
+        "FIFO turned on for every one of the queues that are tagged prod",
+        "An Allow statement that names each of the existing dev queues individually",
+        "A very short visibility timeout that is set on every queue tagged prod",
+        "A Deny on the SQS actions, conditioned on aws:ResourceTag/environment being prod"
+      ],
+      "correctChoice": "A Deny on the SQS actions, conditioned on aws:ResourceTag/environment being prod",
+      "explanation": "A tag-based Deny using aws:ResourceTag applies automatically to any queue with that tag, and an explicit Deny overrides any Allow. Naming each queue does not cover future ones.",
+      "difficulty": "Hard",
+      "tags": [
+        "SQS",
+        "IAM",
+        "ABAC"
+      ]
+    },
+    {
+      "id": "sqs-temp-queues",
+      "prompt": "A request-response pattern needs lightweight per-client reply queues that are created and removed constantly, at minimal cost. Which SQS feature fits?",
+      "choices": [
+        "Delay queues that are configured with a 15-minute delay",
+        "Temporary queues created with the Temporary Queue Client",
+        "Queues that use message timers on each reply",
+        "FIFO queues that are polled using long polling"
+      ],
+      "correctChoice": "Temporary queues created with the Temporary Queue Client",
+      "explanation": "The Temporary Queue Client creates lightweight, application-managed queues that are removed automatically when no longer in use, with no extra cost for creating and deleting them.",
+      "difficulty": "Medium",
+      "tags": [
+        "SQS",
+        "Temporary Queues"
+      ]
+    },
+    {
+      "id": "sqs-batch-ops",
+      "prompt": "What is the maximum number of messages that can be sent in a single SQS batch request?",
+      "choices": [
+        "1",
+        "100",
+        "10",
+        "1,000"
+      ],
+      "correctChoice": "10",
+      "explanation": "SQS batch actions handle up to 10 messages per request, which can reduce cost and increase throughput.",
+      "difficulty": "Easy",
+      "tags": [
+        "SQS",
+        "Cost"
+      ]
+    },
+    {
+      "id": "sqs-asg-queue-depth",
+      "prompt": "Worker instances in an Auto Scaling group process jobs from an SQS queue. Queue backlog varies widely, and CPU utilisation is a poor indicator of load. Which scaling approach is best?",
+      "choices": [
+        "Scale on the network out metric that is reported by the instances",
+        "Scale on a fixed schedule that adds capacity at the start of each hour",
+        "Scale on the retention period that is configured on the queue itself",
+        "Scale on backlog per instance, based on the number of visible messages"
+      ],
+      "correctChoice": "Scale on backlog per instance, based on the number of visible messages",
+      "explanation": "Queue depth reflects the actual work waiting, so a target-tracking policy on backlog per instance scales workers up and down with demand, and SQS buffers work in the meantime.",
+      "difficulty": "Hard",
+      "tags": [
+        "SQS",
+        "Auto Scaling",
+        "Performance"
+      ]
+    },
+    {
+      "id": "sqs-dlq-poison",
+      "prompt": "A few malformed messages cause consumers to fail repeatedly, and the messages keep reappearing and blocking worker capacity. What is the best way to isolate them for investigation?",
+      "choices": [
+        "Reduce the retention period of the queue down to 60 seconds",
+        "Add a dead-letter queue with a maximum receive count to the source queue",
+        "Raise the visibility timeout to 12 hours for all of the messages in it",
+        "Convert the source queue into a FIFO queue to block the bad messages"
+      ],
+      "correctChoice": "Add a dead-letter queue with a maximum receive count to the source queue",
+      "explanation": "A dead-letter queue with a maxReceiveCount moves messages that fail repeatedly into a separate queue for analysis, instead of cycling endlessly in the source queue.",
+      "difficulty": "Hard",
+      "tags": [
+        "SQS",
+        "DLQ",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "sqs-metadata-attribute-types",
+      "prompt": "A team wants to attach structured metadata, such as a numeric priority and a binary image type, to SQS messages without changing the message body. What should they use?",
+      "choices": [
+        "Message attributes, with types such as String, Number and Binary",
+        "Queue tags that are set on the queue by the administrator",
+        "The visibility timeout setting that is configured on the queue",
+        "The access policy that is attached to the queue as a resource policy"
+      ],
+      "correctChoice": "Message attributes, with types such as String, Number and Binary",
+      "explanation": "Message attributes carry structured metadata with the message. Types include String, Number and Binary, and a custom label can be appended (for example, Number.byte).",
+      "difficulty": "Easy",
+      "tags": [
+        "SQS",
+        "Message Attributes"
+      ]
+    },
+    {
+      "id": "sqs-lambda-visibility",
+      "prompt": "A Lambda function with a 5-minute timeout consumes an SQS queue that has the default 30-second visibility timeout. Messages are being processed more than once. What should be changed?",
+      "choices": [
+        "Set the queue's visibility timeout to at least the function's timeout",
+        "Reduce the function's timeout to 1 second so that it fails faster",
+        "Set the queue's retention period to only 60 seconds so old messages vanish",
+        "Enable raw message delivery on the queue so messages are not retried"
+      ],
+      "correctChoice": "Set the queue's visibility timeout to at least the function's timeout",
+      "explanation": "If the visibility timeout is shorter than the processing time, messages become visible again while still being processed and get retried. The visibility timeout should be at least as long as the function timeout.",
+      "difficulty": "Hard",
+      "tags": [
+        "SQS",
+        "Lambda",
+        "Visibility Timeout"
+      ]
+    },
+    {
+      "id": "sqs-fifo-dedup",
+      "prompt": "A producer accidentally sends the same order twice within a minute to a FIFO queue using the same deduplication ID. How many copies will consumers receive?",
+      "choices": [
+        "Zero, because duplicates are rejected and then removed along with the original",
+        "One, as FIFO queues deduplicate within a 5-minute interval",
+        "Two, because every send is stored by the queue as a separate message",
+        "Two, but the second one is flagged as a duplicate for the consumers"
+      ],
+      "correctChoice": "One, as FIFO queues deduplicate within a 5-minute interval",
+      "explanation": "FIFO queues use the message deduplication ID (or content-based deduplication) to discard duplicates sent within a 5-minute interval.",
+      "difficulty": "Medium",
+      "tags": [
+        "SQS",
+        "FIFO"
+      ]
+    },
+    {
+      "id": "sqs-standard-high-volume",
+      "prompt": "A photo app queues thumbnail jobs. Volume is very high, jobs are independent and order does not matter, and an occasional repeated job is harmless. Which queue type is the best fit?",
+      "choices": [
+        "A FIFO queue with a message timer",
+        "A temporary queue with a FIFO suffix",
+        "A standard queue",
+        "A FIFO queue with one message group"
+      ],
+      "correctChoice": "A standard queue",
+      "explanation": "Standard queues offer nearly unlimited throughput and are best when order and exactly-once delivery are not crucial. FIFO adds throughput limits that are not needed here.",
+      "difficulty": "Easy",
+      "tags": [
+        "SQS",
+        "Service Selection"
+      ]
+    },
+    {
+      "id": "sns-vs-sqs-each-consumer",
+      "prompt": "Four microservices must each process every message produced by a single publisher. A team puts one SQS queue between the publisher and the four services, and finds each message is handled by only one service. What should they change?",
+      "choices": [
+        "Increase the retention period so each service gets a turn",
+        "Convert the queue to FIFO so that every service receives each message",
+        "Raise the visibility timeout so all four services can read each message",
+        "Publish to an SNS topic and give each service its own subscribed SQS queue"
+      ],
+      "correctChoice": "Publish to an SNS topic and give each service its own subscribed SQS queue",
+      "explanation": "Consumers sharing one queue compete for messages. Fanning out through an SNS topic into one queue per service gives each service its own copy of every message.",
+      "difficulty": "Hard",
+      "tags": [
+        "SQS",
+        "SNS",
+        "Fanout"
+      ]
+    },
+    {
+      "id": "mq-use-case",
+      "prompt": "A company has an on-premises application that uses Apache ActiveMQ and the JMS API. It wants to move to AWS with as few code changes as possible. Which service fits best?",
+      "choices": [
+        "Amazon SNS",
+        "Amazon SQS",
+        "Amazon MQ",
+        "Amazon AppFlow"
+      ],
+      "correctChoice": "Amazon MQ",
+      "explanation": "Amazon MQ is a managed broker for Apache ActiveMQ and RabbitMQ that supports industry-standard APIs and protocols, so existing applications can migrate without being rewritten for SQS or SNS APIs.",
+      "difficulty": "Easy",
+      "tags": [
+        "Amazon MQ",
+        "Migration"
+      ]
+    },
+    {
+      "id": "mq-vs-sqs-new-app",
+      "prompt": "A new cloud-native application needs simple, highly scalable queue-based decoupling, with no dependence on existing broker protocols. Which choice is the most appropriate and the least to operate?",
+      "choices": [
+        "Amazon MQ for RabbitMQ",
+        "Amazon SQS",
+        "A self-managed RabbitMQ cluster on EC2",
+        "Amazon MQ for ActiveMQ"
+      ],
+      "correctChoice": "Amazon SQS",
+      "explanation": "For new applications without protocol requirements, SQS is serverless and scales automatically. Amazon MQ is mainly for migrating applications that rely on standard broker protocols or advanced messaging features.",
+      "difficulty": "Medium",
+      "tags": [
+        "Amazon MQ",
+        "SQS",
+        "Service Selection"
+      ]
+    },
+    {
+      "id": "mq-protocols",
+      "prompt": "A fleet of devices publishes telemetry to a broker using MQTT. Which AWS messaging service supports MQTT brokers for applications that need standard messaging protocols?",
+      "choices": [
+        "Amazon SQS",
+        "Amazon SNS standard topics",
+        "AWS AppFlow",
+        "Amazon MQ"
+      ],
+      "correctChoice": "Amazon MQ",
+      "explanation": "Amazon MQ supports standard protocols such as AMQP, MQTT and STOMP (and OpenWire for ActiveMQ). SQS and SNS use AWS APIs rather than these broker protocols.",
+      "difficulty": "Easy",
+      "tags": [
+        "Amazon MQ",
+        "MQTT"
+      ]
+    },
+    {
+      "id": "mq-amqp-bindings",
+      "prompt": "In AMQP messaging on a broker such as RabbitMQ, how do messages get from publishers to queues?",
+      "choices": [
+        "Publishers send to exchanges, which route copies to queues using bindings",
+        "Publishers send straight to consumers, bypassing the broker",
+        "Publishers write to a shared database that consumers query",
+        "Publishers send to SNS topics, which forward the messages to queues"
+      ],
+      "correctChoice": "Publishers send to exchanges, which route copies to queues using bindings",
+      "explanation": "AMQP publishers publish to exchanges, and exchanges distribute message copies to queues using rules called bindings. Consumers then receive from the queues.",
+      "difficulty": "Medium",
+      "tags": [
+        "Amazon MQ",
+        "AMQP"
+      ]
+    },
+    {
+      "id": "mq-amqp-ack",
+      "prompt": "In AMQP, when is a message removed from a queue?",
+      "choices": [
+        "When the publisher sends the next message",
+        "When the visibility timeout expires",
+        "As soon as the broker delivers it",
+        "When a consumer acknowledges it to the broker"
+      ],
+      "correctChoice": "When a consumer acknowledges it to the broker",
+      "explanation": "A message stays in the queue until the consumer sends an acknowledgement (ACK), which allows the broker to redeliver messages if a consumer fails before acknowledging.",
+      "difficulty": "Medium",
+      "tags": [
+        "Amazon MQ",
+        "AMQP"
+      ]
+    },
+    {
+      "id": "mq-exchange-fanout",
+      "prompt": "A RabbitMQ-based app must broadcast every message to all queues bound to an exchange, regardless of routing key. Which exchange type should be used?",
+      "choices": [
+        "Direct",
+        "Headers",
+        "Fanout",
+        "Topic"
+      ],
+      "correctChoice": "Fanout",
+      "explanation": "A fanout exchange copies messages to every bound queue. Direct routes on an exact routing key, topic on pattern matches, and headers on message header attributes.",
+      "difficulty": "Medium",
+      "tags": [
+        "Amazon MQ",
+        "AMQP"
+      ]
+    },
+    {
+      "id": "mq-stomp",
+      "prompt": "Which messaging protocol is described as a simple, text-based wire protocol that lets clients talk to almost any message broker?",
+      "choices": [
+        "STOMP",
+        "OpenWire",
+        "Kafka Producer API",
+        "AMQP"
+      ],
+      "correctChoice": "STOMP",
+      "explanation": "STOMP (Simple Text-Oriented Messaging Protocol) is a simple text-based protocol supported by Amazon MQ for ActiveMQ and works with many brokers and clients.",
+      "difficulty": "Easy",
+      "tags": [
+        "Amazon MQ",
+        "STOMP"
+      ]
+    },
+    {
+      "id": "mq-mqtt-description",
+      "prompt": "Which protocol is a lightweight publish/subscribe protocol that uses minimal bandwidth and is common for IoT and machine-to-machine communication?",
+      "choices": [
+        "SMTP",
+        "MQTT",
+        "STOMP",
+        "LDAP"
+      ],
+      "correctChoice": "MQTT",
+      "explanation": "MQTT is a lightweight pub/sub protocol for constrained devices and M2M messaging, in which clients publish to or subscribe on topic names through a broker.",
+      "difficulty": "Easy",
+      "tags": [
+        "Amazon MQ",
+        "MQTT"
+      ]
+    },
+    {
+      "id": "mq-rabbitmq-topic-exchange",
+      "prompt": "An existing application uses RabbitMQ topic exchanges with routing key patterns and the AMQP protocol. The company wants a managed service but does not want to rewrite the application to use AWS-specific messaging APIs. What should it use?",
+      "choices": [
+        "Amazon SNS with filter policies and SQS queues",
+        "Amazon MSK with a new Kafka consumer group",
+        "Amazon SQS FIFO queues with message group IDs",
+        "Amazon MQ for RabbitMQ"
+      ],
+      "correctChoice": "Amazon MQ for RabbitMQ",
+      "explanation": "Amazon MQ keeps the broker's native protocol and routing features (exchanges, bindings, routing keys), so the application migrates without being rewritten. SNS and SQS offer similar patterns, but with different APIs.",
+      "difficulty": "Hard",
+      "tags": [
+        "Amazon MQ",
+        "Migration",
+        "AMQP"
+      ]
+    },
+    {
+      "id": "mq-activemq-jms-openwire",
+      "prompt": "A legacy Java application communicates with its broker using JMS over the OpenWire protocol. It must move to AWS quickly, with minimal code changes and no self-managed brokers. Which option fits best?",
+      "choices": [
+        "Amazon MQ for Apache ActiveMQ",
+        "Amazon SQS standard queues",
+        "Amazon SNS with an HTTP subscription",
+        "Amazon MQ for RabbitMQ"
+      ],
+      "correctChoice": "Amazon MQ for Apache ActiveMQ",
+      "explanation": "OpenWire is an ActiveMQ protocol, and Amazon MQ for ActiveMQ lets JMS applications connect with minimal changes. SQS and SNS would need code changes.",
+      "difficulty": "Hard",
+      "tags": [
+        "Amazon MQ",
+        "Migration"
+      ]
+    },
+    {
+      "id": "msk-purpose",
+      "prompt": "Which AWS service is a fully managed service for building and running applications that use Apache Kafka to process streaming data?",
+      "choices": [
+        "Amazon AppFlow",
+        "Amazon MSK",
+        "Amazon MQ",
+        "Amazon SNS"
+      ],
+      "correctChoice": "Amazon MSK",
+      "explanation": "Amazon Managed Streaming for Apache Kafka (MSK) runs Apache Kafka clusters for you so that Kafka applications can run on AWS without managing the Kafka infrastructure.",
+      "difficulty": "Easy",
+      "tags": [
+        "MSK",
+        "Streaming"
+      ]
+    },
+    {
+      "id": "msk-kafka-basics",
+      "prompt": "In Apache Kafka, how are messages organised?",
+      "choices": [
+        "Producers write to queues, with a visibility timeout on each message",
+        "Producers send to topics, and each consumer is pushed a copy",
+        "Producers write to topics, stored in partitions that consumers read from",
+        "Producers write to exchanges that route to queues by binding"
+      ],
+      "correctChoice": "Producers write to topics, stored in partitions that consumers read from",
+      "explanation": "Kafka messages are organised into topics, whose data is stored in partitions on the cluster (which can span machines). Producers publish and consumers listen using the Kafka APIs.",
+      "difficulty": "Easy",
+      "tags": [
+        "MSK",
+        "Kafka"
+      ]
+    },
+    {
+      "id": "msk-vs-sqs",
+      "prompt": "A team needs a high-volume event stream where several independent consumer applications can each read the same ordered stream, with data kept for later re-reading. Which service type suits this best?",
+      "choices": [
+        "An SQS standard queue",
+        "An SNS standard topic with email subscribers",
+        "Apache Kafka on Amazon MSK",
+        "An SQS delay queue"
+      ],
+      "correctChoice": "Apache Kafka on Amazon MSK",
+      "explanation": "Kafka retains data in partitioned topics that many consumers can read independently and replay. In SQS, consumers share a queue and a message is deleted once it is processed.",
+      "difficulty": "Medium",
+      "tags": [
+        "MSK",
+        "SQS",
+        "Service Selection"
+      ]
+    },
+    {
+      "id": "msk-node-types",
+      "prompt": "In an Amazon MSK cluster running in ZooKeeper mode, which statement describes the node types?",
+      "choices": [
+        "Brokers manage the cluster metadata, and ZooKeeper nodes store the messages",
+        "Brokers store and process messages, and ZooKeeper nodes manage metadata and coordination",
+        "Brokers run Kafka Connect, and ZooKeeper nodes expose SQS-compatible endpoints",
+        "Both node types store messages, but only ZooKeeper nodes accept producers"
+      ],
+      "correctChoice": "Brokers store and process messages, and ZooKeeper nodes manage metadata and coordination",
+      "explanation": "Brokers handle storage and processing of messages. ZooKeeper tracks broker registration, topic configuration, cluster membership, quotas and ACLs.",
+      "difficulty": "Medium",
+      "tags": [
+        "MSK",
+        "Kafka"
+      ]
+    },
+    {
+      "id": "msk-provisioned-vs-serverless",
+      "prompt": "A startup has unpredictable Kafka traffic and does not want to size, monitor or scale broker instances. Which MSK cluster type fits best?",
+      "choices": [
+        "MSK Serverless, which manages capacity automatically and bills for usage",
+        "MSK Provisioned, where the broker instances are sized and scaled manually",
+        "A Kafka cluster on EC2 instances that the team manages itself",
+        "MSK Provisioned with additional ZooKeeper nodes added"
+      ],
+      "correctChoice": "MSK Serverless, which manages capacity automatically and bills for usage",
+      "explanation": "Serverless clusters manage instances automatically and bill for usage, whereas Provisioned clusters require choosing and managing broker instances.",
+      "difficulty": "Medium",
+      "tags": [
+        "MSK",
+        "Operational Overhead"
+      ]
+    },
+    {
+      "id": "msk-vpc-access",
+      "prompt": "A Kafka client application in a different VPC cannot connect to a newly created MSK cluster. By default, where must connections to an MSK cluster originate?",
+      "choices": [
+        "From any AWS account in the same Region",
+        "From the same Availability Zone as the cluster",
+        "From any host on the internet",
+        "From within the VPC where the cluster was launched"
+      ],
+      "correctChoice": "From within the VPC where the cluster was launched",
+      "explanation": "MSK clusters are launched in your VPC, and by default connections must come from that VPC. Public access can be enabled on a cluster after launch, or private connectivity can be provided between networks.",
+      "difficulty": "Medium",
+      "tags": [
+        "MSK",
+        "Networking"
+      ]
+    },
+    {
+      "id": "msk-public-access",
+      "prompt": "Partners outside AWS need to connect Kafka clients directly to an existing MSK cluster over the internet. Which statement is correct?",
+      "choices": [
+        "Clients connect to the ZooKeeper connection string to get public access",
+        "Public access can only be chosen when the cluster is created, so build a new cluster",
+        "Enable public access on the cluster after launch, and use the public bootstrap broker string",
+        "MSK clusters can never be reached from outside of their VPC"
+      ],
+      "correctChoice": "Enable public access on the cluster after launch, and use the public bootstrap broker string",
+      "explanation": "Access is VPC-only by default, but public access can be turned on after the cluster is launched. Clients then use the public bootstrap broker endpoints (for example, the public SASL/IAM string) to connect.",
+      "difficulty": "Hard",
+      "tags": [
+        "MSK",
+        "Networking",
+        "Security"
+      ]
+    },
+    {
+      "id": "msk-bootstrap-brokers",
+      "prompt": "What is the purpose of an MSK bootstrap broker string?",
+      "choices": [
+        "It is the key that is used to encrypt the cluster's data at rest",
+        "It gives Kafka clients broker endpoints to start connecting to the cluster",
+        "It lists the ZooKeeper nodes that clients must write to directly",
+        "It stores the messages that belong to a particular Kafka topic"
+      ],
+      "correctChoice": "It gives Kafka clients broker endpoints to start connecting to the cluster",
+      "explanation": "Bootstrap brokers are broker endpoints that a client connects to first to discover the rest of the cluster. The number of endpoints depends on the AZs the cluster spans, and there are separate strings for private and public access.",
+      "difficulty": "Medium",
+      "tags": [
+        "MSK",
+        "Kafka"
+      ]
+    },
+    {
+      "id": "msk-connect-s3-sink",
+      "prompt": "A team wants to continuously copy data from MSK topics into S3 for analytics and avoid writing and operating a custom consumer application. Which feature should they use?",
+      "choices": [
+        "MSK Connect with a Kafka Connect S3 sink connector",
+        "A Lambda function polling the ZooKeeper ensemble",
+        "An SQS queue subscribed to the Kafka topic",
+        "An SNS topic with a Firehose subscription polling Kafka"
+      ],
+      "correctChoice": "MSK Connect with a Kafka Connect S3 sink connector",
+      "explanation": "MSK Connect runs Kafka Connect connectors as a managed feature. You upload the plugin to S3, create a plugin in MSK Connect, then create a connector pointing to the cluster and the target system.",
+      "difficulty": "Hard",
+      "tags": [
+        "MSK",
+        "MSK Connect",
+        "S3"
+      ]
+    },
+    {
+      "id": "msk-connect-steps",
+      "prompt": "Which sequence correctly describes how to set up MSK Connect?",
+      "choices": [
+        "Upload the plugin to an SNS topic, then create a connector inside SQS",
+        "Create a connector first, then upload the plugin onto a ZooKeeper node",
+        "Create a queue, subscribe the connector to that queue, then download a plugin",
+        "Get the plugin, upload it to S3, create an MSK Connect plugin, then create a connector"
+      ],
+      "correctChoice": "Get the plugin, upload it to S3, create an MSK Connect plugin, then create a connector",
+      "explanation": "MSK Connect uses the Kafka Connect framework. Plugins are stored in S3, registered as an MSK Connect plugin, and used by a connector that specifies configuration for the source or target system.",
+      "difficulty": "Medium",
+      "tags": [
+        "MSK",
+        "MSK Connect"
+      ]
+    },
+    {
+      "id": "msk-migrate-kafka",
+      "prompt": "A company runs Apache Kafka on premises with many existing producers and consumers using the Kafka APIs. It wants to move to AWS, with no application rewrite and less cluster maintenance. Which option is best?",
+      "choices": [
+        "Amazon SNS, by rewriting the producers to use topics",
+        "Amazon MSK",
+        "Amazon SQS, by rewriting the applications to use queues",
+        "Amazon AppFlow, by creating a flow per Kafka topic"
+      ],
+      "correctChoice": "Amazon MSK",
+      "explanation": "MSK is compatible with the open-source Kafka APIs, so existing clients can connect with minimal changes, while AWS manages the cluster infrastructure.",
+      "difficulty": "Hard",
+      "tags": [
+        "MSK",
+        "Migration"
+      ]
+    },
+    {
+      "id": "msk-zookeeper-role",
+      "prompt": "In an MSK cluster that uses ZooKeeper mode, what does Apache ZooKeeper do for Kafka?",
+      "choices": [
+        "It stores the message data that producers write into the topic partitions",
+        "It encrypts the messages as they travel between the producers and the brokers",
+        "It handles coordination and metadata, such as broker registration and topic configuration",
+        "It runs the connectors that move the data from the cluster into S3"
+      ],
+      "correctChoice": "It handles coordination and metadata, such as broker registration and topic configuration",
+      "explanation": "ZooKeeper provides distributed coordination: broker registration, topic configuration, cluster membership, quotas and ACLs. The brokers store and serve the messages.",
+      "difficulty": "Medium",
+      "tags": [
+        "MSK",
+        "Kafka"
+      ]
+    },
+    {
+      "id": "msk-eventbridge-pipes",
+      "prompt": "A team wants events from an MSK topic to be filtered, enriched and sent on to a target such as a Step Functions state machine, with little custom code. Which integration supports this?",
+      "choices": [
+        "Amazon EventBridge Pipes with MSK as the source",
+        "An SQS delay queue between brokers",
+        "AWS AppFlow with MSK as the destination",
+        "SNS Message Data Protection on the MSK topic"
+      ],
+      "correctChoice": "Amazon EventBridge Pipes with MSK as the source",
+      "explanation": "MSK has direct integration with EventBridge Pipes, which can use an MSK topic as a source and optionally filter and enrich events before sending them to a target.",
+      "difficulty": "Medium",
+      "tags": [
+        "MSK",
+        "EventBridge Pipes"
+      ]
+    },
+    {
+      "id": "cross-sns-vs-sqs-push-pull",
+      "prompt": "Which statement correctly contrasts Amazon SNS and Amazon SQS?",
+      "choices": [
+        "Both services require the consumers to poll for new messages",
+        "SNS stores messages until they are polled, while SQS pushes them to subscribers",
+        "Both services push each message to every consumer at the same moment",
+        "SNS pushes messages to subscribers, while SQS holds messages until consumers poll"
+      ],
+      "correctChoice": "SNS pushes messages to subscribers, while SQS holds messages until consumers poll",
+      "explanation": "SNS is a push-based pub/sub service. SQS is a pull-based queue where consumers poll and delete messages.",
+      "difficulty": "Easy",
+      "tags": [
+        "SNS",
+        "SQS",
+        "Comparison"
+      ]
+    },
+    {
+      "id": "cross-s3-event-fanout",
+      "prompt": "When an image is uploaded to S3, the system must run thumbnail generation, virus scanning and metadata indexing independently. Each task can fail and retry without affecting the others, and workloads vary. Which design is best?",
+      "choices": [
+        "Run all three of the tasks in sequence inside one single Lambda function",
+        "Send the S3 event to an SNS topic, with one SQS queue and consumer per task",
+        "Send the S3 event to a single SQS queue that is read by all three of the tasks",
+        "Send the S3 event to an SQS delay queue that every one of the tasks polls"
+      ],
+      "correctChoice": "Send the S3 event to an SNS topic, with one SQS queue and consumer per task",
+      "explanation": "SNS fanout to separate queues gives each task its own durable copy of the event, independent retries and independent scaling. A single shared queue would give each message to only one task.",
+      "difficulty": "Hard",
+      "tags": [
+        "SNS",
+        "SQS",
+        "S3",
+        "Fanout"
+      ]
+    },
+    {
+      "id": "cross-service-selection-ordering-stream",
+      "prompt": "Which requirement most clearly points to Amazon SQS FIFO rather than Amazon MSK?",
+      "choices": [
+        "A data pipeline needs streaming connectors to databases and to S3",
+        "Existing producers already use the Apache Kafka client libraries today",
+        "Strictly ordered work items, each handled once by one worker, then removed",
+        "Several independent applications must each re-read the same event history"
+      ],
+      "correctChoice": "Strictly ordered work items, each handled once by one worker, then removed",
+      "explanation": "SQS FIFO is a queue for ordered work items that are consumed and deleted. Replay by multiple consumers, Kafka API compatibility and connector ecosystems are strengths of MSK.",
+      "difficulty": "Hard",
+      "tags": [
+        "SQS",
+        "MSK",
+        "Service Selection"
+      ]
+    },
+    {
+      "id": "sqs-retention-range",
+      "prompt": "What range of message retention periods can be configured for an Amazon SQS queue?",
+      "choices": [
+        "From 60 seconds up to 14 days",
+        "From 1 hour up to 7 days",
+        "From 1 second up to 12 hours",
+        "From 1 day up to 365 days"
+      ],
+      "correctChoice": "From 60 seconds up to 14 days",
+      "explanation": "SQS retention can be set between 60 seconds and 14 days, with a default of 4 days. Messages not consumed by then are deleted. 12 hours is the maximum visibility timeout, not retention.",
+      "difficulty": "Easy",
+      "tags": [
+        "SQS",
+        "Retention"
+      ]
+    },
+    {
+      "id": "sns-multi-protocol-publish",
+      "prompt": "A single alert must reach an operations email address, an on-call phone by SMS and a Lambda function. Which feature lets the publisher send it once?",
+      "choices": [
+        "An SQS delay queue with a message timer for each consumer",
+        "An SQS queue that is polled by three different consumers",
+        "Three separate SQS FIFO queues, one for each destination",
+        "An SNS topic with an email, an SMS and a Lambda subscription"
+      ],
+      "correctChoice": "An SNS topic with an email, an SMS and a Lambda subscription",
+      "explanation": "SNS topics deliver one published message to all of their subscriptions, formatting it for each protocol, so publishers need not know about subscriber protocols.",
+      "difficulty": "Easy",
+      "tags": [
+        "SNS",
+        "Subscriptions"
+      ]
+    },
+    {
+      "id": "sqs-encryption-options",
+      "prompt": "Which encryption options are available for data at rest in an SQS queue?",
+      "choices": [
+        "Encryption that is available only on FIFO queues and nowhere else",
+        "Encryption that is possible only through a dedicated CloudHSM cluster",
+        "Server-side encryption, with SQS-managed keys or with AWS KMS keys",
+        "Encryption that is not supported for any SQS queues at all"
+      ],
+      "correctChoice": "Server-side encryption, with SQS-managed keys or with AWS KMS keys",
+      "explanation": "SQS supports server-side encryption using either SQS-managed keys or AWS KMS keys. KMS keys offer more control and auditing.",
+      "difficulty": "Easy",
+      "tags": [
+        "SQS",
+        "Encryption"
+      ]
+    },
+    {
+      "id": "sqs-burst-buffer-database",
+      "prompt": "An order API receives bursts ten times the normal rate. The order processing writes to a relational database that can only sustain the normal rate, and no order may be lost. Which design handles this with the least change?",
+      "choices": [
+        "The API writes straight to the database and relies on clients retrying with longer waits",
+        "The API calls the processing service synchronously, and that service is scaled out for bursts",
+        "The API publishes to an SNS topic that has an HTTP subscription to the processing service",
+        "The API writes orders to an SQS queue, and a fixed consumer fleet drains it at a sustainable rate"
+      ],
+      "correctChoice": "The API writes orders to an SQS queue, and a fixed consumer fleet drains it at a sustainable rate",
+      "explanation": "A queue absorbs bursts durably and lets consumers pull at a controlled rate (load levelling). Direct, synchronous and push designs pass the burst through to the database.",
+      "difficulty": "Hard",
+      "tags": [
+        "SQS",
+        "Decoupling",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "sns-notification-mixed-filter",
+      "prompt": "An application publishes events with a numeric attribute severity from 1 to 5. Requirements: every event goes to an analytics SQS queue, events with severity 4 or above go to an on-call phone by SMS, and events with severity 3 or below go to an email digest address. The publisher must publish only once. Which design meets this?",
+      "choices": [
+        "Three topics, where the application chooses a topic according to the event's severity",
+        "One topic with three subscriptions: queue unfiltered, SMS for severity 4 and up, email for 3 and below",
+        "One topic, where the publisher sends twice, once for the queue and once for SMS or email",
+        "One SQS queue that is read by an application which sends the SMS and the email itself"
+      ],
+      "correctChoice": "One topic with three subscriptions: queue unfiltered, SMS for severity 4 and up, email for 3 and below",
+      "explanation": "Subscription filter policies with numeric range matching route messages per subscriber, and a subscription without a filter policy receives everything, so one publish serves all three.",
+      "difficulty": "Hard",
+      "tags": [
+        "SNS",
+        "Filtering",
+        "SQS"
+      ]
+    },
+    {
+      "id": "sqs-cascading-failure",
+      "prompt": "A checkout service calls an invoicing service synchronously over HTTP. When invoicing is slow or down, checkout fails and customers cannot buy. Invoices may be generated a few minutes later. What should the architect do?",
+      "choices": [
+        "Have checkout put an invoice request on an SQS queue that the invoicing service consumes",
+        "Replace the HTTP call with a second synchronous call to a backup invoicing service",
+        "Have the invoicing service poll the checkout database every second",
+        "Increase the HTTP timeout and add instances to the checkout service"
+      ],
+      "correctChoice": "Have checkout put an invoice request on an SQS queue that the invoicing service consumes",
+      "explanation": "Introducing a queue decouples the services: checkout succeeds as soon as the request is queued and invoicing processes it when able. Longer timeouts and backup synchronous calls keep the tight coupling.",
+      "difficulty": "Hard",
+      "tags": [
+        "SQS",
+        "Decoupling",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "sqs-standard-idempotent-high-volume",
+      "prompt": "A system handles a very high rate of independent events and must be cost-effective and highly scalable. Occasional duplicate delivery is acceptable provided the effect of processing is not duplicated. Which design is best?",
+      "choices": [
+        "An SNS FIFO topic that delivers every one of the events to a single subscriber",
+        "An Amazon MQ broker that is configured with one single active queue",
+        "An SQS standard queue, with consumers that record event IDs to skip repeats",
+        "An SQS FIFO queue where every event is sent using one single message group"
+      ],
+      "correctChoice": "An SQS standard queue, with consumers that record event IDs to skip repeats",
+      "explanation": "Standard queues scale to very high throughput, and idempotent consumers make at-least-once delivery safe. A single FIFO message group would serialise everything and limit throughput.",
+      "difficulty": "Hard",
+      "tags": [
+        "SQS",
+        "Reliability",
+        "Performance"
+      ]
+    },
+    {
+      "id": "sqs-fifo-delay-requirement",
+      "prompt": "Messages in an SQS FIFO queue must become available to consumers 5 minutes after they are sent, and order must be kept. A developer proposes per-message timers. What is the correct approach?",
+      "choices": [
+        "Use per-message timers, which FIFO queues fully support for this purpose",
+        "Raise the visibility timeout of the queue to 300 seconds for every message",
+        "Use long polling with a wait time of 300 seconds on the consumers",
+        "Set a queue-level delay of 300 seconds, as FIFO queues lack message timers"
+      ],
+      "correctChoice": "Set a queue-level delay of 300 seconds, as FIFO queues lack message timers",
+      "explanation": "Per-message timers are not supported on FIFO queues, but the queue-level DelaySeconds (up to 15 minutes) applies to all messages and preserves order. Visibility timeout and long polling do not delay a new message.",
+      "difficulty": "Hard",
+      "tags": [
+        "SQS",
+        "FIFO",
+        "Delay Queue"
+      ]
+    },
+    {
+      "id": "sns-sqs-kms-managed-key",
+      "prompt": "An SNS topic delivers to an SQS queue that is encrypted with the AWS managed key for SQS (alias/aws/sqs). Messages are not arriving in the queue. What is the correct fix?",
+      "choices": [
+        "Encrypt the queue with a customer managed key whose key policy allows SNS",
+        "Disable the queue's access policy completely so that SNS is able to write",
+        "Increase the queue's retention period up to its maximum of 14 days",
+        "Switch the queue to FIFO and change the topic into a standard topic"
+      ],
+      "correctChoice": "Encrypt the queue with a customer managed key whose key policy allows SNS",
+      "explanation": "The AWS managed key's policy cannot be edited to grant the SNS service access. A customer managed key lets you add a key policy statement allowing SNS to generate data keys and decrypt, so delivery to the encrypted queue works.",
+      "difficulty": "Hard",
+      "tags": [
+        "SNS",
+        "SQS",
+        "KMS",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "sqs-cross-account-producer",
+      "prompt": "Applications in Account A must send messages to an SQS queue in Account B, but must not be able to receive or delete messages. What is the best way to grant this?",
+      "choices": [
+        "Share the queue's visibility timeout settings with Account A's principals",
+        "Add a queue policy statement allowing sqs:SendMessage for the Account A principal",
+        "Create IAM users in Account B and give their access keys to Account A",
+        "Give the Account A root user full SQS permissions inside Account B"
+      ],
+      "correctChoice": "Add a queue policy statement allowing sqs:SendMessage for the Account A principal",
+      "explanation": "An SQS queue access policy is a resource-based policy that can grant specific actions, such as only SendMessage, to principals in other accounts. This is least privilege without sharing long-term credentials.",
+      "difficulty": "Hard",
+      "tags": [
+        "SQS",
+        "IAM",
+        "Cross-Account"
+      ]
+    }
+  ]
+}

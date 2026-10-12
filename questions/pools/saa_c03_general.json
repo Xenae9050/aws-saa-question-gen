@@ -1,0 +1,1732 @@
+{
+  "$schema": "../pool.schema.json",
+  "poolName": "General AWS Services, Security & Serverless (Mixed Difficulty)",
+  "description": "SAA-C03 revision questions on the AWS API, IAM and STS, federation, Service Catalog, GuardDuty, KMS, CloudHSM, ACM, Cognito, Directory Service, Secrets Manager, Lambda, Step Functions and selected AI/ML and application services at Easy, Medium and Hard difficulty.",
+  "category": "General",
+  "version": 1,
+  "questions": [
+    {
+      "id": "cli-config-precedence",
+      "prompt": "The AWS_DEFAULT_REGION environment variable is set to us-east-1 and the CLI config file sets the region to ap-southeast-2. A command is run with the option --region eu-west-1. Which Region does the command use?",
+      "choices": [
+        "us-east-1",
+        "eu-west-1",
+        "The command fails because the Region is defined in three places",
+        "ap-southeast-2"
+      ],
+      "correctChoice": "eu-west-1",
+      "explanation": "CLI command-line parameters take precedence over environment variables, which take precedence over the config files.",
+      "difficulty": "Easy",
+      "tags": [
+        "AWS CLI",
+        "Fundamentals"
+      ]
+    },
+    {
+      "id": "access-keys-two-active",
+      "prompt": "An IAM user is allowed to have two active access keys at the same time. What is the main practical benefit?",
+      "choices": [
+        "One key can be limited to read-only access and the other to write access",
+        "One key can be used for the console and the other key can be used with MFA devices",
+        "Keys can be rotated with no downtime by moving applications to the new key first",
+        "Two keys double the permissions that the user has in the account"
+      ],
+      "correctChoice": "Keys can be rotated with no downtime by moving applications to the new key first",
+      "explanation": "Having two active keys lets you create a new key, update applications, and then disable and delete the old key. Both keys carry the same permissions as the user.",
+      "difficulty": "Easy",
+      "tags": [
+        "IAM",
+        "Access Keys"
+      ]
+    },
+    {
+      "id": "retry-exponential-backoff",
+      "prompt": "An application intermittently receives network errors when calling an AWS API. Which retry strategy is the standard recommendation?",
+      "choices": [
+        "Retry with exponential backoff so the wait between attempts roughly doubles each time",
+        "Retry every millisecond at a fixed interval to keep latency as low as possible",
+        "Retry immediately in a tight loop until the call eventually succeeds",
+        "Never retry and show the first error to the user straight away"
+      ],
+      "correctChoice": "Retry with exponential backoff so the wait between attempts roughly doubles each time",
+      "explanation": "Exponential backoff reduces load on a struggling endpoint and gives transient network problems time to clear. SDKs and the CLI usually implement it by default.",
+      "difficulty": "Easy",
+      "tags": [
+        "AWS API",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "sts-credential-components",
+      "prompt": "An application receives temporary credentials from AWS STS. Which set of values does STS return?",
+      "choices": [
+        "A signed X.509 certificate and a private key",
+        "Username, password and an MFA seed",
+        "Access key ID and secret access key only, which never expire",
+        "Access key ID, secret access key, session token and expiration"
+      ],
+      "correctChoice": "Access key ID, secret access key, session token and expiration",
+      "explanation": "Temporary credentials include a session token and an expiration time in addition to an access key ID and secret access key. The session token must be supplied with requests.",
+      "difficulty": "Easy",
+      "tags": [
+        "STS",
+        "IAM"
+      ]
+    },
+    {
+      "id": "sts-regional-endpoint",
+      "prompt": "An application in eu-west-1 calls the global STS endpoint (sts.amazonaws.com) and has seen increased latency. The team wants lower latency and less dependence on a single endpoint. What should they do?",
+      "choices": [
+        "Request a dedicated STS endpoint from AWS Support",
+        "Configure the SDK to use the Regional STS endpoint",
+        "Switch to long-term access keys to avoid STS calls",
+        "Move the IAM users to the us-east-1 Region"
+      ],
+      "correctChoice": "Configure the SDK to use the Regional STS endpoint",
+      "explanation": "Regional STS endpoints are recommended because they reduce latency and improve redundancy compared with the single global (legacy) endpoint. IAM users are global and are not moved between Regions.",
+      "difficulty": "Medium",
+      "tags": [
+        "STS",
+        "Performance"
+      ]
+    },
+    {
+      "id": "sigv4-what-is-sent",
+      "prompt": "When a request is signed with Signature Version 4, what is sent to AWS with the request?",
+      "choices": [
+        "The secret access key in plain text, inside the Authorization header",
+        "The secret access key, encrypted using the account's root user password",
+        "A signature produced with a key derived from the secret key, not the secret key itself",
+        "A hash of the IAM user's console password, compared against AWS's stored copy"
+      ],
+      "correctChoice": "A signature produced with a key derived from the secret key, not the secret key itself",
+      "explanation": "Signature V4 builds a string to sign from request elements and creates a signature using HMAC with a signing key derived from the secret key. The secret access key is never transmitted, and the signature also protects the request from tampering.",
+      "difficulty": "Medium",
+      "tags": [
+        "Signing",
+        "Security"
+      ]
+    },
+    {
+      "id": "signing-anonymous-s3",
+      "prompt": "The CLI and SDKs sign most AWS requests automatically. Which request would normally NOT need to be signed?",
+      "choices": [
+        "A call that creates a new IAM user inside the account",
+        "A call that reads a stored secret from AWS Secrets Manager",
+        "A call that launches a new EC2 instance in a private subnet",
+        "An anonymous GET for an object in a publicly readable S3 bucket"
+      ],
+      "correctChoice": "An anonymous GET for an object in a publicly readable S3 bucket",
+      "explanation": "Signing proves the requester's identity and prevents tampering, so it is not required for anonymous access to public S3 content. Authenticated API calls to other services must be signed.",
+      "difficulty": "Easy",
+      "tags": [
+        "Signing",
+        "S3"
+      ]
+    },
+    {
+      "id": "ip-ranges-allow-list",
+      "prompt": "A company must allow only traffic from AWS services in specific Regions through its on-premises firewall, and the list must stay current as AWS adds addresses. What is the best approach?",
+      "choices": [
+        "Periodically download and parse the JSON file published at ip-ranges.amazonaws.com",
+        "Request a fixed address list from AWS Support each year",
+        "Open the firewall to all addresses used by the Regional endpoint's parent domain",
+        "Resolve the service domain names once and hard-code the addresses"
+      ],
+      "correctChoice": "Periodically download and parse the JSON file published at ip-ranges.amazonaws.com",
+      "explanation": "AWS publishes its IP ranges as JSON and updates them as ranges change, so automation can use the file to maintain allow lists. Hard-coded addresses become stale.",
+      "difficulty": "Medium",
+      "tags": [
+        "IP Ranges",
+        "Networking"
+      ]
+    },
+    {
+      "id": "iam-policy-type-editable",
+      "prompt": "Which type of IAM policy can an administrator edit after it is created and attach to many users, groups or roles?",
+      "choices": [
+        "An inline policy attached to a single role, which can also be shared with other roles",
+        "A service control policy attached to an IAM group",
+        "A customer managed policy",
+        "An AWS managed policy"
+      ],
+      "correctChoice": "A customer managed policy",
+      "explanation": "Customer managed policies are created and editable by you and reusable. AWS managed policies cannot be edited, and inline policies are embedded in one identity and are not reusable.",
+      "difficulty": "Easy",
+      "tags": [
+        "IAM",
+        "Policies"
+      ]
+    },
+    {
+      "id": "iam-principal-element",
+      "prompt": "In which type of policy does the Principal element appear?",
+      "choices": [
+        "Resource-based policies and role trust policies",
+        "Permissions boundaries attached to users",
+        "Only AWS managed policies",
+        "Identity-based policies attached to users and groups"
+      ],
+      "correctChoice": "Resource-based policies and role trust policies",
+      "explanation": "Principal specifies who the policy applies to, so it is used where the policy is attached to a resource or defines who may assume a role. In identity-based policies the principal is implicitly the attached identity.",
+      "difficulty": "Easy",
+      "tags": [
+        "IAM",
+        "Policies"
+      ]
+    },
+    {
+      "id": "iam-inline-vs-managed-reuse",
+      "prompt": "The same set of S3 read permissions must be applied to five different roles, and a future change must apply to all of them at once. What is the best approach?",
+      "choices": [
+        "Add the permissions to the root user's policy",
+        "Attach an AWS managed policy and edit it for this use",
+        "Create an identical inline policy in each of the five roles",
+        "Create one customer managed policy and attach it to all five roles"
+      ],
+      "correctChoice": "Create one customer managed policy and attach it to all five roles",
+      "explanation": "A customer managed policy is a single reusable object, so one edit updates every identity it is attached to. Inline policies would need to be changed individually, and AWS managed policies cannot be edited.",
+      "difficulty": "Medium",
+      "tags": [
+        "IAM",
+        "Policies"
+      ]
+    },
+    {
+      "id": "root-only-task-support-plan",
+      "prompt": "Which task requires signing in as the AWS account root user?",
+      "choices": [
+        "Launching an EC2 instance",
+        "Changing or cancelling the AWS Support plan",
+        "Attaching a managed policy to an IAM group",
+        "Creating an IAM user"
+      ],
+      "correctChoice": "Changing or cancelling the AWS Support plan",
+      "explanation": "A small set of tasks such as changing the Support plan, closing a standalone account or restoring IAM permissions require root. Everyday administration should use IAM identities.",
+      "difficulty": "Easy",
+      "tags": [
+        "IAM",
+        "Root User"
+      ]
+    },
+    {
+      "id": "root-user-best-practice",
+      "prompt": "A new AWS account has just been created. Which action best follows root user security recommendations?",
+      "choices": [
+        "Create root access keys and keep them in a shared team password manager",
+        "Use the root user for daily administration because it has the broadest permissions",
+        "Delete the root user once an IAM administrator has been created",
+        "Enable MFA on the root user, create no root access keys, and use IAM identities daily"
+      ],
+      "correctChoice": "Enable MFA on the root user, create no root access keys, and use IAM identities daily",
+      "explanation": "The root user has full access that cannot be limited by IAM policies, so protect it with MFA, avoid access keys, and use it only for tasks that need it. The root user cannot be deleted.",
+      "difficulty": "Medium",
+      "tags": [
+        "IAM",
+        "Root User"
+      ]
+    },
+    {
+      "id": "root-limited-by-scp",
+      "prompt": "A security team wants to prevent the root user of member accounts from performing certain actions. Which mechanism can limit root user permissions?",
+      "choices": [
+        "A password policy with a longer minimum password length",
+        "An IAM group policy that denies actions to the root user",
+        "A service control policy (SCP) applied through AWS Organizations",
+        "An IAM policy attached directly to the root user"
+      ],
+      "correctChoice": "A service control policy (SCP) applied through AWS Organizations",
+      "explanation": "Root has full account access that IAM policies cannot restrict, but SCPs from AWS Organizations can limit it in member accounts.",
+      "difficulty": "Medium",
+      "tags": [
+        "IAM",
+        "Root User",
+        "Organizations"
+      ]
+    },
+    {
+      "id": "polp-jit-contractor",
+      "prompt": "A contractor needs access to a production resource for a two-hour maintenance window only. Which approach best applies the principle of least privilege?",
+      "choices": [
+        "Let the contractor assume a narrowly scoped IAM role that issues temporary credentials",
+        "Create an IAM user with long-term access keys and ask them to delete the keys afterwards",
+        "Share an existing administrator's credentials and change the password later",
+        "Give the contractor the root user's email and password for the window"
+      ],
+      "correctChoice": "Let the contractor assume a narrowly scoped IAM role that issues temporary credentials",
+      "explanation": "A narrowly scoped role satisfies just-enough-access, and temporary credentials that expire provide just-in-time access. Long-term or shared credentials depend on someone remembering to revoke them.",
+      "difficulty": "Medium",
+      "tags": [
+        "IAM",
+        "Least Privilege"
+      ]
+    },
+    {
+      "id": "cross-account-assume-role",
+      "prompt": "Users in Account A need read access to an S3 bucket in Account B. Account B's security team does not want to create IAM users or long-term access keys for them. Which solution meets the requirement?",
+      "choices": [
+        "Create IAM users in Account B and share their long-term access keys with Account A's staff",
+        "Create a role in Account B that trusts Account A, and have its users assume it with STS",
+        "Attach Account B's root user policy to Account A's users so that they inherit its access",
+        "Copy Account A's IAM users into Account B by adding them to an IAM group there"
+      ],
+      "correctChoice": "Create a role in Account B that trusts Account A, and have its users assume it with STS",
+      "explanation": "Cross-account access uses a role in the resource account whose trust policy names the other account. Users call STS AssumeRole and receive temporary credentials, so no long-term keys are created.",
+      "difficulty": "Hard",
+      "tags": [
+        "IAM",
+        "STS",
+        "Cross-Account"
+      ]
+    },
+    {
+      "id": "assume-role-harden-keys",
+      "prompt": "Developers use IAM user access keys that have broad permissions, and the keys are stored in ~/.aws/credentials. Security wants to reduce the impact of a leaked key without disrupting CLI use. Which change is best?",
+      "choices": [
+        "Give each developer a second access key to use from a different device",
+        "Rotate the access keys every day but leave the broad permissions in place",
+        "Move the keys from the credentials file into environment variables on each laptop",
+        "Remove users' direct permissions, let them only assume roles, and use STS temporary credentials in the CLI"
+      ],
+      "correctChoice": "Remove users' direct permissions, let them only assume roles, and use STS temporary credentials in the CLI",
+      "explanation": "If a user can only assume roles, a leaked long-term key has no direct permissions, and the credentials actually used are temporary and expire. Moving or duplicating keys does not reduce what a leaked key can do.",
+      "difficulty": "Hard",
+      "tags": [
+        "IAM",
+        "STS",
+        "Security"
+      ]
+    },
+    {
+      "id": "temp-creds-default-duration",
+      "prompt": "By default, how long do the temporary credentials returned when a role is assumed remain valid?",
+      "choices": [
+        "Fifteen minutes, with no way to extend them",
+        "One hour, extendable up to a maximum of 12 hours",
+        "Twenty-four hours, with no way to shorten them",
+        "They never expire until the role itself is deleted"
+      ],
+      "correctChoice": "One hour, extendable up to a maximum of 12 hours",
+      "explanation": "Role session credentials last 1 hour by default, and the role's maximum session duration can be set up to 12 hours. Temporary credentials always expire, which is why they are safer than long-term keys.",
+      "difficulty": "Easy",
+      "tags": [
+        "STS",
+        "Temporary Credentials"
+      ]
+    },
+    {
+      "id": "web-identity-token-exchange",
+      "prompt": "A mobile app signs users in through a third-party OpenID Connect provider and receives a JWT. Which STS action exchanges that token for temporary AWS credentials?",
+      "choices": [
+        "GetSessionToken",
+        "DecodeAuthorizationMessage",
+        "AssumeRoleWithWebIdentity",
+        "AssumeRole"
+      ],
+      "correctChoice": "AssumeRoleWithWebIdentity",
+      "explanation": "AssumeRoleWithWebIdentity accepts a token from a web identity provider (such as Google or an OIDC provider) and returns temporary credentials for the role. AssumeRole needs existing AWS credentials to call.",
+      "difficulty": "Easy",
+      "tags": [
+        "STS",
+        "Federation"
+      ]
+    },
+    {
+      "id": "identity-center-workforce-sso",
+      "prompt": "A company with many AWS accounts wants employees to sign in once and be granted access to selected accounts and SAML-enabled business applications, with permissions managed centrally. Which service fits best?",
+      "choices": [
+        "AWS IAM Identity Center (successor to AWS SSO)",
+        "AWS Directory Service Simple AD",
+        "AWS Secrets Manager with SAML support",
+        "Amazon Cognito user pools for the workforce"
+      ],
+      "correctChoice": "AWS IAM Identity Center (successor to AWS SSO)",
+      "explanation": "IAM Identity Center provides workforce single sign-on and central permission management across accounts and applications. Cognito user pools target customer-facing app users, not workforce access to AWS accounts.",
+      "difficulty": "Medium",
+      "tags": [
+        "IAM Identity Center",
+        "SSO"
+      ]
+    },
+    {
+      "id": "identity-center-ad-source",
+      "prompt": "A company wants its existing Microsoft Active Directory users to sign in to AWS accounts through single sign-on. Which approach supports this?",
+      "choices": [
+        "Replace Active Directory with AWS Secrets Manager",
+        "Use IAM Identity Center with Active Directory as its identity source",
+        "Create an IAM user and access key for every AD user",
+        "Use the root user to sign in on behalf of each employee"
+      ],
+      "correctChoice": "Use IAM Identity Center with Active Directory as its identity source",
+      "explanation": "IAM Identity Center can use its own directory, Active Directory, or an external SAML identity provider as the identity source, so existing identities can be reused.",
+      "difficulty": "Easy",
+      "tags": [
+        "IAM Identity Center",
+        "Directory Service"
+      ]
+    },
+    {
+      "id": "service-catalog-purpose",
+      "prompt": "What is the primary purpose of AWS Service Catalog?",
+      "choices": [
+        "To monitor running instances for malicious or suspicious activity",
+        "To store application secrets and rotate them automatically on a schedule",
+        "To publish approved products that users can discover and launch in self-service",
+        "To record every API call made in an AWS account for later audit"
+      ],
+      "correctChoice": "To publish approved products that users can discover and launch in self-service",
+      "explanation": "Service Catalog organises approved CloudFormation-based products into portfolios so users can launch them without direct access to the underlying services, giving standardisation and control.",
+      "difficulty": "Easy",
+      "tags": [
+        "Service Catalog"
+      ]
+    },
+    {
+      "id": "service-catalog-launch-constraint",
+      "prompt": "End users need to launch an approved Service Catalog product that creates EC2 and RDS resources, but they should not have IAM permissions to create those resources themselves. Which feature enables this?",
+      "choices": [
+        "A launch constraint that names an IAM role used for provisioning",
+        "A template constraint limiting the selectable instance types",
+        "A TagUpdate constraint on the product's resources",
+        "A notification constraint that sends stack events to the user"
+      ],
+      "correctChoice": "A launch constraint that names an IAM role used for provisioning",
+      "explanation": "A launch constraint makes Service Catalog use a specified IAM role to provision the stack instead of the end user's credentials, so users need only permission to launch the product.",
+      "difficulty": "Medium",
+      "tags": [
+        "Service Catalog",
+        "IAM"
+      ]
+    },
+    {
+      "id": "service-catalog-template-constraint",
+      "prompt": "A Service Catalog product lets users choose an EC2 instance type at launch. The administrator wants to limit the choice to t2.micro to control cost. Which constraint type should be used?",
+      "choices": [
+        "Launch constraint",
+        "Notification constraint",
+        "StackSet constraint",
+        "Template constraint"
+      ],
+      "correctChoice": "Template constraint",
+      "explanation": "A template constraint restricts the parameter values users can pick when launching a product, such as allowed instance types. A launch constraint changes which role provisions the product.",
+      "difficulty": "Medium",
+      "tags": [
+        "Service Catalog",
+        "Cost"
+      ]
+    },
+    {
+      "id": "service-catalog-stackset-constraint",
+      "prompt": "A company wants a Service Catalog product to be deployed to several accounts and Regions when a user launches it. Which constraint supports this?",
+      "choices": [
+        "Template constraint",
+        "Launch constraint",
+        "TagUpdate constraint",
+        "StackSet constraint"
+      ],
+      "correctChoice": "StackSet constraint",
+      "explanation": "A StackSet constraint configures the accounts and Regions where a product's CloudFormation StackSet is deployed. Template constraints limit parameter values and launch constraints select the provisioning role.",
+      "difficulty": "Medium",
+      "tags": [
+        "Service Catalog",
+        "CloudFormation"
+      ]
+    },
+    {
+      "id": "service-catalog-governed-self-service",
+      "prompt": "Central IT wants developers to deploy a standard web stack on demand. Developers must not have direct EC2 or CloudFormation permissions, and they must only be able to choose approved instance sizes. Which design meets both requirements?",
+      "choices": [
+        "A portfolio product with only a template constraint, plus EC2 and CloudFormation permissions for developers",
+        "Give developers the raw CloudFormation template and an IAM policy that allows all EC2 actions",
+        "A shared portfolio product with a launch constraint role and a template constraint on instance type",
+        "A portfolio product with only notification and TagUpdate constraints applied"
+      ],
+      "correctChoice": "A shared portfolio product with a launch constraint role and a template constraint on instance type",
+      "explanation": "The launch constraint lets Service Catalog provision using a role so users need no direct service permissions, and the template constraint limits the allowed instance sizes. Giving developers direct permissions would defeat the control.",
+      "difficulty": "Hard",
+      "tags": [
+        "Service Catalog",
+        "Governance"
+      ]
+    },
+    {
+      "id": "web-identity-trust-policy",
+      "prompt": "An app obtains a valid JWT from a web identity provider but calls AssumeRoleWithWebIdentity and receives AccessDenied. The role's permissions policy grants the needed S3 access. What is the most likely cause?",
+      "choices": [
+        "STS accepts web identity calls only on the global endpoint, not Regional ones",
+        "The role's trust policy does not allow the provider to call sts:AssumeRoleWithWebIdentity",
+        "The role's permissions policy is missing a Principal element for the provider",
+        "The JWT must first be exchanged using the AWS account root user credentials"
+      ],
+      "correctChoice": "The role's trust policy does not allow the provider to call sts:AssumeRoleWithWebIdentity",
+      "explanation": "The trust policy controls who can assume a role, so it must name the identity provider and allow sts:AssumeRoleWithWebIdentity. Permissions policies are identity-based and do not contain Principal elements.",
+      "difficulty": "Hard",
+      "tags": [
+        "STS",
+        "Federation",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "guardduty-data-sources",
+      "prompt": "Which set lists the core foundational data sources that Amazon GuardDuty continuously analyses to detect malicious or suspicious activity?",
+      "choices": [
+        "CloudTrail logs, VPC Flow Logs and DNS logs",
+        "Performance metrics in CloudWatch and billing reports",
+        "Full packet captures and payload data from every instance's network interface",
+        "Application source code in CodeCommit repositories"
+      ],
+      "correctChoice": "CloudTrail logs, VPC Flow Logs and DNS logs",
+      "explanation": "GuardDuty uses machine learning, anomaly detection and threat intelligence on sources such as CloudTrail, VPC Flow Logs and DNS logs, without requiring agents or changes to workloads.",
+      "difficulty": "Easy",
+      "tags": [
+        "GuardDuty",
+        "Security"
+      ]
+    },
+    {
+      "id": "guardduty-automated-response",
+      "prompt": "A company wants a Lambda function to run automatically whenever GuardDuty reports a high-severity finding. Which integration achieves this?",
+      "choices": [
+        "An S3 event notification configured from the GuardDuty console page",
+        "An EventBridge rule that matches GuardDuty findings and targets the function",
+        "A CloudWatch alarm on the account's total number of Lambda invocations",
+        "An IAM policy that attaches the Lambda function directly to GuardDuty"
+      ],
+      "correctChoice": "An EventBridge rule that matches GuardDuty findings and targets the function",
+      "explanation": "GuardDuty publishes findings as events to EventBridge, where rules can trigger Lambda or notify third-party tools to automate incident response.",
+      "difficulty": "Medium",
+      "tags": [
+        "GuardDuty",
+        "EventBridge"
+      ]
+    },
+    {
+      "id": "detective-root-cause",
+      "prompt": "GuardDuty raises a finding that an IAM principal made unusual API calls. The security team now wants to explore related activity over time to find the root cause. Which service is designed for this?",
+      "choices": [
+        "Amazon Detective",
+        "AWS Service Catalog",
+        "AWS Artifact",
+        "AWS Health Dashboard"
+      ],
+      "correctChoice": "Amazon Detective",
+      "explanation": "Detective builds a behaviour graph from log data so analysts can investigate findings, such as seeing where API calls came from and how their volume changed. GuardDuty detects; Detective investigates.",
+      "difficulty": "Medium",
+      "tags": [
+        "Detective",
+        "GuardDuty"
+      ]
+    },
+    {
+      "id": "guardduty-detective-isolation",
+      "prompt": "A security team wants (1) detection of an EC2 instance communicating with a known malicious IP, (2) automatic isolation of that instance, and (3) later investigation of which IAM principals were involved. Which combination fits best?",
+      "choices": [
+        "GuardDuty for detection and investigation, with CloudHSM to isolate the instance",
+        "AWS Health Dashboard for detection, Service Catalog for isolation, and Detective for the investigation",
+        "GuardDuty for detection, an EventBridge rule invoking Lambda to isolate the instance, and Detective for the investigation",
+        "Detective for detection, AWS Artifact for isolation, and GuardDuty for the investigation"
+      ],
+      "correctChoice": "GuardDuty for detection, an EventBridge rule invoking Lambda to isolate the instance, and Detective for the investigation",
+      "explanation": "GuardDuty detects the threat and emits findings, EventBridge can trigger Lambda to change the instance's security group, and Detective is used to investigate related behaviour. The other pairings assign services roles they do not have.",
+      "difficulty": "Hard",
+      "tags": [
+        "GuardDuty",
+        "Detective",
+        "EventBridge",
+        "Incident Response"
+      ]
+    },
+    {
+      "id": "health-dashboard-vs-public",
+      "prompt": "Which statement best describes the AWS Health Dashboard compared with the public AWS service health page?",
+      "choices": [
+        "Both pages show only the same general Regional status and neither is tailored to your account",
+        "The Health Dashboard only displays billing alerts, whereas the public page displays technical events",
+        "The Health Dashboard is public and needs no sign-in, whereas the public service health page is tailored to your own account's resources",
+        "The Health Dashboard shows events and guidance affecting your own AWS resources, whereas the public page shows general service status by Region without sign-in"
+      ],
+      "correctChoice": "The Health Dashboard shows events and guidance affecting your own AWS resources, whereas the public page shows general service status by Region without sign-in",
+      "explanation": "The Health Dashboard (formerly Personal Health Dashboard) is account-specific, including proactive notifications of scheduled activities. The public Service Health page gives a general view and needs no sign-in.",
+      "difficulty": "Easy",
+      "tags": [
+        "Health Dashboard"
+      ]
+    },
+    {
+      "id": "health-dashboard-scheduled-events",
+      "prompt": "An operations team wants to be told in advance about scheduled maintenance that will affect their specific EC2 instances so that they can plan changes. Which service provides this?",
+      "choices": [
+        "The public AWS service health page",
+        "AWS Health Dashboard",
+        "Amazon GuardDuty",
+        "AWS Artifact"
+      ],
+      "correctChoice": "AWS Health Dashboard",
+      "explanation": "The Health Dashboard gives account-specific alerts and proactive notifications about scheduled activities and issues affecting your resources. The public page is general and not tailored to your resources.",
+      "difficulty": "Medium",
+      "tags": [
+        "Health Dashboard",
+        "Operations"
+      ]
+    },
+    {
+      "id": "artifact-compliance-reports",
+      "prompt": "An auditor asks for AWS's own compliance reports, such as a SOC report. Where can these be downloaded on demand?",
+      "choices": [
+        "AWS Artifact",
+        "AWS Trusted Advisor",
+        "Amazon Inspector",
+        "AWS CloudTrail"
+      ],
+      "correctChoice": "AWS Artifact",
+      "explanation": "AWS Artifact is a self-service portal for AWS compliance reports and agreements, which also help customers understand their own responsibilities under each standard.",
+      "difficulty": "Easy",
+      "tags": [
+        "Artifact",
+        "Compliance"
+      ]
+    },
+    {
+      "id": "artifact-vs-config",
+      "prompt": "A company needs evidence that AWS's data centres and services meet a particular compliance standard, rather than evidence about how its own resources are configured. Which is the best source?",
+      "choices": [
+        "AWS CloudTrail",
+        "Amazon GuardDuty",
+        "AWS Config",
+        "AWS Artifact"
+      ],
+      "correctChoice": "AWS Artifact",
+      "explanation": "Artifact provides AWS's third-party audit reports and compliance documents about AWS's side of the shared responsibility model. Config, CloudTrail and GuardDuty describe your own resources and activity.",
+      "difficulty": "Medium",
+      "tags": [
+        "Artifact",
+        "Compliance",
+        "Shared Responsibility"
+      ]
+    },
+    {
+      "id": "kms-audit-key-usage",
+      "prompt": "An auditor requires a record of every time a particular encryption key was used to decrypt data. Which setup provides this?",
+      "choices": [
+        "Use an access key pair generated for the root user",
+        "Use an ACM public certificate for each data store",
+        "Use a KMS key, which integrates with CloudTrail to log key usage",
+        "Store the key in an EC2 instance's local file system and review its shell history"
+      ],
+      "correctChoice": "Use a KMS key, which integrates with CloudTrail to log key usage",
+      "explanation": "KMS integrates with CloudTrail, so each use of a KMS key is logged and can be audited, which is not possible with keys managed ad hoc on servers.",
+      "difficulty": "Medium",
+      "tags": [
+        "KMS",
+        "CloudTrail",
+        "Compliance"
+      ]
+    },
+    {
+      "id": "kms-managed-vs-custom-cost",
+      "prompt": "Most AWS services let you enable encryption by choosing a KMS key. Which statement about the choice of key is correct?",
+      "choices": [
+        "Both key types are free of any monthly charge, whatever the usage",
+        "Customer managed keys are free, while AWS managed keys carry a monthly charge",
+        "Only customer managed keys can be selected for encryption in Amazon S3",
+        "AWS managed keys have no monthly key charge; customer managed keys carry a small one"
+      ],
+      "correctChoice": "AWS managed keys have no monthly key charge; customer managed keys carry a small one",
+      "explanation": "AWS managed keys are created and managed by AWS for a service with no monthly key fee, whereas customer managed keys give more control (rotation, policies) for a small monthly cost.",
+      "difficulty": "Easy",
+      "tags": [
+        "KMS",
+        "Cost"
+      ]
+    },
+    {
+      "id": "kms-envelope-encryption",
+      "prompt": "An application must encrypt multi-gigabyte files using keys protected by AWS KMS. KMS cannot directly encrypt data this large. Which approach should be used?",
+      "choices": [
+        "Store the KMS key material in an S3 bucket alongside the encrypted files",
+        "Encrypt each file with a root user access key and keep that key in the file metadata",
+        "Envelope encryption: a KMS key protects a data key, which encrypts the files locally",
+        "Send each whole file to the KMS Encrypt API in one call and store the ciphertext"
+      ],
+      "correctChoice": "Envelope encryption: a KMS key protects a data key, which encrypts the files locally",
+      "explanation": "In envelope encryption, a KMS key encrypts a data key and the data key encrypts the bulk data, so large data never has to pass through KMS. The encrypted data key is stored with the data and decrypted through KMS when needed.",
+      "difficulty": "Medium",
+      "tags": [
+        "KMS",
+        "Envelope Encryption"
+      ]
+    },
+    {
+      "id": "kms-vs-cloudhsm-tenancy",
+      "prompt": "Which statement correctly contrasts AWS KMS with AWS CloudHSM?",
+      "choices": [
+        "Both services share HSMs between customers and differ only in price",
+        "KMS uses virtually isolated multi-tenant HSMs, whereas CloudHSM gives single-tenant HSMs",
+        "KMS is single-tenant and dedicated to one customer, whereas CloudHSM is shared",
+        "KMS stores keys on ordinary disks, whereas CloudHSM stores keys in S3 buckets"
+      ],
+      "correctChoice": "KMS uses virtually isolated multi-tenant HSMs, whereas CloudHSM gives single-tenant HSMs",
+      "explanation": "KMS is a managed multi-tenant service, while CloudHSM gives a customer dedicated HSM hardware in a single-tenant arrangement suited to stricter compliance requirements.",
+      "difficulty": "Easy",
+      "tags": [
+        "KMS",
+        "CloudHSM"
+      ]
+    },
+    {
+      "id": "cloudhsm-compliance-single-tenant",
+      "prompt": "A company's compliance rules require that cryptographic keys be stored on dedicated, single-tenant hardware under the company's sole control. Which service meets this?",
+      "choices": [
+        "AWS CloudHSM",
+        "AWS KMS with an AWS managed key",
+        "AWS Certificate Manager",
+        "AWS Secrets Manager"
+      ],
+      "correctChoice": "AWS CloudHSM",
+      "explanation": "CloudHSM provides single-tenant HSMs that the customer controls. KMS uses shared hardware, and ACM and Secrets Manager manage certificates and secrets rather than offering dedicated HSMs.",
+      "difficulty": "Medium",
+      "tags": [
+        "CloudHSM",
+        "Compliance"
+      ]
+    },
+    {
+      "id": "kms-custom-key-store-cloudhsm",
+      "prompt": "A company must keep key material in its own single-tenant CloudHSM cluster but wants S3 and EBS encryption to keep working through the normal KMS integration. What should they do?",
+      "choices": [
+        "Copy the keys to S3 and let S3 read them directly from the bucket",
+        "Switch to AWS managed keys, which are stored in the customer's CloudHSM",
+        "Use CloudHSM only, because AWS services cannot use keys held in an HSM",
+        "Configure a KMS custom key store backed by the CloudHSM cluster"
+      ],
+      "correctChoice": "Configure a KMS custom key store backed by the CloudHSM cluster",
+      "explanation": "KMS can use a CloudHSM cluster as a custom key store, so the key material stays in the dedicated HSMs while AWS services continue to use KMS APIs and integrations. This costs more than the default KMS key store.",
+      "difficulty": "Hard",
+      "tags": [
+        "KMS",
+        "CloudHSM",
+        "Compliance"
+      ]
+    },
+    {
+      "id": "kms-reencrypt-use",
+      "prompt": "A team needs to move ciphertext from one KMS key to another without ever exposing the plaintext to the calling application. Which CLI operation should they use?",
+      "choices": [
+        "aws kms create-key with the same key ID",
+        "aws kms re-encrypt",
+        "aws kms decrypt followed by aws kms encrypt on a local machine",
+        "aws kms enable-key-rotation"
+      ],
+      "correctChoice": "aws kms re-encrypt",
+      "explanation": "Re-encrypt decrypts and re-encrypts the data inside KMS, so plaintext is not returned to the client. It is used to change the key protecting ciphertext, manually rotate a key, or change the encryption context.",
+      "difficulty": "Medium",
+      "tags": [
+        "KMS",
+        "CLI"
+      ]
+    },
+    {
+      "id": "kms-rotation-symmetric-only",
+      "prompt": "A team runs aws kms enable-key-rotation on a key and the request is rejected. Which is a likely reason?",
+      "choices": [
+        "The key is an asymmetric KMS key, and automatic rotation is only supported for symmetric keys",
+        "The key was created in the same account as the caller, and rotation needs another account",
+        "The key is a customer managed key, and customer managed keys can never be rotated",
+        "The key is used by S3, and S3 blocks rotation of any key it uses"
+      ],
+      "correctChoice": "The key is an asymmetric KMS key, and automatic rotation is only supported for symmetric keys",
+      "explanation": "Automatic rotation applies to symmetric keys. It also cannot be enabled for a key in a different account. Customer managed keys are exactly the keys for which you enable rotation.",
+      "difficulty": "Medium",
+      "tags": [
+        "KMS",
+        "Key Rotation"
+      ]
+    },
+    {
+      "id": "cloudhsm-standard-apis",
+      "prompt": "An existing application accesses its cryptographic hardware through the PKCS#11 interface. Which AWS service lets it keep using that interface in the cloud?",
+      "choices": [
+        "Amazon Cognito",
+        "AWS KMS",
+        "AWS CloudHSM",
+        "AWS Directory Service"
+      ],
+      "correctChoice": "AWS CloudHSM",
+      "explanation": "CloudHSM integrates with industry-standard interfaces including PKCS#11, Java Cryptography Extensions (JCE) and Microsoft CNG, making migration of HSM-based applications straightforward.",
+      "difficulty": "Easy",
+      "tags": [
+        "CloudHSM"
+      ]
+    },
+    {
+      "id": "acm-public-cert-free",
+      "prompt": "A company needs a TLS certificate for an Application Load Balancer. Which statement about public certificates from AWS Certificate Manager (ACM) is correct?",
+      "choices": [
+        "They incur a monthly charge for each certificate that is issued",
+        "They can only be attached to Amazon S3 buckets and nothing else",
+        "They are free, and ACM can manage and renew them for integrated services",
+        "They must first be purchased from a third-party certificate authority"
+      ],
+      "correctChoice": "They are free, and ACM can manage and renew them for integrated services",
+      "explanation": "Public certificates provisioned through ACM have no charge and can be deployed to integrated services such as Elastic Load Balancing, CloudFront and API Gateway.",
+      "difficulty": "Easy",
+      "tags": [
+        "ACM",
+        "Cost"
+      ]
+    },
+    {
+      "id": "acm-not-on-ec2",
+      "prompt": "A team wants to use a public certificate issued by ACM directly on a web server running on an EC2 instance, without a load balancer. What is the correct conclusion?",
+      "choices": [
+        "Attach the certificate to the instance profile so the instance serves it directly",
+        "They cannot be installed directly on EC2; use an integrated service such as an ALB or CloudFront",
+        "Download the private key from ACM and copy it manually to each instance",
+        "Use the AWS CLI to export the ACM public certificate with its private key"
+      ],
+      "correctChoice": "They cannot be installed directly on EC2; use an integrated service such as an ALB or CloudFront",
+      "explanation": "ACM public certificates are deployed to integrated services (ELB, CloudFront, API Gateway) and their private keys cannot be exported. Terminating TLS at an ALB also avoids installing certificates on every instance.",
+      "difficulty": "Medium",
+      "tags": [
+        "ACM",
+        "ELB"
+      ]
+    },
+    {
+      "id": "acm-wildcard-alb-reencrypt",
+      "prompt": "A web app behind an ALB serves www.example.com and api.example.com. The team wants a single ACM certificate for the subdomains, and policy now requires traffic between the ALB and the instances to be encrypted too. Which design satisfies both needs?",
+      "choices": [
+        "Request a separate certificate for each subdomain and terminate at the ALB using HTTP to the instances",
+        "Use a wildcard certificate with HTTP between the ALB and the instances, because terminating TLS at the ALB already encrypts the whole path",
+        "Use the ACM certificate on the instances only and leave the ALB as a TCP passthrough",
+        "Request an ACM certificate for example.com and *.example.com for the HTTPS listener, and use HTTPS to the targets with certificates installed on the instances"
+      ],
+      "correctChoice": "Request an ACM certificate for example.com and *.example.com for the HTTPS listener, and use HTTPS to the targets with certificates installed on the instances",
+      "explanation": "ACM supports wildcard names, so one certificate can cover several subdomains. Terminating TLS at the ALB leaves traffic to the instances unencrypted unless you re-encrypt with HTTPS to the targets, which then need their own certificates.",
+      "difficulty": "Hard",
+      "tags": [
+        "ACM",
+        "ELB",
+        "Encryption"
+      ]
+    },
+    {
+      "id": "cognito-user-pool-signin",
+      "prompt": "A new mobile app needs a managed user directory with sign-up and sign-in, including sign-in through social identity providers. Which Amazon Cognito feature provides this?",
+      "choices": [
+        "Cognito user pools",
+        "AWS Directory Service AD Connector",
+        "Cognito identity pools",
+        "AWS Security Token Service global endpoint"
+      ],
+      "correctChoice": "Cognito user pools",
+      "explanation": "A user pool is a user directory that handles registration and authentication, including federation with identity providers, and grants users access to an app.",
+      "difficulty": "Easy",
+      "tags": [
+        "Cognito",
+        "Authentication"
+      ]
+    },
+    {
+      "id": "cognito-identity-pool-creds",
+      "prompt": "Which Amazon Cognito feature provides temporary AWS credentials so that app users can call AWS services such as S3 directly?",
+      "choices": [
+        "Cognito identity pools",
+        "AWS Secrets Manager",
+        "Cognito user pools",
+        "Cognito Sync"
+      ],
+      "correctChoice": "Cognito identity pools",
+      "explanation": "Identity pools exchange an authenticated identity for temporary, limited-privilege AWS credentials. User pools authenticate users but do not themselves issue AWS credentials.",
+      "difficulty": "Easy",
+      "tags": [
+        "Cognito",
+        "Temporary Credentials"
+      ]
+    },
+    {
+      "id": "cognito-pools-combined-s3",
+      "prompt": "A mobile app must authenticate customers with its own sign-up and sign-in, and then let each signed-in customer upload photos directly to S3 using only the permissions a customer needs, with no long-term AWS keys in the app. Which design meets this?",
+      "choices": [
+        "AWS Directory Service Simple AD, with an individual IAM user created for every customer",
+        "A Cognito user pool for sign-in, then an IAM user's long-term access key embedded in the app for S3",
+        "A Cognito user pool for sign-in, then an identity pool to exchange tokens for temporary role credentials",
+        "A Cognito identity pool only, with each customer's password stored in an S3 bucket"
+      ],
+      "correctChoice": "A Cognito user pool for sign-in, then an identity pool to exchange tokens for temporary role credentials",
+      "explanation": "The user pool authenticates and issues tokens, and the identity pool turns those tokens into temporary credentials for an IAM role scoped to the required S3 actions. Embedded long-term keys would be exposed to every installation.",
+      "difficulty": "Hard",
+      "tags": [
+        "Cognito",
+        "S3",
+        "Least Privilege"
+      ]
+    },
+    {
+      "id": "ad-connector-purpose",
+      "prompt": "What does AD Connector in AWS Directory Service do?",
+      "choices": [
+        "It creates a lightweight Samba-based directory in AWS with only basic features",
+        "It hosts a full copy of the corporate directory in AWS, managed entirely by AWS",
+        "It automatically replaces IAM users with Active Directory groups in the account",
+        "It proxies directory requests to an existing on-premises Microsoft Active Directory"
+      ],
+      "correctChoice": "It proxies directory requests to an existing on-premises Microsoft Active Directory",
+      "explanation": "AD Connector is a directory gateway that forwards requests to your on-premises AD without caching or storing directory information in the cloud.",
+      "difficulty": "Easy",
+      "tags": [
+        "Directory Service",
+        "Active Directory"
+      ]
+    },
+    {
+      "id": "managed-ad-full-features",
+      "prompt": "A company with no on-premises directory needs a fully featured Microsoft Active Directory in AWS for Windows workloads, managed by AWS. Which option fits best?",
+      "choices": [
+        "Cognito user pools (app users)",
+        "AWS Managed Microsoft AD",
+        "AWS CloudHSM (hardware keys)",
+        "AD Connector (proxy only)"
+      ],
+      "correctChoice": "AWS Managed Microsoft AD",
+      "explanation": "AWS Managed Microsoft AD is the full-featured, AWS-managed version of AD. AD Connector only proxies to an existing directory, and Simple AD supports only basic features.",
+      "difficulty": "Medium",
+      "tags": [
+        "Directory Service",
+        "Active Directory"
+      ]
+    },
+    {
+      "id": "managed-ad-resilient-trust",
+      "prompt": "AD-aware applications on EC2 in AWS must keep authenticating users even when the VPN link to the on-premises data centre is down. Users also exist in the on-premises Active Directory. Which design is best?",
+      "choices": [
+        "AWS Managed Microsoft AD with a trust to the on-premises directory",
+        "AD Connector pointing to the on-premises directory for every request",
+        "Simple AD with every on-premises user re-created by hand",
+        "Amazon Cognito user pools federated to the on-premises directory"
+      ],
+      "correctChoice": "AWS Managed Microsoft AD with a trust to the on-premises directory",
+      "explanation": "Managed AD runs a real directory in AWS, so applications can authenticate locally during a link outage, and a trust lets on-premises identities be recognised. AD Connector depends on reaching the on-premises directory for each request.",
+      "difficulty": "Hard",
+      "tags": [
+        "Directory Service",
+        "Hybrid",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "ldap-what-is",
+      "prompt": "How is the Lightweight Directory Access Protocol (LDAP) best described?",
+      "choices": [
+        "A DNS record type that routes traffic to load balancers across multiple Regions",
+        "A federation standard that exchanges signed tokens between web identity providers and AWS",
+        "An open, vendor-neutral protocol for accessing directory information, often a central store of usernames",
+        "A proprietary AWS protocol that encrypts data at rest in managed storage services"
+      ],
+      "correctChoice": "An open, vendor-neutral protocol for accessing directory information, often a central store of usernames",
+      "explanation": "LDAP is a standard application protocol for directory services. It was not designed for web apps, and some systems support LDAP integration only rather than SSO.",
+      "difficulty": "Easy",
+      "tags": [
+        "Directory Service",
+        "LDAP"
+      ]
+    },
+    {
+      "id": "secrets-manager-rotation",
+      "prompt": "A company wants RDS database credentials stored encrypted and rotated automatically on a schedule, with access to the secret auditable. Which service meets this?",
+      "choices": [
+        "AWS Artifact with a scheduled report listing the stored credentials",
+        "Amazon S3 with default encryption and a lifecycle rule that replaces the object every 90 days",
+        "AWS Certificate Manager with an automatic renewal schedule for each database",
+        "AWS Secrets Manager, which rotates credentials with a Lambda function and logs access in CloudTrail"
+      ],
+      "correctChoice": "AWS Secrets Manager, which rotates credentials with a Lambda function and logs access in CloudTrail",
+      "explanation": "Secrets Manager encrypts secrets with KMS, can rotate database credentials automatically using Lambda, and records access in CloudTrail.",
+      "difficulty": "Medium",
+      "tags": [
+        "Secrets Manager",
+        "Security"
+      ]
+    },
+    {
+      "id": "secrets-manager-cache-cost",
+      "prompt": "An application retrieves a database secret from Secrets Manager on every incoming request, and the monthly API call charges are unexpectedly high. How can the cost be reduced without losing automatic rotation?",
+      "choices": [
+        "Move the secret into a plaintext environment variable permanently and disable rotation",
+        "Cache the secret in the application for a short period and refresh it periodically",
+        "Create a new secret for every request so each is called only once",
+        "Copy the secret value into the source code to avoid calls"
+      ],
+      "correctChoice": "Cache the secret in the application for a short period and refresh it periodically",
+      "explanation": "Secrets Manager charges per secret per month and per 10,000 API calls, so caching reduces calls while still picking up rotated values when the cache refreshes. Hard-coding or disabling rotation undermines security.",
+      "difficulty": "Hard",
+      "tags": [
+        "Secrets Manager",
+        "Cost"
+      ]
+    },
+    {
+      "id": "lambda-pricing-model",
+      "prompt": "A company runs an image-resizing task that executes a few times per day, with no activity in between. Which characteristic of AWS Lambda makes it cost-effective for this?",
+      "choices": [
+        "A fixed monthly fee per function, regardless of how often it runs",
+        "Charges for at least one always-running server for the whole month",
+        "Charges are based on compute time consumed, with nothing charged while idle",
+        "A fee per provisioned vCPU for every hour in the month"
+      ],
+      "correctChoice": "Charges are based on compute time consumed, with nothing charged while idle",
+      "explanation": "Lambda is serverless: you pay for invocations and compute time and nothing while the function is idle. There are no servers to provision or manage.",
+      "difficulty": "Easy",
+      "tags": [
+        "Lambda",
+        "Cost"
+      ]
+    },
+    {
+      "id": "lambda-max-timeout",
+      "prompt": "A data-processing job takes about 40 minutes to run in a single execution. Why is a single Lambda function a poor fit?",
+      "choices": [
+        "The maximum Lambda timeout is 5 minutes for functions using layers",
+        "Lambda cannot access S3 for batch data",
+        "Lambda functions can only run once per hour",
+        "The maximum Lambda timeout is 15 minutes"
+      ],
+      "correctChoice": "The maximum Lambda timeout is 15 minutes",
+      "explanation": "A Lambda invocation can run for at most 15 minutes (the default timeout is only 3 seconds). Longer jobs need another approach such as AWS Batch, ECS/Fargate, or splitting the work with Step Functions.",
+      "difficulty": "Easy",
+      "tags": [
+        "Lambda",
+        "Limits"
+      ]
+    },
+    {
+      "id": "lambda-async-sns",
+      "prompt": "An SNS topic invokes a Lambda function when a message is published. How is the function invoked, and what does the caller receive?",
+      "choices": [
+        "It cannot be invoked by SNS and requires an SQS queue",
+        "Asynchronously; the caller is not made to wait for the function's result",
+        "Synchronously; the topic waits for the function's response",
+        "Synchronously; the topic retries until it receives an HTTP response"
+      ],
+      "correctChoice": "Asynchronously; the caller is not made to wait for the function's result",
+      "explanation": "Services such as SNS, EventBridge and S3 invoke Lambda asynchronously, so the event is queued and the caller returns immediately. Synchronous invocation is used when a caller needs the response, such as an HTTP request.",
+      "difficulty": "Medium",
+      "tags": [
+        "Lambda",
+        "Invocation"
+      ]
+    },
+    {
+      "id": "lambda-layers-shared-libs",
+      "prompt": "Twelve Lambda functions use the same third-party library, and the team wants to update it in one place without bundling it in every deployment package. What should they use?",
+      "choices": [
+        "A Lambda layer containing the library, attached to each function",
+        "An EC2 instance store volume attached to each function",
+        "A separate alias for each function",
+        "An environment variable containing the library's code"
+      ],
+      "correctChoice": "A Lambda layer containing the library, attached to each function",
+      "explanation": "Layers are ZIP archives of libraries, custom runtimes or dependencies that functions can share (up to five per function) instead of including them in each deployment package.",
+      "difficulty": "Medium",
+      "tags": [
+        "Lambda",
+        "Layers"
+      ]
+    },
+    {
+      "id": "lambda-arm64",
+      "prompt": "A team wants to lower the cost of Lambda functions written in Python, which have no dependencies on x86-specific binaries. What is a simple change that typically improves price-performance?",
+      "choices": [
+        "Switch the function's architecture to arm64 (Graviton2)",
+        "Change the deployment package type to ZIP over 50 MB",
+        "Switch the function to run on a dedicated EC2 Dedicated Host",
+        "Increase the timeout to 15 minutes"
+      ],
+      "correctChoice": "Switch the function's architecture to arm64 (Graviton2)",
+      "explanation": "Lambda supports x86_64 and arm64; arm64 functions typically give better price-performance, provided that any native dependencies are built for arm64.",
+      "difficulty": "Medium",
+      "tags": [
+        "Lambda",
+        "Cost",
+        "Performance"
+      ]
+    },
+    {
+      "id": "lambda-alias-stable-target",
+      "prompt": "An event source must always invoke the production version of a Lambda function, while developers publish new versions and promote them. What provides a stable reference that can be moved between versions?",
+      "choices": [
+        "A new layer that holds the version number",
+        "A Lambda alias that points to a specific version",
+        "The unqualified function ARN with $LATEST appended",
+        "The function's execution role"
+      ],
+      "correctChoice": "A Lambda alias that points to a specific version",
+      "explanation": "An alias is a friendly name for a specific version and can be repointed when a new version is promoted. Each version has its own ARN, and unqualified ARNs cannot be used with aliases.",
+      "difficulty": "Medium",
+      "tags": [
+        "Lambda",
+        "Versions"
+      ]
+    },
+    {
+      "id": "lambda-container-image-large",
+      "prompt": "A machine-learning inference function needs about 3 GB of libraries and model files. The team wants to run it on Lambda. Which packaging option should they use?",
+      "choices": [
+        "A ZIP archive plus six layers",
+        "An AWS Elastic Transcoder pipeline",
+        "A container image stored in Amazon ECR and referenced by the function",
+        "A ZIP archive uploaded directly through the console, because ZIP deployment packages can be up to 10 GB"
+      ],
+      "correctChoice": "A container image stored in Amazon ECR and referenced by the function",
+      "explanation": "ZIP deployment packages (including layers) are limited to 250 MB unzipped. Container images, built from a Dockerfile and pushed to a registry such as ECR, support much larger functions (up to 10 GB).",
+      "difficulty": "Hard",
+      "tags": [
+        "Lambda",
+        "Containers",
+        "Deployment"
+      ]
+    },
+    {
+      "id": "lambda-os-only-runtime",
+      "prompt": "A team has compiled a Rust application to a native binary and wants to run it on Lambda without a language runtime. Which approach is correct?",
+      "choices": [
+        "Use provided.al2023, but select the opposite instruction set architecture to the binary's",
+        "Compile the binary for Windows so Lambda can run it on the function's default operating system",
+        "Choose the Java managed runtime and upload the compiled Rust binary as a layer on top",
+        "Use provided.al2023 with a runtime interface client in a Linux binary built for the function's architecture"
+      ],
+      "correctChoice": "Use provided.al2023 with a runtime interface client in a Linux binary built for the function's architecture",
+      "explanation": "Natively compiled languages like Go, Rust and C++ run on OS-only runtimes. The binary must include a runtime interface client and be compiled for Linux and the same architecture (arm64 or x86_64) as the function.",
+      "difficulty": "Hard",
+      "tags": [
+        "Lambda",
+        "Runtimes"
+      ]
+    },
+    {
+      "id": "lambda-concurrency-throttling",
+      "prompt": "A critical order-processing function is throttled when another function in the same Region and account spikes and consumes most of the default account concurrency of 1,000. What should be done so that the critical function always has capacity?",
+      "choices": [
+        "Add the critical function to a layer shared with the other function",
+        "Increase the timeout of the other function to 15 minutes",
+        "Configure reserved concurrency for the critical function",
+        "Switch the critical function to the $LATEST version only"
+      ],
+      "correctChoice": "Configure reserved concurrency for the critical function",
+      "explanation": "Lambda scales up to the account concurrency limit (default 1,000 per Region, which can be raised). Reserved concurrency guarantees a portion of that pool for a function so that others cannot starve it.",
+      "difficulty": "Hard",
+      "tags": [
+        "Lambda",
+        "Scaling",
+        "Reliability"
+      ]
+    },
+    {
+      "id": "sfn-purpose",
+      "prompt": "What is the main purpose of AWS Step Functions?",
+      "choices": [
+        "To store, encrypt and rotate database credentials automatically",
+        "To coordinate multiple AWS services into serverless workflows built as state machines",
+        "To distribute incoming traffic evenly across a fleet of EC2 instances",
+        "To transcode video files between formats for on-demand streaming"
+      ],
+      "correctChoice": "To coordinate multiple AWS services into serverless workflows built as state machines",
+      "explanation": "Step Functions models a workflow as a state machine, with a visual view, automatic tracking and logging of each step, and built-in retries on errors.",
+      "difficulty": "Easy",
+      "tags": [
+        "Step Functions"
+      ]
+    },
+    {
+      "id": "sfn-choice-state",
+      "prompt": "A workflow must take one path if an order total exceeds a threshold and another path otherwise. Which Step Functions state type provides this branching?",
+      "choices": [
+        "Pass state",
+        "Wait state",
+        "Succeed state",
+        "Choice state"
+      ],
+      "correctChoice": "Choice state",
+      "explanation": "A Choice state evaluates conditions (including AND, OR and NOT combinations) and moves to the matching branch, with an optional default branch.",
+      "difficulty": "Easy",
+      "tags": [
+        "Step Functions"
+      ]
+    },
+    {
+      "id": "sfn-wait-state",
+      "prompt": "A workflow must pause for 24 hours between sending a reminder and checking whether a customer responded. Which state type is designed for this?",
+      "choices": [
+        "Wait state",
+        "Choice state",
+        "Fail state",
+        "Map state"
+      ],
+      "correctChoice": "Wait state",
+      "explanation": "A Wait state delays the state machine for a specified duration or until a specified time without needing compute to run during the pause.",
+      "difficulty": "Easy",
+      "tags": [
+        "Step Functions"
+      ]
+    },
+    {
+      "id": "sfn-standard-long-running",
+      "prompt": "A business process includes steps that wait several days for human approval before continuing, and each execution must be tracked reliably. Which Step Functions workflow type is appropriate?",
+      "choices": [
+        "Express workflow with a Parallel state",
+        "Neither, because workflows cannot last longer than 15 minutes",
+        "Express workflow",
+        "Standard workflow"
+      ],
+      "correctChoice": "Standard workflow",
+      "explanation": "Standard workflows are for long-running, general-purpose workloads. Express workflows target short, high-volume workloads such as streaming data processing.",
+      "difficulty": "Medium",
+      "tags": [
+        "Step Functions",
+        "Workflow Types"
+      ]
+    },
+    {
+      "id": "sfn-express-high-volume",
+      "prompt": "An IoT pipeline processes a very high volume of short events, each requiring a few quick steps that complete in seconds. Which Step Functions workflow type fits best?",
+      "choices": [
+        "Standard workflow, because it is designed for short, high-volume streams",
+        "A workflow using only Pass states",
+        "Express workflow",
+        "A Wait state in a Standard workflow"
+      ],
+      "correctChoice": "Express workflow",
+      "explanation": "Express workflows are intended for short-duration, high-event-rate workloads such as streaming data processing. Standard workflows suit long-running processes.",
+      "difficulty": "Medium",
+      "tags": [
+        "Step Functions",
+        "Workflow Types"
+      ]
+    },
+    {
+      "id": "sfn-map-state",
+      "prompt": "A state machine receives an array of 500 records and must apply the same processing step to each record. Which state type is the best fit?",
+      "choices": [
+        "Map state",
+        "Parallel state",
+        "Succeed state",
+        "Choice state"
+      ],
+      "correctChoice": "Map state",
+      "explanation": "A Map state iterates over an array and performs the same steps for each item. A Parallel state runs different, fixed branches concurrently and waits for them all.",
+      "difficulty": "Medium",
+      "tags": [
+        "Step Functions"
+      ]
+    },
+    {
+      "id": "sfn-parallel-state",
+      "prompt": "After an order is validated, a workflow must update inventory and send a customer email at the same time, and only continue when both are complete. Which state type should be used?",
+      "choices": [
+        "Wait state",
+        "Parallel state",
+        "Map state",
+        "Pass state"
+      ],
+      "correctChoice": "Parallel state",
+      "explanation": "A Parallel state starts its branches at the same time and does not advance until all have finished. Map applies one step across the items of an array.",
+      "difficulty": "Medium",
+      "tags": [
+        "Step Functions"
+      ]
+    },
+    {
+      "id": "sfn-activity-onprem-worker",
+      "prompt": "A Step Functions task must be completed by a worker application running in an on-premises data centre. Which Task state approach supports this?",
+      "choices": [
+        "Use a Pass state to simulate the work of the on-premises worker",
+        "Use a Succeed state that stores the worker's IP address",
+        "Use a Choice state to call the on-premises server directly",
+        "Use an activity, where the worker polls Step Functions for the task"
+      ],
+      "correctChoice": "Use an activity, where the worker polls Step Functions for the task",
+      "explanation": "With an activity, the workflow waits until an activity worker polls for the task, so the worker can be hosted anywhere that can reach the service.",
+      "difficulty": "Medium",
+      "tags": [
+        "Step Functions",
+        "Hybrid"
+      ]
+    },
+    {
+      "id": "sfn-resultpath-preserve-input",
+      "prompt": "In a state machine, a Lambda task returns a validation result. The next state also needs the original input, so the result should be added to it under $.validation rather than replacing it. Which field achieves this?",
+      "choices": [
+        "ResultPath set to $.validation",
+        "InputPath set to $.validation",
+        "Parameters set to $.validation, which would copy the task result into the input",
+        "OutputPath set to $.validation, which merges the result with the original input"
+      ],
+      "correctChoice": "ResultPath set to $.validation",
+      "explanation": "ResultPath determines where the task result is placed relative to the state's input, so the original input can be kept with the result added. OutputPath only filters what is passed on, and InputPath selects part of the input.",
+      "difficulty": "Hard",
+      "tags": [
+        "Step Functions",
+        "Data Flow"
+      ]
+    },
+    {
+      "id": "sfn-orchestration-vs-lambda-chain",
+      "prompt": "A workflow runs an AWS Batch job and must then publish to SNS on success or failure, with retries on transient errors, and operators want a visual record of each execution. Which approach has the least custom code?",
+      "choices": [
+        "A Pass state that mocks the Batch job, followed by a Wait state before the SNS call",
+        "A state machine with a Batch task, retries, and SNS states for the success and failure paths",
+        "A single Lambda function that polls the Batch job and calls SNS, with custom retry code inside",
+        "A CloudWatch dashboard with an alarm that an operator uses to restart the job by hand"
+      ],
+      "correctChoice": "A state machine with a Batch task, retries, and SNS states for the success and failure paths",
+      "explanation": "Step Functions integrates with services such as Batch and SNS, automatically tracks and logs each step, retries on errors, and shows execution in a visual workflow, which avoids writing and maintaining orchestration code.",
+      "difficulty": "Hard",
+      "tags": [
+        "Step Functions",
+        "Batch",
+        "Orchestration"
+      ]
+    },
+    {
+      "id": "rekognition-image-moderation",
+      "prompt": "A photo-sharing site wants to automatically detect inappropriate content in uploaded images without building its own machine-learning model. Which service should it use?",
+      "choices": [
+        "Amazon Polly",
+        "Amazon Comprehend",
+        "Amazon Rekognition",
+        "Amazon Textract"
+      ],
+      "correctChoice": "Amazon Rekognition",
+      "explanation": "Rekognition offers pre-built image and video analysis, including content moderation, object and face detection and text detection, with no ML expertise required.",
+      "difficulty": "Easy",
+      "tags": [
+        "Rekognition",
+        "Machine Learning"
+      ]
+    },
+    {
+      "id": "textract-forms-tables",
+      "prompt": "A company has thousands of scanned paper forms and wants to extract the text, form fields and tables into structured data. Which service is designed for this?",
+      "choices": [
+        "Amazon Rekognition",
+        "Amazon Translate",
+        "Amazon Textract",
+        "Amazon Kendra"
+      ],
+      "correctChoice": "Amazon Textract",
+      "explanation": "Textract performs OCR and goes beyond it to detect forms, tables, signatures, IDs, expenses and lending documents. Rekognition's text detection is intended for text in images such as signs, not structured documents.",
+      "difficulty": "Easy",
+      "tags": [
+        "Textract",
+        "Machine Learning"
+      ]
+    },
+    {
+      "id": "comprehend-sentiment",
+      "prompt": "A support team wants to analyse thousands of customer emails to find the sentiment and detect personally identifiable information, without managing ML infrastructure. Which service should they use?",
+      "choices": [
+        "Amazon Lex",
+        "Amazon Comprehend",
+        "AWS Batch",
+        "Amazon Personalize"
+      ],
+      "correctChoice": "Amazon Comprehend",
+      "explanation": "Comprehend is a serverless natural language processing service that extracts entities, key phrases, sentiment, language and PII from text.",
+      "difficulty": "Easy",
+      "tags": [
+        "Comprehend",
+        "Machine Learning"
+      ]
+    },
+    {
+      "id": "translate-text",
+      "prompt": "An application must convert product descriptions from English into several other languages, either in real time or as an asynchronous batch. Which service should be used?",
+      "choices": [
+        "Amazon Translate",
+        "Amazon Polly",
+        "Amazon Comprehend",
+        "Amazon Textract"
+      ],
+      "correctChoice": "Amazon Translate",
+      "explanation": "Translate is a neural machine translation service that supports real-time translation and asynchronous batch processing, given the text, source language and target language.",
+      "difficulty": "Easy",
+      "tags": [
+        "Translate",
+        "Machine Learning"
+      ]
+    },
+    {
+      "id": "polly-text-to-speech",
+      "prompt": "An accessibility feature must read article text aloud as an audio file in a natural-sounding synthesised voice. Which service provides this?",
+      "choices": [
+        "Amazon Rekognition",
+        "Amazon Kendra",
+        "Amazon Lex",
+        "Amazon Polly"
+      ],
+      "correctChoice": "Amazon Polly",
+      "explanation": "Polly is a text-to-speech service. Its engines range from the cost-effective standard engine to the neural engine with the most natural-sounding speech.",
+      "difficulty": "Easy",
+      "tags": [
+        "Polly",
+        "Machine Learning"
+      ]
+    },
+    {
+      "id": "kendra-enterprise-search",
+      "prompt": "Employees want to ask natural-language questions and search across company documents held in S3 and SharePoint, receiving relevant answers rather than simple keyword matches. Which service is the best fit?",
+      "choices": [
+        "AWS Directory Service",
+        "Amazon Personalize",
+        "Amazon Kendra",
+        "Amazon Rekognition"
+      ],
+      "correctChoice": "Amazon Kendra",
+      "explanation": "Kendra is an ML-powered enterprise search service that indexes documents from sources such as S3 and SharePoint and uses natural language understanding to return relevant results.",
+      "difficulty": "Medium",
+      "tags": [
+        "Kendra",
+        "Machine Learning"
+      ]
+    },
+    {
+      "id": "personalize-recommendations",
+      "prompt": "An online retailer wants to show each shopper product recommendations based on user-item interaction data. Which service provides real-time personalised recommendations without requiring deep ML expertise?",
+      "choices": [
+        "Amazon Kendra",
+        "Amazon Personalize",
+        "Amazon Translate",
+        "Amazon Comprehend"
+      ],
+      "correctChoice": "Amazon Personalize",
+      "explanation": "Personalize trains models on interaction data (user ID, item ID, timestamp) uploaded to a dataset group, and a campaign serves recommendations to applications.",
+      "difficulty": "Medium",
+      "tags": [
+        "Personalize",
+        "Machine Learning"
+      ]
+    },
+    {
+      "id": "ml-pipeline-scanned-claims",
+      "prompt": "An insurer receives scanned claim forms in many languages. It must extract the fields, detect any personal information in the extracted text, and produce English versions for reviewers. Which combination of managed AI services fits best?",
+      "choices": [
+        "Amazon Textract to extract the content, Amazon Comprehend to detect PII, and Amazon Translate to translate to English",
+        "Amazon Comprehend to extract the content from scans, Amazon Textract to translate, and Amazon Polly to detect PII",
+        "Amazon Rekognition to extract the content, Amazon Polly to detect PII, and Amazon Lex to translate",
+        "Amazon Personalize to extract the content, Amazon Kendra to detect PII, and Amazon Translate to translate"
+      ],
+      "correctChoice": "Amazon Textract to extract the content, Amazon Comprehend to detect PII, and Amazon Translate to translate to English",
+      "explanation": "Textract performs OCR and structured extraction from documents, Comprehend finds entities and PII in text, and Translate converts between languages. The other options assign capabilities to services that do not provide them.",
+      "difficulty": "Hard",
+      "tags": [
+        "Textract",
+        "Comprehend",
+        "Translate",
+        "Service Selection"
+      ]
+    },
+    {
+      "id": "voice-bot-lex-kendra-polly",
+      "prompt": "A company wants a text and voice assistant that understands customer requests, answers questions from its knowledge-base documents, and can speak answers back in a synthesised voice. Which combination of services should it choose?",
+      "choices": [
+        "Amazon Kendra for the conversation, Amazon Lex for synthesising speech, and Amazon Rekognition for document search",
+        "Amazon Personalize for the conversation, Amazon Textract for document search, and Amazon Translate for the spoken responses",
+        "Amazon Rekognition for the conversation, Amazon Comprehend for document search, and AWS Batch for the spoken responses",
+        "Amazon Lex for the conversation interface, Amazon Kendra to search the documents, and Amazon Polly for the spoken responses"
+      ],
+      "correctChoice": "Amazon Lex for the conversation interface, Amazon Kendra to search the documents, and Amazon Polly for the spoken responses",
+      "explanation": "Lex provides conversational interfaces (voice and text) with NLU, a Lex bot can use Kendra to find answers in indexed documents, and Polly turns text into speech. The other options misassign service roles.",
+      "difficulty": "Hard",
+      "tags": [
+        "Lex",
+        "Kendra",
+        "Polly",
+        "Service Selection"
+      ]
+    },
+    {
+      "id": "batch-array-spot-cost",
+      "prompt": "Each night a company must run about 20,000 independent, restartable tasks using the same container image, and each task takes roughly 45 minutes. The work must finish within hours at the lowest cost, without the team managing job scheduling software. Which solution is best?",
+      "choices": [
+        "An ECS service on On-Demand instances kept running all day with a custom scheduler",
+        "An AWS Batch array job on a managed compute environment that uses Spot Instances",
+        "One Lambda function invocation per task, because Lambda scales automatically",
+        "A Step Functions Express workflow that runs each task in a Pass state"
+      ],
+      "correctChoice": "An AWS Batch array job on a managed compute environment that uses Spot Instances",
+      "explanation": "Batch plans, schedules and runs batch workloads, array jobs share common parameters across many child jobs, and Spot Instances cut cost for fault-tolerant work. Lambda is ruled out because each task exceeds the 15-minute limit.",
+      "difficulty": "Hard",
+      "tags": [
+        "AWS Batch",
+        "Cost",
+        "Lambda"
+      ]
+    },
+    {
+      "id": "batch-multinode-parallel",
+      "prompt": "An engineering team runs a tightly coupled simulation that must span 16 EC2 instances as a single job, and wants job queueing and scheduling handled by a managed service. Which AWS Batch job type fits?",
+      "choices": [
+        "An array job",
+        "A GPU job running on a single instance",
+        "A multi-node parallel job",
+        "A job that uses a Wait state to link 16 independent jobs"
+      ],
+      "correctChoice": "A multi-node parallel job",
+      "explanation": "A multi-node parallel job runs a single job spanning multiple EC2 instances. An array job runs many independent copies of a job that share parameters, which does not suit tightly coupled work.",
+      "difficulty": "Hard",
+      "tags": [
+        "AWS Batch",
+        "Compute"
+      ]
+    },
+    {
+      "id": "mediaconvert-replaces-transcoder",
+      "prompt": "A video-on-demand pipeline uses AWS Elastic Transcoder, and the team now needs to crop videos, overlay graphics and insert caption tracks. Which action best fits current AWS guidance?",
+      "choices": [
+        "Migrate to AWS Elemental MediaConvert, the successor with more processing options",
+        "Move the transcoding work onto AWS Device Farm test devices",
+        "Keep Elastic Transcoder and add Amazon Rekognition to perform the cropping",
+        "Route the video files through Amazon Polly to apply the overlays"
+      ],
+      "correctChoice": "Migrate to AWS Elemental MediaConvert, the successor with more processing options",
+      "explanation": "MediaConvert is the more comprehensive successor to Elastic Transcoder, with options such as video correction, input filtering, cropping, overlays and caption insertion. It reads from a source bucket and writes to a destination bucket.",
+      "difficulty": "Hard",
+      "tags": [
+        "MediaConvert",
+        "Elastic Transcoder",
+        "Media"
+      ]
+    },
+    {
+      "id": "device-farm-real-devices",
+      "prompt": "A mobile team has no device lab. It must run automated tests of its native iOS and Android app on many real device models, record video of each run, and use Appium test suites. Which service should it use?",
+      "choices": [
+        "AWS Batch with a GPU job queue",
+        "Amazon EC2 with Android emulators",
+        "AWS Amplify Hosting",
+        "AWS Device Farm"
+      ],
+      "correctChoice": "AWS Device Farm",
+      "explanation": "Device Farm tests on real physical devices rather than simulators, supports Appium and built-in fuzz tests, and captures video. Emulators on EC2 do not provide real-device coverage.",
+      "difficulty": "Hard",
+      "tags": [
+        "Device Farm",
+        "Testing"
+      ]
+    },
+    {
+      "id": "lambda-secret-kms-denied",
+      "prompt": "A Lambda function's execution role allows secretsmanager:GetSecretValue for a secret encrypted with a customer managed KMS key. The function fails with an access denied error when reading the secret. Which change most likely fixes this while keeping least privilege?",
+      "choices": [
+        "Allow the role to call kms:* on every KMS key in the account",
+        "Allow the role kms:Decrypt on that specific key, through the key policy or an IAM policy",
+        "Attach the AdministratorAccess managed policy to the function's execution role",
+        "Make the secret publicly readable so that the KMS key is no longer needed"
+      ],
+      "correctChoice": "Allow the role kms:Decrypt on that specific key, through the key policy or an IAM policy",
+      "explanation": "A secret encrypted with a customer managed key can only be read by principals that are also allowed to use that key, so the role needs kms:Decrypt on the specific key. Broad policies would violate least privilege.",
+      "difficulty": "Hard",
+      "tags": [
+        "Secrets Manager",
+        "KMS",
+        "Lambda",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "ec2-role-replace-keys",
+      "prompt": "An application on EC2 reads an S3 bucket using IAM user access keys stored in ~/.aws/credentials. After the keys were exposed in a backup, security wants no long-term credentials on the instance while keeping least privilege. What should the team do?",
+      "choices": [
+        "Create a second set of keys for the same user so that one can be kept offline",
+        "Attach the AdministratorAccess policy to the IAM user and move the keys to environment variables",
+        "Attach an IAM role with only the required S3 permissions to the instance and remove the stored keys",
+        "Rotate the keys and encrypt the credentials file with a KMS key"
+      ],
+      "correctChoice": "Attach an IAM role with only the required S3 permissions to the instance and remove the stored keys",
+      "explanation": "A role attached to the instance provides temporary credentials delivered by AWS and rotated automatically, so there is nothing long-lived to leak. Moving, encrypting or duplicating long-term keys still leaves keys that can be exposed.",
+      "difficulty": "Hard",
+      "tags": [
+        "IAM",
+        "Roles",
+        "EC2",
+        "Security"
+      ]
+    },
+    {
+      "id": "sfn-map-lambda-large-file",
+      "prompt": "A single Lambda function times out when processing a 4 GB data file that takes about 2 hours in total. The work can be split into independent chunks of a few minutes each. Which design avoids the timeout with the least infrastructure to manage?",
+      "choices": [
+        "A Step Functions workflow whose Map state invokes a Lambda function for each chunk",
+        "Increase the Lambda timeout to 2 hours",
+        "Run the whole file in one Lambda invocation with a Wait state to extend the timeout",
+        "Attach more layers to the function to speed up processing"
+      ],
+      "correctChoice": "A Step Functions workflow whose Map state invokes a Lambda function for each chunk",
+      "explanation": "The 15-minute Lambda limit cannot be raised, but a Map state can fan out the chunks to separate invocations and the workflow tracks progress and retries. Wait states and layers do not extend the limit.",
+      "difficulty": "Hard",
+      "tags": [
+        "Step Functions",
+        "Lambda",
+        "Serverless"
+      ]
+    },
+    {
+      "id": "lambda-layer-arch-mismatch",
+      "prompt": "After switching a function to arm64 to save cost, it fails at start-up with errors loading a native library from an attached layer. The layer was built on an x86_64 machine. What is the correct fix?",
+      "choices": [
+        "Move the native library into the function's environment variables",
+        "Increase the function's timeout to the maximum of 15 minutes to allow loading",
+        "Reference the layer through the function's unqualified ARN instead",
+        "Rebuild the layer's native library for arm64 (Linux) and publish a new layer version"
+      ],
+      "correctChoice": "Rebuild the layer's native library for arm64 (Linux) and publish a new layer version",
+      "explanation": "Native binaries must match the function's instruction set architecture. Lambda supports both arm64 and x86_64, but layers containing compiled code must be built for the architecture in use.",
+      "difficulty": "Hard",
+      "tags": [
+        "Lambda",
+        "Layers",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "service-catalog-service-actions",
+      "prompt": "Users of provisioned Service Catalog products must be able to run an approved operation, such as restarting an instance, on their stacks without being given broad SSM or EC2 permissions. Which feature supports this?",
+      "choices": [
+        "A TagUpdate constraint applied to the provisioned product",
+        "A template constraint that limits the product's parameters",
+        "Service actions, which run approved SSM documents on provisioned products",
+        "A new portfolio that shares the raw CloudFormation template directly with users"
+      ],
+      "correctChoice": "Service actions, which run approved SSM documents on provisioned products",
+      "explanation": "Service actions let end users run administrator-approved SSM documents on a provisioned product from the Service Catalog console, so they do not need direct permissions to the underlying services.",
+      "difficulty": "Hard",
+      "tags": [
+        "Service Catalog",
+        "Governance"
+      ]
+    },
+    {
+      "id": "retry-jitter-thundering-herd",
+      "prompt": "Hundreds of clients retry failed AWS API calls using exponential backoff, but their retries still arrive in synchronised bursts and keep overloading the endpoint. Which change best addresses this?",
+      "choices": [
+        "Use a fixed retry interval of one second for every attempt",
+        "Remove retries and have users resubmit manually",
+        "Retry immediately and indefinitely so that requests complete sooner",
+        "Add random jitter to the backoff delay so that retries are spread out"
+      ],
+      "correctChoice": "Add random jitter to the backoff delay so that retries are spread out",
+      "explanation": "Exponential backoff alone can still synchronise many clients. Random jitter spreads retry times, reducing contention. SDKs and the CLI commonly implement backoff, so this is usually a configuration option.",
+      "difficulty": "Hard",
+      "tags": [
+        "AWS API",
+        "Resilience",
+        "Retries"
+      ]
+    },
+    {
+      "id": "polly-lexicon-speech-marks",
+      "prompt": "A learning app uses Amazon Polly to read text aloud. It must pronounce product brand names correctly and highlight each word on screen as it is spoken. Which Polly features should it use?",
+      "choices": [
+        "A lexicon for word timing and speech marks for brand pronunciation",
+        "A pronunciation lexicon for brand names, and speech marks for word timing",
+        "The standard engine alone, because it adds word timing automatically",
+        "Amazon Translate for pronunciation and Amazon Comprehend for word timing"
+      ],
+      "correctChoice": "A pronunciation lexicon for brand names, and speech marks for word timing",
+      "explanation": "Lexicons customise pronunciation of specific words. Speech marks provide metadata, such as where each word starts and ends, that applications can use to synchronise highlighting with the audio.",
+      "difficulty": "Hard",
+      "tags": [
+        "Polly",
+        "Machine Learning"
+      ]
+    },
+    {
+      "id": "rekognition-custom-labels",
+      "prompt": "A manufacturer wants to detect its own proprietary machine parts in images from an assembly line. Standard object detection does not recognise them, and the team has only a few hundred labelled images and no ML specialists. What is the best approach?",
+      "choices": [
+        "Use Amazon Rekognition Custom Labels, trained on the labelled images",
+        "Use Amazon Comprehend custom classification on the images",
+        "Use Amazon Textract to read the parts' shapes",
+        "Use Amazon Rekognition's pre-built celebrity recognition"
+      ],
+      "correctChoice": "Use Amazon Rekognition Custom Labels, trained on the labelled images",
+      "explanation": "Rekognition Custom Labels lets you train a model for business-specific objects, logos or scenes from a small set of labelled images without ML expertise. Textract and Comprehend work on documents and text, not images of objects.",
+      "difficulty": "Hard",
+      "tags": [
+        "Rekognition",
+        "Machine Learning",
+        "Service Selection"
+      ]
+    },
+    {
+      "id": "root-fix-bucket-policy-lockout",
+      "prompt": "A bucket policy containing an invalid VPC endpoint ID now denies access to every IAM user and role, including administrators. Who can edit or delete that bucket policy to recover access?",
+      "choices": [
+        "The IAM role used by the S3 service",
+        "Only AWS Support, after a support plan upgrade",
+        "The AWS account root user",
+        "Any IAM user with the AdministratorAccess policy"
+      ],
+      "correctChoice": "The AWS account root user",
+      "explanation": "An explicit deny blocks even administrators, but the root user can edit or delete a bucket policy that locked everyone out, including one containing invalid VPC or VPC endpoint IDs. This is one of the tasks that specifically requires root.",
+      "difficulty": "Hard",
+      "tags": [
+        "IAM",
+        "Root User",
+        "S3"
+      ]
+    },
+    {
+      "id": "amplify-fullstack-managed",
+      "prompt": "A small front-end team wants to build a web and mobile app with sign-in, a GraphQL API, S3 storage and static hosting, using a managed framework and toolchain rather than assembling and operating each AWS service by hand. Which service fits best?",
+      "choices": [
+        "AWS Batch",
+        "AWS Service Catalog",
+        "AWS Device Farm",
+        "AWS Amplify"
+      ],
+      "correctChoice": "AWS Amplify",
+      "explanation": "Amplify provides an opinionated framework, CLI, SDK, UI components and hosting for web and mobile apps, with integrations to Cognito for authentication, AppSync for GraphQL APIs, S3 and DynamoDB.",
+      "difficulty": "Hard",
+      "tags": [
+        "Amplify",
+        "Application Development"
+      ]
+    },
+    {
+      "id": "amazon-q-developer-vs-business",
+      "prompt": "One team of engineers wants an AI assistant in their IDE and the AWS console to help write code and troubleshoot AWS resources. A separate HR group wants an assistant that answers staff questions using internal company data through built-in connectors. Which pairing is correct?",
+      "choices": [
+        "Amazon Q Developer for the engineers and Amazon Q Business for the HR group",
+        "Amazon Q Business for the engineers and Amazon Q Developer for the HR group",
+        "Amazon Q Developer for both teams, because connectors are not supported",
+        "Amazon Q for QuickSight for the engineers and Amazon Q for Amazon Connect for the HR group"
+      ],
+      "correctChoice": "Amazon Q Developer for the engineers and Amazon Q Business for the HR group",
+      "explanation": "Q Developer assists with coding, testing and troubleshooting and is integrated into IDEs and the console. Q Business connects to company data and systems through connectors to answer employee questions.",
+      "difficulty": "Hard",
+      "tags": [
+        "Amazon Q",
+        "AI Developer Tools"
+      ]
+    },
+    {
+      "id": "kms-customer-managed-control",
+      "prompt": "A company encrypts data with KMS and requires its own key policy, the ability to disable the key, and control over automatic rotation, in addition to audit logs of key usage. Which key type should it use?",
+      "choices": [
+        "An ACM public certificate",
+        "A customer managed KMS key",
+        "A root user access key",
+        "An AWS managed key"
+      ],
+      "correctChoice": "A customer managed KMS key",
+      "explanation": "Customer managed keys give you control of the key policy, rotation and lifecycle (for a small monthly cost). AWS managed keys are created and managed by AWS on a service's behalf, so you cannot change their policy or schedule.",
+      "difficulty": "Hard",
+      "tags": [
+        "KMS",
+        "Key Management"
+      ]
+    }
+  ]
+}

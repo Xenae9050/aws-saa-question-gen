@@ -1,0 +1,1725 @@
+{
+  "$schema": "../pool.schema.json",
+  "poolName": "EC2, Auto Scaling, Load Balancing & Containers (Mixed Difficulty)",
+  "description": "SAA-C03 revision questions on EC2, AMIs, pricing models, placement groups, Auto Scaling, Elastic Load Balancing, ECR, ECS, Fargate, EKS, Elastic Beanstalk and Compute Optimizer at Easy, Medium and Hard difficulty.",
+  "category": "Compute",
+  "version": 1,
+  "questions": [
+    {
+      "id": "ami-region-scope",
+      "prompt": "An AMI was created in us-east-1, and the same server image is now needed in eu-west-1. What is the correct approach?",
+      "choices": [
+        "Use the AMI directly in eu-west-1 because AMIs are global",
+        "Share the AMI with the eu-west-1 Region using launch permissions",
+        "Copy the AMI to eu-west-1",
+        "Recreate the AMI from scratch because AMIs cannot be copied between Regions"
+      ],
+      "correctChoice": "Copy the AMI to eu-west-1",
+      "explanation": "AMIs are Region-specific, but they can be copied to another Region. Launch permissions control which AWS accounts can launch from an AMI, not which Regions.",
+      "difficulty": "Easy",
+      "tags": [
+        "EC2",
+        "AMI"
+      ]
+    },
+    {
+      "id": "family-memory",
+      "prompt": "A team is deploying an in-memory database that must hold a very large data set in RAM. Which EC2 instance family category is designed for this?",
+      "choices": [
+        "General purpose (T, M families)",
+        "Compute optimised (C family)",
+        "Storage optimised (I, D, H families)",
+        "Memory optimised (R, X, z families)"
+      ],
+      "correctChoice": "Memory optimised (R, X, z families)",
+      "explanation": "Memory optimised instances provide fast performance for workloads that process large data sets in memory, such as in-memory databases and caches.",
+      "difficulty": "Easy",
+      "tags": [
+        "EC2",
+        "Instance Types"
+      ]
+    },
+    {
+      "id": "family-storage",
+      "prompt": "A self-managed NoSQL database needs very high sequential read and write throughput to large data sets on local instance storage. Which instance family category fits best?",
+      "choices": [
+        "Compute optimised (C family)",
+        "Storage optimised (I, D, H families)",
+        "General purpose (T family)",
+        "Memory optimised (R, X families)"
+      ],
+      "correctChoice": "Storage optimised (I, D, H families)",
+      "explanation": "Storage optimised instances are built for fast sequential read/write access to large data sets on local storage, such as NoSQL databases and data warehousing.",
+      "difficulty": "Easy",
+      "tags": [
+        "EC2",
+        "Instance Types"
+      ]
+    },
+    {
+      "id": "instance-name-size",
+      "prompt": "In the instance type name c7gn.xlarge, what does 'xlarge' represent?",
+      "choices": [
+        "The processor family used by the instance",
+        "The generation of the instance family",
+        "The instance size, which sets the amount of vCPU and RAM",
+        "The instance family and its intended workload"
+      ],
+      "correctChoice": "The instance size, which sets the amount of vCPU and RAM",
+      "explanation": "The name combines family (c), generation (7), processor (g = Graviton), additional capability (n) and size (xlarge). Each size step roughly doubles resources and cost.",
+      "difficulty": "Easy",
+      "tags": [
+        "EC2",
+        "Instance Types"
+      ]
+    },
+    {
+      "id": "profile-purpose",
+      "prompt": "An application on an EC2 instance must read objects from an S3 bucket. What is the recommended way to grant access without storing long-lived credentials on the instance?",
+      "choices": [
+        "Bake the access keys into the AMI",
+        "Store an IAM user's access keys in the application's configuration file",
+        "Pass the access keys in the instance user data",
+        "Attach an IAM role to the instance through an instance profile"
+      ],
+      "correctChoice": "Attach an IAM role to the instance through an instance profile",
+      "explanation": "An instance profile passes an IAM role to the instance, which receives temporary credentials automatically. Embedding long-lived keys anywhere on the instance is an anti-pattern.",
+      "difficulty": "Easy",
+      "tags": [
+        "EC2",
+        "IAM"
+      ]
+    },
+    {
+      "id": "user-data-purpose",
+      "prompt": "A team wants every new instance to install and start an Apache web server automatically the first time it boots. Which feature should they use?",
+      "choices": [
+        "Instance metadata",
+        "A block device mapping",
+        "A user data script",
+        "An instance profile"
+      ],
+      "correctChoice": "A user data script",
+      "explanation": "User data is a script (processed by cloud-init on Linux) that runs at launch. Metadata describes the instance, and block device mappings define volumes.",
+      "difficulty": "Easy",
+      "tags": [
+        "EC2",
+        "Cloud-Init"
+      ]
+    },
+    {
+      "id": "instance-store-stop",
+      "prompt": "An instance uses an instance store volume for its working data. What happens to that data when the instance is stopped?",
+      "choices": [
+        "It is moved to an EBS snapshot",
+        "It is kept and available when the instance is started again",
+        "It is automatically saved to Amazon S3",
+        "It is lost, because instance store is ephemeral storage"
+      ],
+      "correctChoice": "It is lost, because instance store is ephemeral storage",
+      "explanation": "Instance store data does not persist when the instance is stopped or terminated. EBS-backed root volumes persist independently of the instance.",
+      "difficulty": "Easy",
+      "tags": [
+        "EC2",
+        "Storage"
+      ]
+    },
+    {
+      "id": "console-screenshot",
+      "prompt": "An instance will not finish booting and cannot be reached over the network. Which EC2 feature shows the instance's current console state to help diagnose the boot problem?",
+      "choices": [
+        "EC2 Instance Connect",
+        "Instance console screenshot",
+        "The source/destination check",
+        "AWS Compute Optimizer"
+      ],
+      "correctChoice": "Instance console screenshot",
+      "explanation": "The console screenshot captures the instance's current display output and is used to troubleshoot boot issues. It is available from the console and the CLI.",
+      "difficulty": "Easy",
+      "tags": [
+        "EC2",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "burstable-use",
+      "prompt": "A small internal website normally uses little CPU but occasionally has short traffic spikes. Which instance family offers the lowest cost for this usage pattern?",
+      "choices": [
+        "C family compute optimised instances",
+        "T family burstable general purpose instances",
+        "P family accelerated instances",
+        "R family memory optimised instances"
+      ],
+      "correctChoice": "T family burstable general purpose instances",
+      "explanation": "T instances provide a baseline CPU level with the ability to burst using CPU credits, making them the cheapest option for low average utilisation with occasional spikes.",
+      "difficulty": "Easy",
+      "tags": [
+        "EC2",
+        "Instance Types"
+      ]
+    },
+    {
+      "id": "pg-cluster",
+      "prompt": "A high-performance computing job needs the lowest possible network latency between tightly coupled nodes. Which placement group strategy should be used?",
+      "choices": [
+        "Deploying the nodes across multiple Availability Zones without a placement group",
+        "Partition",
+        "Spread",
+        "Cluster"
+      ],
+      "correctChoice": "Cluster",
+      "explanation": "A cluster placement group packs instances close together within a single Availability Zone for low-latency, high-throughput node-to-node communication.",
+      "difficulty": "Easy",
+      "tags": [
+        "EC2",
+        "Placement Groups"
+      ]
+    },
+    {
+      "id": "pg-spread",
+      "prompt": "A small number of critical instances must each run on separate underlying hardware so that one hardware failure affects only one of them. Which placement group strategy fits?",
+      "choices": [
+        "Dedicated tenancy",
+        "Cluster",
+        "Spread",
+        "Partition with a single partition"
+      ],
+      "correctChoice": "Spread",
+      "explanation": "A spread placement group places each instance on distinct hardware (rack), which is ideal for a small set of critical instances.",
+      "difficulty": "Easy",
+      "tags": [
+        "EC2",
+        "Placement Groups"
+      ]
+    },
+    {
+      "id": "ssh-sg-port",
+      "prompt": "An administrator cannot SSH to a new Linux instance from the office and the connection times out. The key pair is correct. What is the most likely cause?",
+      "choices": [
+        "The AMI was created in a different Region",
+        "The instance has no IAM role attached to authorise SSH logins",
+        "The instance uses hardware virtual machine virtualisation",
+        "The security group does not allow inbound port 22 from the office IP address"
+      ],
+      "correctChoice": "The security group does not allow inbound port 22 from the office IP address",
+      "explanation": "SSH requires inbound TCP port 22 to be allowed by the security group. A timeout, rather than an authentication error, points to network filtering.",
+      "difficulty": "Easy",
+      "tags": [
+        "EC2",
+        "Connectivity"
+      ]
+    },
+    {
+      "id": "instance-connect",
+      "prompt": "Which connection method pushes short-lived SSH keys to a Linux instance, with access controlled by IAM policies?",
+      "choices": [
+        "EC2 Instance Connect",
+        "Fleet Manager Remote Desktop",
+        "A long-lived key pair shared among administrators",
+        "EC2 serial console"
+      ],
+      "correctChoice": "EC2 Instance Connect",
+      "explanation": "EC2 Instance Connect uses temporary keys authorised through IAM. It works for Linux only, and not on every instance or AMI.",
+      "difficulty": "Easy",
+      "tags": [
+        "EC2",
+        "Connectivity"
+      ]
+    },
+    {
+      "id": "ami-hvm",
+      "prompt": "Which virtualisation type is used by modern EC2 instances, uses hardware assistance from the host CPU, and can boot from either EBS or instance store?",
+      "choices": [
+        "Hardware Virtual Machine (HVM)",
+        "Container-based virtualisation",
+        "Software emulation only",
+        "Paravirtualisation (PV)"
+      ],
+      "correctChoice": "Hardware Virtual Machine (HVM)",
+      "explanation": "HVM is the current standard. PV required modified operating systems, could only boot from instance store, and is effectively retired.",
+      "difficulty": "Easy",
+      "tags": [
+        "EC2",
+        "AMI"
+      ]
+    },
+    {
+      "id": "price-on-demand",
+      "prompt": "A company is launching a new application for the first time. The workload is short-term and unpredictable, and it wants no long-term commitment. Which EC2 purchasing option is most appropriate?",
+      "choices": [
+        "Dedicated Hosts",
+        "A Compute Savings Plan with a 3-year term",
+        "Standard Reserved Instances with a 3-year term",
+        "On-Demand Instances"
+      ],
+      "correctChoice": "On-Demand Instances",
+      "explanation": "On-Demand has the least commitment, is flexible, and instances are not interrupted by AWS, so it suits unpredictable or first-time workloads.",
+      "difficulty": "Easy",
+      "tags": [
+        "EC2",
+        "Pricing"
+      ]
+    },
+    {
+      "id": "price-spot",
+      "prompt": "Which EC2 purchasing option provides the largest discounts (up to about 90%) in exchange for the possibility that AWS reclaims the capacity?",
+      "choices": [
+        "Spot Instances",
+        "On-Demand Instances",
+        "Convertible Reserved Instances",
+        "On-Demand Capacity Reservations"
+      ],
+      "correctChoice": "Spot Instances",
+      "explanation": "Spot uses spare EC2 capacity at the deepest discounts, but instances can be interrupted, so it suits fault-tolerant, flexible workloads.",
+      "difficulty": "Easy",
+      "tags": [
+        "EC2",
+        "Pricing"
+      ]
+    },
+    {
+      "id": "price-ri",
+      "prompt": "A database server will run continuously, with a steady and predictable load, for the next three years. Which purchasing approach generally gives the lowest cost?",
+      "choices": [
+        "Spot Instances",
+        "On-Demand Instances",
+        "On-Demand Instances launched and terminated daily",
+        "Reserved Instances or an EC2 Instance Savings Plan"
+      ],
+      "correctChoice": "Reserved Instances or an EC2 Instance Savings Plan",
+      "explanation": "Reserved Instances and Savings Plans give significant discounts for steady, predictable usage committed over a 1 or 3 year term.",
+      "difficulty": "Easy",
+      "tags": [
+        "EC2",
+        "Pricing"
+      ]
+    },
+    {
+      "id": "asg-horizontal",
+      "prompt": "How does an EC2 Auto Scaling group scale a workload?",
+      "choices": [
+        "By converting On-Demand instances to Reserved Instances",
+        "By resizing the EBS volumes of its instances",
+        "Horizontally, by adding or removing instances",
+        "Vertically, by changing the instance size of running instances"
+      ],
+      "correctChoice": "Horizontally, by adding or removing instances",
+      "explanation": "Auto Scaling groups scale out and in by changing the number of instances between the configured minimum and maximum.",
+      "difficulty": "Easy",
+      "tags": [
+        "Auto Scaling"
+      ]
+    },
+    {
+      "id": "asg-replace-unhealthy",
+      "prompt": "An instance in an Auto Scaling group fails its health check. What does the group do?",
+      "choices": [
+        "Stops it and waits for an administrator to start it again",
+        "Replaces the unhealthy instance to maintain desired capacity",
+        "Leaves it running and lowers the desired capacity of the group",
+        "Reboots it repeatedly until it passes the check"
+      ],
+      "correctChoice": "Replaces the unhealthy instance to maintain desired capacity",
+      "explanation": "Health check replacement is a core ASG function: unhealthy instances are replaced so the group returns to its desired capacity.",
+      "difficulty": "Easy",
+      "tags": [
+        "Auto Scaling"
+      ]
+    },
+    {
+      "id": "asg-target-tracking",
+      "prompt": "A team wants an Auto Scaling group to keep average CPU utilisation near 50% with minimal configuration. Which scaling policy type should they use?",
+      "choices": [
+        "Step scaling with several manually defined steps",
+        "Simple scaling with a manually created alarm",
+        "Target tracking scaling",
+        "Changing the desired capacity manually"
+      ],
+      "correctChoice": "Target tracking scaling",
+      "explanation": "Target tracking adjusts capacity automatically to keep a chosen metric near a target value, and creates the required CloudWatch alarms for you.",
+      "difficulty": "Easy",
+      "tags": [
+        "Auto Scaling"
+      ]
+    },
+    {
+      "id": "alb-path-routing",
+      "prompt": "A web application must send requests for /api/* to one group of servers and /images/* to another. Which load balancer type supports this?",
+      "choices": [
+        "Gateway Load Balancer",
+        "Network Load Balancer",
+        "Application Load Balancer",
+        "None; this requires a separate load balancer per path"
+      ],
+      "correctChoice": "Application Load Balancer",
+      "explanation": "ALBs operate at layer 7 and route based on HTTP information such as path and host name using listener rules.",
+      "difficulty": "Easy",
+      "tags": [
+        "ELB"
+      ]
+    },
+    {
+      "id": "nlb-udp-gaming",
+      "prompt": "A real-time multiplayer game must load balance UDP traffic at millions of requests per second with very low latency. Which load balancer fits?",
+      "choices": [
+        "Application Load Balancer",
+        "Gateway Load Balancer",
+        "Network Load Balancer",
+        "An ALB with WebSockets enabled"
+      ],
+      "correctChoice": "Network Load Balancer",
+      "explanation": "NLBs operate at layer 4 (TCP/UDP) and are built for extreme throughput and low latency. ALBs handle only HTTP/HTTPS.",
+      "difficulty": "Easy",
+      "tags": [
+        "ELB"
+      ]
+    },
+    {
+      "id": "gwlb-purpose",
+      "prompt": "A company wants all incoming traffic sent through third-party virtual security appliances, such as firewalls, before it reaches the application. Which load balancer type is designed for this?",
+      "choices": [
+        "Application Load Balancer",
+        "Network Load Balancer",
+        "Gateway Load Balancer",
+        "Classic Load Balancer"
+      ],
+      "correctChoice": "Gateway Load Balancer",
+      "explanation": "A Gateway Load Balancer routes traffic through virtual appliances before it reaches its destination, acting as a transparent security layer.",
+      "difficulty": "Easy",
+      "tags": [
+        "ELB",
+        "Security"
+      ]
+    },
+    {
+      "id": "ecr-scan",
+      "prompt": "Which Amazon ECR capability helps identify software vulnerabilities in container images when they are pushed to a repository?",
+      "choices": [
+        "Pull through cache",
+        "Private image replication",
+        "Lifecycle policies",
+        "Image scanning on push"
+      ],
+      "correctChoice": "Image scanning on push",
+      "explanation": "ECR can scan images on push to identify known software vulnerabilities.",
+      "difficulty": "Easy",
+      "tags": [
+        "ECR",
+        "Security"
+      ]
+    },
+    {
+      "id": "ecs-service-vs-task",
+      "prompt": "A containerised web application must keep a set number of copies running and replace any that fail. Which ECS construct provides this?",
+      "choices": [
+        "A task definition on its own",
+        "An ECR repository",
+        "An ECS service",
+        "A standalone ECS task"
+      ],
+      "correctChoice": "An ECS service",
+      "explanation": "A service ensures the desired number of tasks remains running. Standalone tasks do not remain running once their workload completes.",
+      "difficulty": "Easy",
+      "tags": [
+        "ECS"
+      ]
+    },
+    {
+      "id": "fargate-no-servers",
+      "prompt": "A small team wants to run containers without provisioning, scaling or patching the underlying EC2 instances. Which option should they choose?",
+      "choices": [
+        "AWS Fargate",
+        "A self-managed Kubernetes cluster on EC2",
+        "ECS on EC2 with a self-managed Auto Scaling group",
+        "Docker installed on instance store-backed EC2 instances"
+      ],
+      "correctChoice": "AWS Fargate",
+      "explanation": "Fargate is serverless container compute: AWS manages the underlying servers and you pay for the resources your tasks use.",
+      "difficulty": "Easy",
+      "tags": [
+        "Fargate"
+      ]
+    },
+    {
+      "id": "fargate-awsvpc",
+      "prompt": "Which ECS network mode must be used by tasks running on AWS Fargate?",
+      "choices": [
+        "bridge",
+        "none",
+        "host",
+        "awsvpc"
+      ],
+      "correctChoice": "awsvpc",
+      "explanation": "Fargate tasks use awsvpc, which gives each task its own elastic network interface and private IP address in your VPC.",
+      "difficulty": "Easy",
+      "tags": [
+        "Fargate",
+        "ECS"
+      ]
+    },
+    {
+      "id": "eks-control-plane",
+      "prompt": "Which AWS service lets an organisation run Kubernetes without installing and operating its own Kubernetes control plane?",
+      "choices": [
+        "AWS Elastic Beanstalk worker environments",
+        "Amazon Elastic Kubernetes Service (EKS)",
+        "Amazon EC2 Auto Scaling",
+        "Amazon Elastic Container Registry (ECR)"
+      ],
+      "correctChoice": "Amazon Elastic Kubernetes Service (EKS)",
+      "explanation": "EKS is a managed Kubernetes service in which AWS operates the control plane.",
+      "difficulty": "Easy",
+      "tags": [
+        "EKS"
+      ]
+    },
+    {
+      "id": "eb-purpose",
+      "prompt": "Developers want to upload application code and have AWS provision the load balancer, Auto Scaling group and instances for them. Which service provides this PaaS-style experience?",
+      "choices": [
+        "Amazon ECR",
+        "AWS Elastic Beanstalk",
+        "AWS Compute Optimizer",
+        "EC2 placement groups"
+      ],
+      "correctChoice": "AWS Elastic Beanstalk",
+      "explanation": "Elastic Beanstalk is a platform as a service that builds the underlying infrastructure (via CloudFormation) so developers can focus on the application.",
+      "difficulty": "Easy",
+      "tags": [
+        "Elastic Beanstalk"
+      ]
+    },
+    {
+      "id": "compute-optimizer-purpose",
+      "prompt": "A company suspects many EC2 instances are over-provisioned. Which AWS service analyses CloudWatch utilisation metrics and recommends better-sized resources?",
+      "choices": [
+        "Amazon ECR",
+        "AWS Compute Optimizer",
+        "EC2 Instance Connect",
+        "AWS Elastic Beanstalk"
+      ],
+      "correctChoice": "AWS Compute Optimizer",
+      "explanation": "Compute Optimizer analyses configuration and utilisation metrics (14 days by default) and recommends optimal resources, including EC2 instances, Auto Scaling groups and EBS volumes.",
+      "difficulty": "Easy",
+      "tags": [
+        "Compute Optimizer",
+        "Cost"
+      ]
+    },
+    {
+      "id": "ssm-session-manager",
+      "prompt": "A security team wants administrators to open shell sessions on Linux and Windows instances with access controlled by IAM, audit trails, and no inbound ports opened. Which option fits?",
+      "choices": [
+        "SSH with a shared key pair",
+        "EC2 serial console",
+        "Fleet Manager Remote Desktop over RDP",
+        "AWS Systems Manager Session Manager"
+      ],
+      "correctChoice": "AWS Systems Manager Session Manager",
+      "explanation": "Session Manager uses a reverse connection from the instance, so no inbound ports are needed. It supports Windows and Linux, is controlled by IAM, and supports logging and audit trails.",
+      "difficulty": "Easy",
+      "tags": [
+        "EC2",
+        "Connectivity",
+        "Security"
+      ]
+    },
+    {
+      "id": "hibernate-basics",
+      "prompt": "What does hibernating an EC2 instance do?",
+      "choices": [
+        "Reboots the operating system while keeping its public IP address",
+        "Keeps the instance running on cheaper hardware",
+        "Saves RAM to the encrypted EBS root volume and stops the instance",
+        "Copies the instance store volumes to Amazon S3, then terminates it"
+      ],
+      "correctChoice": "Saves RAM to the encrypted EBS root volume and stops the instance",
+      "explanation": "Hibernation must be enabled at launch. RAM is saved to the EBS root volume, there is no instance charge while hibernated, but EBS storage is still charged.",
+      "difficulty": "Easy",
+      "tags": [
+        "EC2",
+        "Lifecycle"
+      ]
+    },
+    {
+      "id": "recover-instance",
+      "prompt": "An instance fails because of an underlying hardware problem. Which EC2 capability, if enabled, restarts it on new hardware while keeping the instance ID and its configuration?",
+      "choices": [
+        "Terminating and launching a new instance from the AMI",
+        "Automatic instance recovery",
+        "Deregistering the AMI",
+        "Instance retirement"
+      ],
+      "correctChoice": "Automatic instance recovery",
+      "explanation": "Automatic recovery moves a failed instance to new hardware and keeps the instance ID, private IP addresses and other configuration.",
+      "difficulty": "Easy",
+      "tags": [
+        "EC2",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "imds-v2-enforce",
+      "prompt": "A security review finds that a web application on EC2 is vulnerable to server-side request forgery, which could let an attacker read the instance's role credentials from the metadata service. Which change best reduces this risk?",
+      "choices": [
+        "Require IMDSv2 in the instance metadata options",
+        "Attach a larger instance profile with more permissions",
+        "Move the application to a different Availability Zone",
+        "Disable user data on the instance"
+      ],
+      "correctChoice": "Require IMDSv2 in the instance metadata options",
+      "explanation": "IMDSv2 is session-oriented and requires a token obtained with a PUT request, so simple request-forwarding attacks against IMDSv1 fail. Requests without a token receive a 401 response.",
+      "difficulty": "Medium",
+      "tags": [
+        "EC2",
+        "Security"
+      ]
+    },
+    {
+      "id": "source-dest-nat",
+      "prompt": "A team launches a NAT instance to provide outbound internet access for private subnets, but the instances behind it cannot reach the internet. The route tables are correct. What should they change on the NAT instance?",
+      "choices": [
+        "Enable IMDSv2",
+        "Disable the source/destination check",
+        "Attach the instance to a cluster placement group",
+        "Enable hibernation"
+      ],
+      "correctChoice": "Disable the source/destination check",
+      "explanation": "By default an instance only sends or receives traffic for which it is the source or destination. A NAT instance forwards traffic for others, so the check must be disabled.",
+      "difficulty": "Medium",
+      "tags": [
+        "EC2",
+        "Networking"
+      ]
+    },
+    {
+      "id": "pg-partition-kafka",
+      "prompt": "A large Apache Kafka and Cassandra deployment needs its replicas isolated so that a hardware failure affects only one group of nodes, while running more than 100 instances across several Availability Zones. Which placement group strategy fits best?",
+      "choices": [
+        "Partition placement group",
+        "Spread placement group",
+        "Cluster placement group",
+        "No placement group, because instances are always on separate hardware"
+      ],
+      "correctChoice": "Partition placement group",
+      "explanation": "Partition groups place instances in logical partitions that do not share underlying hardware, support large numbers of instances, and can span multiple AZs (up to 7 partitions per AZ). Spread groups are limited to 7 running instances per AZ.",
+      "difficulty": "Medium",
+      "tags": [
+        "EC2",
+        "Placement Groups"
+      ]
+    },
+    {
+      "id": "pg-cluster-az",
+      "prompt": "A tightly coupled HPC cluster is placed in a cluster placement group. The architect also needs the cluster to survive the loss of an Availability Zone. What is the key constraint?",
+      "choices": [
+        "A cluster placement group can span AZs only with dedicated tenancy",
+        "A cluster placement group automatically replicates instances to a second AZ",
+        "A cluster placement group cannot span multiple Availability Zones",
+        "A cluster placement group can span AZs but only within one Region and VPC peering"
+      ],
+      "correctChoice": "A cluster placement group cannot span multiple Availability Zones",
+      "explanation": "Cluster placement groups pack instances into one AZ for low latency, trading away AZ-level resilience. Partition and spread groups can be multi-AZ.",
+      "difficulty": "Medium",
+      "tags": [
+        "EC2",
+        "Placement Groups",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "ri-standard-convertible",
+      "prompt": "A company expects to change instance families and operating systems over the next three years but still wants a Reserved Instance discount. Which Reserved Instance class should it buy?",
+      "choices": [
+        "Standard Reserved Instances, because they give the highest discount and can be exchanged",
+        "Standard Reserved Instances, because they can be modified to any instance family",
+        "Convertible Reserved Instances, because they can be sold on the Reserved Instance Marketplace",
+        "Convertible Reserved Instances, which can be exchanged for new attributes"
+      ],
+      "correctChoice": "Convertible Reserved Instances, which can be exchanged for new attributes",
+      "explanation": "Convertible RIs give a smaller discount (up to about 66%) but can be exchanged for other Convertible RIs with different attributes. Standard RIs (up to about 72%) can only be modified in limited ways and cannot be exchanged, but can be sold on the Marketplace.",
+      "difficulty": "Medium",
+      "tags": [
+        "EC2",
+        "Pricing"
+      ]
+    },
+    {
+      "id": "ri-zonal-capacity",
+      "prompt": "A business-critical workload must be guaranteed to launch in a specific Availability Zone during a regional capacity shortage, and it also wants a discount for a one-year commitment. Which purchase meets both needs?",
+      "choices": [
+        "A regional Reserved Instance, which reserves capacity across the Region",
+        "A Compute Savings Plan, which reserves capacity",
+        "A Spot Instance request with a high maximum price",
+        "A zonal Reserved Instance, which reserves capacity in the chosen Availability Zone"
+      ],
+      "correctChoice": "A zonal Reserved Instance, which reserves capacity in the chosen Availability Zone",
+      "explanation": "Zonal RIs reserve capacity in one AZ along with the billing discount. Regional RIs give AZ and size flexibility but do not reserve capacity, and Savings Plans do not reserve capacity.",
+      "difficulty": "Medium",
+      "tags": [
+        "EC2",
+        "Pricing",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "sp-compute-vs-instance",
+      "prompt": "A company runs EC2, Fargate and Lambda workloads and expects to change instance families and Regions as it modernises. It wants a commitment-based discount that applies automatically. Which option is best?",
+      "choices": [
+        "A Compute Savings Plan",
+        "An EC2 Instance Savings Plan",
+        "Standard Reserved Instances",
+        "A SageMaker Savings Plan"
+      ],
+      "correctChoice": "A Compute Savings Plan",
+      "explanation": "Compute Savings Plans (up to about 66%) apply across EC2 regardless of family, size, Region, OS or tenancy, and also to Fargate and Lambda. EC2 Instance Savings Plans give lower prices but are tied to a family in a Region.",
+      "difficulty": "Medium",
+      "tags": [
+        "EC2",
+        "Pricing"
+      ]
+    },
+    {
+      "id": "dedicated-tenancy",
+      "prompt": "A licence agreement requires that a company's instances never share physical hardware with other AWS customers. Which approach meets this requirement?",
+      "choices": [
+        "Use Dedicated Instances or Dedicated Hosts",
+        "Use a cluster placement group in one Availability Zone",
+        "Use Spot Instances with a high maximum price",
+        "Use a spread placement group within a single VPC"
+      ],
+      "correctChoice": "Use Dedicated Instances or Dedicated Hosts",
+      "explanation": "Dedicated tenancy guarantees isolated hardware and can be purchased On-Demand, as Reserved, or as Spot. Placement groups control placement relative to your own instances, not tenancy.",
+      "difficulty": "Medium",
+      "tags": [
+        "EC2",
+        "Pricing",
+        "Security"
+      ]
+    },
+    {
+      "id": "asg-elb-health",
+      "prompt": "An application on instances in an Auto Scaling group behind an ALB sometimes crashes, but the instances still pass EC2 status checks, so the group never replaces them and users see errors. What should the architect do?",
+      "choices": [
+        "Enable ELB health checks for the Auto Scaling group",
+        "Switch the group to simple scaling with a cooldown",
+        "Increase the maximum size of the group",
+        "Enable hibernation on the launch template"
+      ],
+      "correctChoice": "Enable ELB health checks for the Auto Scaling group",
+      "explanation": "By default an ASG uses only EC2 status checks. Enabling ELB health checks lets the ALB's HTTP check mark the instance unhealthy so the group replaces it.",
+      "difficulty": "Medium",
+      "tags": [
+        "Auto Scaling",
+        "ELB",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "asg-step-scaling",
+      "prompt": "An Auto Scaling group should add 1 instance when CPU is between 60% and 75%, and add 4 instances when CPU exceeds 75%. Which scaling policy type allows different adjustments at different alarm thresholds?",
+      "choices": [
+        "Simple scaling",
+        "Target tracking scaling",
+        "Step scaling",
+        "Predictive scaling"
+      ],
+      "correctChoice": "Step scaling",
+      "explanation": "Step scaling applies different capacity changes depending on how far a CloudWatch alarm metric breaches its threshold. Target tracking does not let you define per-threshold adjustments, and simple scaling applies one adjustment.",
+      "difficulty": "Medium",
+      "tags": [
+        "Auto Scaling"
+      ]
+    },
+    {
+      "id": "asg-predictive",
+      "prompt": "A web application has a predictable traffic surge every weekday morning, and new instances take several minutes to warm up, causing slow responses at the start of the surge. Which policy best addresses this?",
+      "choices": [
+        "Reducing the minimum size of the group",
+        "Predictive scaling, which scales ahead of forecast demand",
+        "Simple scaling with a longer cooldown",
+        "Target tracking scaling on average CPU utilisation"
+      ],
+      "correctChoice": "Predictive scaling, which scales ahead of forecast demand",
+      "explanation": "Predictive scaling analyses historical CloudWatch data to detect daily or weekly patterns and provisions capacity in advance. Reactive policies only scale after the metric has already moved.",
+      "difficulty": "Medium",
+      "tags": [
+        "Auto Scaling",
+        "Performance"
+      ]
+    },
+    {
+      "id": "alb-static-ip",
+      "prompt": "A partner requires the company to publish fixed IP addresses for allow-listing, but the application needs HTTP path-based routing. What is a suitable design?",
+      "choices": [
+        "Assign Elastic IP addresses directly to the ALB's listeners",
+        "Use a Classic Load Balancer, which has static IP addresses",
+        "Place a Network Load Balancer in front of the Application Load Balancer",
+        "Use a Gateway Load Balancer in front of the Application Load Balancer"
+      ],
+      "correctChoice": "Place a Network Load Balancer in front of the Application Load Balancer",
+      "explanation": "An ALB is accessed by hostname only and its IP addresses can change. An NLB provides static IPs per AZ and can forward to an ALB target, combining static IPs with Layer 7 routing.",
+      "difficulty": "Medium",
+      "tags": [
+        "ELB",
+        "Networking"
+      ]
+    },
+    {
+      "id": "nlb-source-ip",
+      "prompt": "A custom TCP-based protocol server must see the original client IP address and also needs static IP addresses for the load balancer. Which load balancer should be used?",
+      "choices": [
+        "Application Load Balancer",
+        "Classic Load Balancer with HTTP listeners",
+        "Network Load Balancer",
+        "Gateway Load Balancer"
+      ],
+      "correctChoice": "Network Load Balancer",
+      "explanation": "NLBs work at layer 4, support static IPs, and preserve the client source IP. An ALB handles only HTTP/HTTPS and cannot serve custom TCP protocols.",
+      "difficulty": "Medium",
+      "tags": [
+        "ELB"
+      ]
+    },
+    {
+      "id": "alb-cognito-auth",
+      "prompt": "A company wants to require users to sign in with a user pool identity before requests reach its web application, without writing authentication code in the application. Which design achieves this?",
+      "choices": [
+        "Use a Gateway Load Balancer to validate user tokens at the edge",
+        "Use a Network Load Balancer with a Cognito authorizer",
+        "Configure ALB listener rules to authenticate with Amazon Cognito",
+        "Attach an IAM role to the load balancer"
+      ],
+      "correctChoice": "Configure ALB listener rules to authenticate with Amazon Cognito",
+      "explanation": "ALBs can authenticate users natively through Amazon Cognito (or an OIDC identity provider) in listener rules before forwarding requests to targets.",
+      "difficulty": "Medium",
+      "tags": [
+        "ELB",
+        "Security"
+      ]
+    },
+    {
+      "id": "fargate-ip-targets",
+      "prompt": "An ALB must route traffic to ECS tasks running on Fargate. Which target type should the target group use?",
+      "choices": [
+        "Application Load Balancer, because ALBs can only target other ALBs",
+        "Lambda function, because Fargate tasks are serverless",
+        "IP addresses, because Fargate tasks have their own ENI and no instance to register",
+        "Instances, because every Fargate task runs on an EC2 instance you can register"
+      ],
+      "correctChoice": "IP addresses, because Fargate tasks have their own ENI and no instance to register",
+      "explanation": "Fargate tasks use awsvpc networking and each has its own ENI and private IP. The target group must therefore use the IP target type.",
+      "difficulty": "Medium",
+      "tags": [
+        "Fargate",
+        "ELB"
+      ]
+    },
+    {
+      "id": "ecs-execution-role",
+      "prompt": "An ECS task fails to start because it cannot pull a private image from Amazon ECR or retrieve a database password from Secrets Manager that is referenced in the task definition. Which role is missing permissions?",
+      "choices": [
+        "The service-linked role for Elastic Load Balancing",
+        "The task execution role",
+        "The IAM role of the engineer who created the service",
+        "The task role"
+      ],
+      "correctChoice": "The task execution role",
+      "explanation": "The execution role is used by the ECS agent to prepare the task: pulling images from ECR, retrieving secrets and writing logs. The task role is used by the application code once it is running.",
+      "difficulty": "Medium",
+      "tags": [
+        "ECS",
+        "IAM",
+        "Security"
+      ]
+    },
+    {
+      "id": "ecs-task-role",
+      "prompt": "A containerised application on ECS must write items to a DynamoDB table. Following least privilege, where should the DynamoDB permissions be granted?",
+      "choices": [
+        "In the security group attached to the task",
+        "In an IAM user whose access keys are set as environment variables in the task definition",
+        "In an IAM role assigned to the task as the task role",
+        "In the task execution role"
+      ],
+      "correctChoice": "In an IAM role assigned to the task as the task role",
+      "explanation": "The task role provides credentials to the application code running in the container. The execution role is used by the ECS agent for pulling images, secrets and logging, not for application API calls.",
+      "difficulty": "Medium",
+      "tags": [
+        "ECS",
+        "IAM",
+        "Security"
+      ]
+    },
+    {
+      "id": "fargate-spot",
+      "prompt": "A nightly image-processing job runs as Fargate tasks. It is fault tolerant, can be retried, and cost must be minimised. Which option is most appropriate?",
+      "choices": [
+        "Use the FARGATE_SPOT capacity provider",
+        "Run the tasks on Dedicated Hosts",
+        "Use the FARGATE capacity provider with a Compute Savings Plan only",
+        "Use Standard Reserved Instances for the Fargate tasks"
+      ],
+      "correctChoice": "Use the FARGATE_SPOT capacity provider",
+      "explanation": "FARGATE_SPOT runs tasks on spare capacity at a discount, but tasks can be interrupted, so it suits interruption-tolerant jobs. Reserved Instances and Dedicated Hosts do not apply to Fargate.",
+      "difficulty": "Medium",
+      "tags": [
+        "Fargate",
+        "Cost"
+      ]
+    },
+    {
+      "id": "ecs-exec-use",
+      "prompt": "A developer needs an interactive shell in a running Fargate container for troubleshooting. Policy forbids opening inbound ports or managing SSH keys. What should be used?",
+      "choices": [
+        "Open port 22 in the task's security group",
+        "SSH to the Fargate host using an EC2 key pair",
+        "EC2 Instance Connect to the task's ENI",
+        "ECS Exec, with the Session Manager plugin installed"
+      ],
+      "correctChoice": "ECS Exec, with the Session Manager plugin installed",
+      "explanation": "ECS Exec uses Systems Manager channels to run commands in a container without inbound ports, SSH keys or access to the host. It must be enabled for the task and the task role needs the right permissions.",
+      "difficulty": "Medium",
+      "tags": [
+        "ECS",
+        "Security"
+      ]
+    },
+    {
+      "id": "ecs-anywhere-use",
+      "prompt": "A company wants to run containerised workloads on its existing on-premises servers while managing them from an Amazon ECS cluster with the same APIs and tooling. Which option fits?",
+      "choices": [
+        "Elastic Beanstalk worker environments on premises",
+        "Amazon ECS Anywhere, registering the external instances to the cluster",
+        "ECS with the bridge network mode on the on-premises servers",
+        "AWS Fargate on the on-premises servers"
+      ],
+      "correctChoice": "Amazon ECS Anywhere, registering the external instances to the cluster",
+      "explanation": "ECS Anywhere registers external VMs or bare-metal servers into an ECS cluster using the EXTERNAL launch type, so on-premises capacity is managed through the ECS control plane.",
+      "difficulty": "Medium",
+      "tags": [
+        "ECS",
+        "Hybrid"
+      ]
+    },
+    {
+      "id": "eks-fargate-nodes",
+      "prompt": "A team runs Kubernetes workloads on Amazon EKS and wants to avoid provisioning, patching and scaling worker nodes entirely. Which compute option should they choose?",
+      "choices": [
+        "An EKS Anywhere cluster on their own VMs",
+        "AWS Fargate for EKS pods",
+        "Self-managed node groups with Auto Scaling groups",
+        "Managed node groups using Spot Instances"
+      ],
+      "correctChoice": "AWS Fargate for EKS pods",
+      "explanation": "Fargate runs EKS pods without any worker nodes to manage. Managed node groups automate node lifecycle but still use EC2 instances, and self-managed groups leave scaling to the customer.",
+      "difficulty": "Medium",
+      "tags": [
+        "EKS",
+        "Fargate"
+      ]
+    },
+    {
+      "id": "eks-anywhere-use",
+      "prompt": "A company must run Kubernetes clusters in its own data centre on VMware vSphere for data-residency reasons, but wants the same Kubernetes distribution that EKS uses. What should it use?",
+      "choices": [
+        "Amazon EKS Anywhere, which deploys EKS Distro on-premises",
+        "Amazon EKS on Fargate in the nearest Region",
+        "AWS Elastic Beanstalk with a Docker platform",
+        "Amazon ECS with the awsvpc network mode on EC2"
+      ],
+      "correctChoice": "Amazon EKS Anywhere, which deploys EKS Distro on-premises",
+      "explanation": "EKS Anywhere lets you create and operate Kubernetes clusters on your own VMs or bare metal, using EKS Distro for consistency with EKS in AWS.",
+      "difficulty": "Medium",
+      "tags": [
+        "EKS",
+        "Hybrid"
+      ]
+    },
+    {
+      "id": "beanstalk-worker",
+      "prompt": "A team needs an Elastic Beanstalk environment to process long-running background jobs placed on a queue, scaling instances as the queue grows. Which environment tier is suitable?",
+      "choices": [
+        "A single-instance web environment with an Elastic IP address",
+        "A web server environment fronted by a Network Load Balancer",
+        "A web server environment with an Application Load Balancer",
+        "A worker environment, which creates an SQS queue for the jobs"
+      ],
+      "correctChoice": "A worker environment, which creates an SQS queue for the jobs",
+      "explanation": "Worker environments create an Auto Scaling group and an Amazon SQS queue, install the SQS daemon on the instances, and scale based on CloudWatch alarms.",
+      "difficulty": "Medium",
+      "tags": [
+        "Elastic Beanstalk",
+        "Decoupling"
+      ]
+    },
+    {
+      "id": "beanstalk-single-instance",
+      "prompt": "A developer needs a low-cost Elastic Beanstalk test environment that does not need scaling or a load balancer. Which environment type fits?",
+      "choices": [
+        "A load-balanced web environment, which always creates an ALB and an Auto Scaling group",
+        "A single-instance web environment, which uses an Auto Scaling group with one instance and an Elastic IP",
+        "An environment with a NAT gateway in each AZ",
+        "A worker environment, which creates an SQS queue"
+      ],
+      "correctChoice": "A single-instance web environment, which uses an Auto Scaling group with one instance and an Elastic IP",
+      "explanation": "A single-instance environment has no load balancer, so it costs less. It still uses an ASG with a desired capacity of 1 for instance replacement, and traffic goes to the instance's Elastic IP.",
+      "difficulty": "Medium",
+      "tags": [
+        "Elastic Beanstalk",
+        "Cost"
+      ]
+    },
+    {
+      "id": "ecr-immutable-tags",
+      "prompt": "A deployment pipeline pushes container images tagged 'v1.4' and must ensure that tag can never be overwritten by a later push, so that rollbacks always return the identical image. Which ECR setting helps?",
+      "choices": [
+        "Enable image scanning on push",
+        "Enable pull through cache",
+        "Use the 'latest' tag for every image",
+        "Enable tag immutability on the repository"
+      ],
+      "correctChoice": "Enable tag immutability on the repository",
+      "explanation": "With immutable tags, pushing an image to an existing tag is rejected, so a tag always refers to one image. This is a best practice for reliable rollbacks.",
+      "difficulty": "Medium",
+      "tags": [
+        "ECR",
+        "Security"
+      ]
+    },
+    {
+      "id": "ami-copy-encrypt",
+      "prompt": "A company has an unencrypted AMI in us-east-1. A new policy requires instances in ap-southeast-2 to be launched from encrypted images. What is the simplest approach?",
+      "choices": [
+        "Create a placement group in ap-southeast-2 with encryption enabled",
+        "Share the AMI with ap-southeast-2 and enable encryption on the instances after launch",
+        "Copy the AMI to ap-southeast-2 and enable encryption during the copy",
+        "Deregister the AMI, because AMIs cannot be encrypted"
+      ],
+      "correctChoice": "Copy the AMI to ap-southeast-2 and enable encryption during the copy",
+      "explanation": "AMIs can be copied across Regions, and an unencrypted AMI can be encrypted as part of the copy operation.",
+      "difficulty": "Medium",
+      "tags": [
+        "EC2",
+        "AMI",
+        "Security"
+      ]
+    },
+    {
+      "id": "ami-share-org",
+      "prompt": "A central team wants to let only specific AWS accounts in its organisation launch instances from a hardened AMI, without making the AMI public. What should it do?",
+      "choices": [
+        "Make the AMI public and rely on security groups",
+        "Copy the AMI into each account's S3 bucket manually",
+        "Modify the AMI's launch permissions to share it explicitly with those accounts or organisational units",
+        "Leave the default launch permissions, which already share the AMI with the organisation"
+      ],
+      "correctChoice": "Modify the AMI's launch permissions to share it explicitly with those accounts or organisational units",
+      "explanation": "AMI sharing can be public, explicit (specific accounts, organisations or OUs), or implicit (owner only, the default). Explicit sharing restricts launching to the chosen principals.",
+      "difficulty": "Medium",
+      "tags": [
+        "EC2",
+        "AMI",
+        "Security"
+      ]
+    },
+    {
+      "id": "ami-bake-patching",
+      "prompt": "Instances in an Auto Scaling group take a long time to become ready because patches and software are installed at boot through user data. How can the architect improve launch time and consistency?",
+      "choices": [
+        "Use a Classic Load Balancer to delay traffic to new instances until patched",
+        "Increase the instance size so the user data script runs faster at boot",
+        "Move the user data script into the instance metadata categories",
+        "Bake patches and software into a golden AMI and use it in the launch template"
+      ],
+      "correctChoice": "Bake patches and software into a golden AMI and use it in the launch template",
+      "explanation": "A pre-baked AMI contains the OS, patches and applications, so instances start ready. Systems Manager Automation can routinely patch and build AMIs, and launch templates manage the AMI versions used.",
+      "difficulty": "Medium",
+      "tags": [
+        "EC2",
+        "AMI",
+        "Operations"
+      ]
+    },
+    {
+      "id": "profile-replace-running",
+      "prompt": "An application server is running in production and needs a different IAM role. The team wants to avoid downtime. What is the correct approach?",
+      "choices": [
+        "Reboot the instance after attaching a second role, as instances can only have one role without a reboot",
+        "Replace the instance profile association on the running instance; no stop or reboot is required",
+        "Stop the instance, change the role, and start it again",
+        "Terminate the instance, because an instance profile can only be set at launch"
+      ],
+      "correctChoice": "Replace the instance profile association on the running instance; no stop or reboot is required",
+      "explanation": "An instance profile can be attached to or replaced on a running or stopped instance without a reboot. Changes are eventually consistent, so replacing the profile is preferred to removing it.",
+      "difficulty": "Medium",
+      "tags": [
+        "EC2",
+        "IAM"
+      ]
+    },
+    {
+      "id": "ecr-replication",
+      "prompt": "A company deploys containers in two Regions for disaster recovery and wants images pushed in the primary Region to be available automatically in the secondary Region and in another account. Which ECR feature should it use?",
+      "choices": [
+        "Image scanning on push to the repository",
+        "Private image replication across Regions and accounts",
+        "ECR lifecycle policies for old images",
+        "ECR pull through cache from a registry"
+      ],
+      "correctChoice": "Private image replication across Regions and accounts",
+      "explanation": "ECR private image replication copies images across Regions and accounts automatically. Lifecycle policies clean up images, and pull through cache syncs from an upstream registry.",
+      "difficulty": "Medium",
+      "tags": [
+        "ECR",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "graviton-cost",
+      "prompt": "A company wants better price performance for a Linux web tier by moving to AWS Graviton-based instances. What must be true for this migration to work?",
+      "choices": [
+        "The workload must use instance store as its root volume",
+        "The AMI must use paravirtualisation (PV)",
+        "The software and AMI must support the ARM (arm64) architecture",
+        "The instances must be launched in a cluster placement group"
+      ],
+      "correctChoice": "The software and AMI must support the ARM (arm64) architecture",
+      "explanation": "Graviton processors use the ARM architecture, so applications and the AMI must be built for arm64. Graviton instances typically offer better price performance for suitable workloads.",
+      "difficulty": "Medium",
+      "tags": [
+        "EC2",
+        "Cost",
+        "Instance Types"
+      ]
+    },
+    {
+      "id": "inferentia-ml",
+      "prompt": "A company runs high-volume machine learning inference on GPU instances and wants lower cost per inference. Which EC2 option is purpose-built for this?",
+      "choices": [
+        "Memory optimised R family instances",
+        "T family burstable instances",
+        "Instances powered by AWS Trainium",
+        "Instances powered by AWS Inferentia"
+      ],
+      "correctChoice": "Instances powered by AWS Inferentia",
+      "explanation": "AWS Inferentia is designed for cost-effective, high-performance ML inference. Trainium is designed for training ML models.",
+      "difficulty": "Medium",
+      "tags": [
+        "EC2",
+        "Cost",
+        "Instance Types"
+      ]
+    },
+    {
+      "id": "ri-marketplace-sell",
+      "prompt": "A company bought a Standard Reserved Instance for three years but no longer needs the capacity after one year. Which option can recover some of the cost?",
+      "choices": [
+        "Sell the remaining term on the Reserved Instance Marketplace",
+        "Exchange it for a Spot Instance",
+        "Cancel it for a full refund",
+        "Sell it on the Marketplace only if it is a Convertible Reserved Instance"
+      ],
+      "correctChoice": "Sell the remaining term on the Reserved Instance Marketplace",
+      "explanation": "Standard RIs can be sold in the Reserved Instance Marketplace (after being active for 30 days and with payment made). Convertible RIs cannot be sold there, only exchanged.",
+      "difficulty": "Medium",
+      "tags": [
+        "EC2",
+        "Pricing"
+      ]
+    },
+    {
+      "id": "ri-regional-flex",
+      "prompt": "A company runs the same Linux instance family in several Availability Zones in one Region. It wants a Reserved Instance discount that applies across AZs and instance sizes within that family, and does not need a capacity reservation. Which scope should it choose?",
+      "choices": [
+        "Regional scope",
+        "Zonal scope in the busiest Availability Zone",
+        "Regional scope, but only with a capacity reservation attached to every AZ",
+        "Zonal scope, because it is cheaper"
+      ],
+      "correctChoice": "Regional scope",
+      "explanation": "Regional RIs apply the discount across AZs in the Region and offer instance size flexibility (for Linux/UNIX), but do not reserve capacity. Scope does not change the price.",
+      "difficulty": "Medium",
+      "tags": [
+        "EC2",
+        "Pricing"
+      ]
+    },
+    {
+      "id": "pg-partition-vs-spread",
+      "prompt": "A replicated database cluster of 30 instances runs across three Availability Zones. Each replica set must be isolated at the hardware level so a rack failure affects only one set, and the team needs to know which partition each instance runs in. Which placement strategy meets this?",
+      "choices": [
+        "A single cluster placement group spanning the three Availability Zones",
+        "A spread placement group, because it isolates every instance on its own rack",
+        "A cluster placement group in each Availability Zone",
+        "A partition placement group with partitions in each Availability Zone"
+      ],
+      "correctChoice": "A partition placement group with partitions in each Availability Zone",
+      "explanation": "A spread group is limited to 7 running instances per AZ, so it cannot hold 30 instances across 3 AZs this way. Partition groups scale to large deployments, can be multi-AZ, and keep partitions on separate hardware. Cluster groups cannot span AZs.",
+      "difficulty": "Hard",
+      "tags": [
+        "EC2",
+        "Placement Groups",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "imds-hop-limit",
+      "prompt": "Containers running in bridge network mode on an EC2 host cannot retrieve credentials from the instance metadata service after the team enforced IMDSv2 with the maximum hop limit set to 1. What is the best fix that preserves the security posture?",
+      "choices": [
+        "Raise the metadata hop limit to 2 and keep IMDSv2 required",
+        "Move the instance to a spread placement group",
+        "Disable IMDSv2 enforcement and fall back to IMDSv1",
+        "Disable the metadata endpoint entirely"
+      ],
+      "correctChoice": "Raise the metadata hop limit to 2 and keep IMDSv2 required",
+      "explanation": "Token responses are limited by the hop limit. Traffic from a container crosses an extra network hop, so a limit of 1 blocks it. Raising the limit lets containers reach IMDSv2 without reverting to the weaker IMDSv1.",
+      "difficulty": "Hard",
+      "tags": [
+        "EC2",
+        "Security",
+        "Containers"
+      ]
+    },
+    {
+      "id": "pricing-mix",
+      "prompt": "A company has a baseline of 20 instances running 24/7 for three years, unpredictable extra traffic that varies daily, and a nightly fault-tolerant batch job. Which combination is the most cost-effective?",
+      "choices": [
+        "Spot Instances for the baseline, variable traffic and batch job",
+        "Reserved Instances for baseline, On-Demand for variable load, Spot for batch",
+        "On-Demand Instances for everything, to keep full flexibility",
+        "Reserved Instances sized for peak traffic and the batch job"
+      ],
+      "correctChoice": "Reserved Instances for baseline, On-Demand for variable load, Spot for batch",
+      "explanation": "Commitment discounts suit steady usage, On-Demand covers unpredictable demand without commitment or interruption, and Spot gives the deepest discounts for interruption-tolerant batch work.",
+      "difficulty": "Hard",
+      "tags": [
+        "EC2",
+        "Pricing",
+        "Cost"
+      ]
+    },
+    {
+      "id": "capacity-reservation-peak",
+      "prompt": "A retailer needs guaranteed EC2 capacity in one Availability Zone for a two-week annual sales event, and does not want a one- or three-year commitment. Which option fits?",
+      "choices": [
+        "An On-Demand Capacity Reservation created for the event period",
+        "A regional Reserved Instance",
+        "A Compute Savings Plan",
+        "A Spot Instance request with a high maximum price"
+      ],
+      "correctChoice": "An On-Demand Capacity Reservation created for the event period",
+      "explanation": "Capacity Reservations guarantee capacity in an AZ with no term commitment, but are charged whether or not the instances run. Regional RIs and Savings Plans do not reserve capacity, and Spot can be interrupted.",
+      "difficulty": "Hard",
+      "tags": [
+        "EC2",
+        "Pricing",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "sp-ec2-instance",
+      "prompt": "A company will run m6i instances in us-east-1 for three years, expects to change sizes and Availability Zones, and will not use Fargate or Lambda. It wants the lowest price with that flexibility. Which option is best?",
+      "choices": [
+        "An EC2 Instance Savings Plan for the m6i family in us-east-1",
+        "Convertible Reserved Instances, because Savings Plans cannot cover size changes",
+        "A Compute Savings Plan, because it always has the lowest price",
+        "A zonal Standard Reserved Instance in a single Availability Zone"
+      ],
+      "correctChoice": "An EC2 Instance Savings Plan for the m6i family in us-east-1",
+      "explanation": "EC2 Instance Savings Plans give the best discount (up to about 72%) and apply across sizes, AZs, OS and tenancy within one family in a Region. Compute Savings Plans give more flexibility but a smaller discount.",
+      "difficulty": "Hard",
+      "tags": [
+        "EC2",
+        "Pricing",
+        "Cost"
+      ]
+    },
+    {
+      "id": "hibernate-requirements",
+      "prompt": "An in-memory application takes 30 minutes to warm its cache. The team wants to stop instances overnight to save cost and resume with the cache intact. The existing instances were launched without hibernation. What is required?",
+      "choices": [
+        "Use instance store volumes, which keep RAM contents when stopped",
+        "Stop the instances, because stopped instances keep RAM contents",
+        "Launch new instances with hibernation enabled and an encrypted EBS root volume",
+        "Enable hibernation on the running instances after a reboot"
+      ],
+      "correctChoice": "Launch new instances with hibernation enabled and an encrypted EBS root volume",
+      "explanation": "Hibernation saves RAM to the encrypted EBS root volume and must be enabled at launch. A normal stop discards memory. While hibernated there is no instance charge, but EBS storage is still billed.",
+      "difficulty": "Hard",
+      "tags": [
+        "EC2",
+        "Lifecycle"
+      ]
+    },
+    {
+      "id": "asg-sqs-backlog",
+      "prompt": "Workers in an Auto Scaling group process messages from an SQS queue. CPU utilisation stays low even when the queue has a large backlog, so CPU-based scaling does not add capacity. Which approach scales most appropriately?",
+      "choices": [
+        "Use target tracking with a custom queue backlog per instance metric",
+        "Use target tracking on average network traffic out",
+        "Use target tracking on average CPU utilisation with a lower target",
+        "Increase the minimum size of the group to the expected peak"
+      ],
+      "correctChoice": "Use target tracking with a custom queue backlog per instance metric",
+      "explanation": "Target tracking supports custom metrics. A backlog-per-instance metric matches the real demand signal, whereas CPU does not reflect queue depth for these workers. Fixing minimum size to peak wastes cost.",
+      "difficulty": "Hard",
+      "tags": [
+        "Auto Scaling",
+        "Decoupling"
+      ]
+    },
+    {
+      "id": "asg-custom-termination",
+      "prompt": "During scale-in, an Auto Scaling group must remove instances in an order determined by custom business logic that the predefined policies cannot express. What should be used?",
+      "choices": [
+        "The predefined 'oldest instance' termination policy of the group",
+        "A cluster placement group",
+        "A custom termination policy that invokes a Lambda function",
+        "A step scaling policy with additional scale-in steps"
+      ],
+      "correctChoice": "A custom termination policy that invokes a Lambda function",
+      "explanation": "Predefined termination policies cover common orders such as oldest instance first. For custom logic, an ASG termination policy can invoke a Lambda function.",
+      "difficulty": "Hard",
+      "tags": [
+        "Auto Scaling"
+      ]
+    },
+    {
+      "id": "ga-vs-cloudfront",
+      "prompt": "A global application runs behind ALBs in two Regions. Responses are dynamic and not cacheable. Users need fixed anycast IP addresses and fast failover between Regions. Which design fits best?",
+      "choices": [
+        "Place Amazon CloudFront in front of the ALBs for caching",
+        "Use a single Network Load Balancer across both Regions",
+        "Place AWS Global Accelerator in front of the ALBs",
+        "Use a Classic Load Balancer with cross-Region targets"
+      ],
+      "correctChoice": "Place AWS Global Accelerator in front of the ALBs",
+      "explanation": "Global Accelerator provides static anycast IPs and health-based routing across Regional endpoints such as ALBs. CloudFront is mainly for caching content close to users, which does not help with non-cacheable responses and static IPs.",
+      "difficulty": "Hard",
+      "tags": [
+        "ELB",
+        "Networking",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "gwlb-inspection",
+      "prompt": "A company must inspect all traffic entering its VPC with a fleet of third-party firewall appliances that must scale and remain highly available, with the traffic path transparent to the applications. Which load balancer fits?",
+      "choices": [
+        "Network Load Balancer with a static IP in front of the appliances",
+        "Classic Load Balancer directly attached to the applications",
+        "Application Load Balancer in front of the appliances",
+        "Gateway Load Balancer with the appliances as targets"
+      ],
+      "correctChoice": "Gateway Load Balancer with the appliances as targets",
+      "explanation": "GWLB is designed to transparently route traffic through virtual appliance fleets and to scale and distribute them. ALBs and NLBs act as destinations for clients, not transparent inspection hops.",
+      "difficulty": "Hard",
+      "tags": [
+        "ELB",
+        "Security"
+      ]
+    },
+    {
+      "id": "asg-tg-association",
+      "prompt": "New instances launched by an Auto Scaling group pass EC2 status checks, but the ALB never sends them traffic. The ALB and target group are otherwise healthy. What is the most likely cause?",
+      "choices": [
+        "The ALB can only be associated directly with an Auto Scaling group, not through a target group",
+        "The Auto Scaling group is not associated with the ALB's target group",
+        "The instances are using HVM virtualisation",
+        "The Auto Scaling group desired capacity equals its minimum size"
+      ],
+      "correctChoice": "The Auto Scaling group is not associated with the ALB's target group",
+      "explanation": "ALBs, NLBs and GWLBs connect to an ASG indirectly through target groups, so the group must be attached to the target group for instances to be registered automatically. Only Classic Load Balancers attach directly.",
+      "difficulty": "Hard",
+      "tags": [
+        "Auto Scaling",
+        "ELB",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "asg-mixed-spot",
+      "prompt": "A stateless web tier behind an ALB must stay available if Spot capacity is reclaimed, while keeping costs as low as possible. Which design is best?",
+      "choices": [
+        "An Auto Scaling group using Dedicated Hosts to avoid interruptions",
+        "An Auto Scaling group using only Spot Instances in a single AZ",
+        "Spot Instances launched manually outside of any Auto Scaling group",
+        "A multi-AZ Auto Scaling group with an On-Demand base and Spot for the rest"
+      ],
+      "correctChoice": "A multi-AZ Auto Scaling group with an On-Demand base and Spot for the rest",
+      "explanation": "A baseline of On-Demand capacity guarantees availability if Spot is interrupted, while Spot provides cheap extra capacity. Using multiple AZs and an ASG automates replacement.",
+      "difficulty": "Hard",
+      "tags": [
+        "Auto Scaling",
+        "Cost",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "ecs-awsvpc-sg",
+      "prompt": "An ECS cluster runs many tasks on shared EC2 hosts. Only the payment tasks may connect to an RDS database, and the rule must be enforced with security groups at the task level rather than at the host level. What should the architect do?",
+      "choices": [
+        "Use none network mode and connect through the container agent",
+        "Use host network mode and attach a security group to the EC2 hosts",
+        "Use awsvpc mode and attach a dedicated security group to the payment tasks",
+        "Use bridge network mode and restrict traffic with port mappings"
+      ],
+      "correctChoice": "Use awsvpc mode and attach a dedicated security group to the payment tasks",
+      "explanation": "awsvpc gives each task its own ENI, so security groups apply per task. With host or bridge mode the security group applies to the instance and every task on it shares the same rules.",
+      "difficulty": "Hard",
+      "tags": [
+        "ECS",
+        "Security",
+        "Networking"
+      ]
+    },
+    {
+      "id": "ecs-secrets-injection",
+      "prompt": "A containerised application needs a database password at start-up. The password must not appear in the image, in plaintext in the task definition, or in source control. Which solution is best?",
+      "choices": [
+        "Put the password in a plaintext environment variable in the task definition",
+        "Grant the task role access and write the password to a file in the Dockerfile",
+        "Bake the password into the container image stored in the ECR repository",
+        "Reference a Secrets Manager secret in the task definition and allow the execution role to read it"
+      ],
+      "correctChoice": "Reference a Secrets Manager secret in the task definition and allow the execution role to read it",
+      "explanation": "Task definition 'secrets' pull values from Secrets Manager or SSM Parameter Store at launch. The execution role performs the retrieval and injects them, so the value is never stored in the image or definition.",
+      "difficulty": "Hard",
+      "tags": [
+        "ECS",
+        "Security"
+      ]
+    },
+    {
+      "id": "ecs-awslogs-nonblocking",
+      "prompt": "A high-throughput container using the awslogs log driver slows down or stalls when CloudWatch Logs is briefly unavailable, because log writes block the application. Which change avoids this back-pressure?",
+      "choices": [
+        "Disable logging entirely so the application is never blocked",
+        "Switch the task to the host network mode to speed up logging",
+        "Increase the task's memory and CPU allocation only",
+        "Use non-blocking log delivery mode, or a FireLens sidecar"
+      ],
+      "correctChoice": "Use non-blocking log delivery mode, or a FireLens sidecar",
+      "explanation": "The awslogs driver is blocking by default, so application output can stall when logs cannot be delivered. Non-blocking mode buffers logs, and FireLens runs a sidecar that handles log routing separately from the application.",
+      "difficulty": "Hard",
+      "tags": [
+        "ECS",
+        "Observability"
+      ]
+    },
+    {
+      "id": "ecs-capacity-provider-asg",
+      "prompt": "An ECS cluster uses EC2 instances. During spikes, new tasks stay in PENDING because the cluster has no free capacity, and the team does not want to manage infrastructure scaling manually. What should they configure?",
+      "choices": [
+        "A larger CPU and memory value in the task definition",
+        "A capacity provider backed by an Auto Scaling group with managed scaling",
+        "Switch the service to the host network mode",
+        "Raise the maximum size of the Auto Scaling group only, and scale manually"
+      ],
+      "correctChoice": "A capacity provider backed by an Auto Scaling group with managed scaling",
+      "explanation": "Capacity providers manage the scaling of the infrastructure for tasks. With an ASG capacity provider and managed scaling, ECS scales the group out when tasks need capacity.",
+      "difficulty": "Hard",
+      "tags": [
+        "ECS",
+        "Auto Scaling"
+      ]
+    },
+    {
+      "id": "ecs-ec2-vs-fargate",
+      "prompt": "A workload needs custom kernel settings and a custom AMI on the container hosts, and the team wants direct control over the instance fleet and high steady utilisation to maximise savings. Which compute option fits?",
+      "choices": [
+        "AWS Fargate with FARGATE_SPOT",
+        "ECS Anywhere on AWS-managed hosts",
+        "AWS Fargate, because it allows custom AMIs",
+        "ECS with the EC2 launch type"
+      ],
+      "correctChoice": "ECS with the EC2 launch type",
+      "explanation": "Fargate abstracts the host, so there is no custom AMI or host-level tuning. ECS on EC2 gives control over instances, AMIs and the use of Reserved Instances or Savings Plans on a fully utilised fleet.",
+      "difficulty": "Hard",
+      "tags": [
+        "ECS",
+        "Fargate"
+      ]
+    },
+    {
+      "id": "service-connect-use",
+      "prompt": "A team running many ECS services wants service discovery, automatic retries, traffic health checks and TLS-encrypted service-to-service traffic, using a sidecar proxy without custom application code. Which ECS feature provides this?",
+      "choices": [
+        "ECS Anywhere",
+        "ECS Exec",
+        "An Application Load Balancer in front of every service",
+        "Amazon ECS Service Connect"
+      ],
+      "correctChoice": "Amazon ECS Service Connect",
+      "explanation": "Service Connect deploys a sidecar proxy and uses a Cloud Map namespace to provide service discovery, retries, health checks, telemetry and TLS for service-to-service communication.",
+      "difficulty": "Hard",
+      "tags": [
+        "ECS",
+        "Networking"
+      ]
+    },
+    {
+      "id": "ecs-roles-split",
+      "prompt": "A task pulls its image from a private ECR repository, writes application logs through the awslogs driver, and its code reads from an S3 bucket. Which permissions assignment follows least privilege?",
+      "choices": [
+        "One shared role with administrator access for both roles",
+        "Execution role: S3 read; task role: ECR image pull",
+        "Execution role: ECR pull and logs; task role: S3 read only",
+        "Task role: ECR image pull and S3 read; execution role: none"
+      ],
+      "correctChoice": "Execution role: ECR pull and logs; task role: S3 read only",
+      "explanation": "The execution role covers what ECS needs to prepare and run the task (image pull, log delivery, secrets). The task role holds only the permissions the application code needs, here S3 read.",
+      "difficulty": "Hard",
+      "tags": [
+        "ECS",
+        "IAM",
+        "Security"
+      ]
+    },
+    {
+      "id": "eks-managed-node-groups",
+      "prompt": "A team runs Kubernetes workloads on EKS that need EC2 worker nodes (including specific instance types and DaemonSets). They want AWS to automate node provisioning, scaling and updates with minimal custom tooling. Which option fits?",
+      "choices": [
+        "Self-managed node groups with their own Auto Scaling groups",
+        "AWS Fargate profiles, because they support DaemonSets on EC2 hosts",
+        "Managed node groups",
+        "EKS Anywhere on their own hardware"
+      ],
+      "correctChoice": "Managed node groups",
+      "explanation": "Managed node groups let AWS handle provisioning and lifecycle of EC2 nodes. Self-managed groups leave scaling to the customer, and Fargate has no nodes to run DaemonSets on.",
+      "difficulty": "Hard",
+      "tags": [
+        "EKS",
+        "Operations"
+      ]
+    },
+    {
+      "id": "eks-pod-identity",
+      "prompt": "Different pods on the same EKS node must have different, least-privilege AWS permissions (one reads S3, another writes to DynamoDB). Which approach meets this?",
+      "choices": [
+        "Store IAM user access keys in a Kubernetes secret for each pod",
+        "Use EKS Pod Identity to associate IAM roles with Kubernetes service accounts",
+        "Attach different security groups to the nodes",
+        "Attach a broad IAM role to the node instance profile so all pods share it"
+      ],
+      "correctChoice": "Use EKS Pod Identity to associate IAM roles with Kubernetes service accounts",
+      "explanation": "The EKS Pod Identity agent grants IAM permissions to pods through their Kubernetes service accounts, giving per-workload least privilege. A node role is shared by every pod on the node.",
+      "difficulty": "Hard",
+      "tags": [
+        "EKS",
+        "IAM",
+        "Security"
+      ]
+    },
+    {
+      "id": "eks-karpenter",
+      "prompt": "An EKS cluster has highly variable workloads with differing CPU and memory needs. The team wants new nodes of suitable sizes provisioned quickly in response to unschedulable pods, to reduce idle capacity. Which option fits best?",
+      "choices": [
+        "AWS Elastic Beanstalk worker environments",
+        "An ECS capacity provider",
+        "Karpenter",
+        "A fixed-size self-managed node group"
+      ],
+      "correctChoice": "Karpenter",
+      "explanation": "Karpenter is an open-source cluster autoscaler that provisions right-sized nodes in response to pending pods, reducing both scheduling delay and wasted capacity.",
+      "difficulty": "Hard",
+      "tags": [
+        "EKS",
+        "Auto Scaling",
+        "Cost"
+      ]
+    },
+    {
+      "id": "eks-connector",
+      "prompt": "A company has conformant Kubernetes clusters running in another environment and wants to view them alongside its EKS clusters in the AWS Management Console. What should it use?",
+      "choices": [
+        "AWS Fargate",
+        "Amazon EKS Connector",
+        "Amazon ECR pull through cache",
+        "Amazon EKS Distro"
+      ],
+      "correctChoice": "Amazon EKS Connector",
+      "explanation": "EKS Connector registers and connects conformant Kubernetes clusters to AWS so they can be visualised in the EKS console. EKS Distro is the Kubernetes distribution used by EKS.",
+      "difficulty": "Hard",
+      "tags": [
+        "EKS",
+        "Hybrid"
+      ]
+    },
+    {
+      "id": "eb-web-worker",
+      "prompt": "An application accepts image uploads through a web front end and processes them in the background. The team wants Elastic Beanstalk to scale each part independently and decouple them. What is the best design?",
+      "choices": [
+        "A single-instance web environment running both functions on one instance",
+        "A load-balanced web environment plus a worker environment reading an SQS queue",
+        "Two load-balanced web environments that share a single Elastic IP",
+        "A worker environment that is fronted by an Application Load Balancer"
+      ],
+      "correctChoice": "A load-balanced web environment plus a worker environment reading an SQS queue",
+      "explanation": "Web environments serve HTTP traffic (load-balanced ones create an ALB and ASG), while worker environments pull from an SQS queue using an SQS daemon. Separate tiers scale independently and are decoupled by the queue.",
+      "difficulty": "Hard",
+      "tags": [
+        "Elastic Beanstalk",
+        "Decoupling"
+      ]
+    },
+    {
+      "id": "compute-optimizer-lookback",
+      "prompt": "A finance application has heavy usage only during month-end processing. Compute Optimizer, using its default look-back, recommends downsizing the instances. What should the architect do before acting?",
+      "choices": [
+        "Accept it, because Compute Optimizer always analyses a full year of data",
+        "Switch to Spot Instances, as recommendations only apply to On-Demand",
+        "Enable enhanced infrastructure metrics to extend the look-back to up to 93 days",
+        "Disable CloudWatch metrics to avoid skewing recommendations"
+      ],
+      "correctChoice": "Enable enhanced infrastructure metrics to extend the look-back to up to 93 days",
+      "explanation": "By default Compute Optimizer analyses the last 14 days of CloudWatch metrics, which can miss infrequent peaks. Enhanced infrastructure metrics extend the look-back up to 93 days.",
+      "difficulty": "Hard",
+      "tags": [
+        "Compute Optimizer",
+        "Cost"
+      ]
+    },
+    {
+      "id": "ecr-pull-through",
+      "prompt": "A build pipeline frequently pulls images from an upstream public container registry and occasionally fails when that registry is unavailable or throttles requests. The team wants to keep using ECR and its access controls. Which feature helps?",
+      "choices": [
+        "ECR lifecycle policies",
+        "Tag immutability on the repository",
+        "Image signing with AWS Signer",
+        "ECR pull through cache"
+      ],
+      "correctChoice": "ECR pull through cache",
+      "explanation": "A pull through cache stores and keeps in sync copies of upstream images in your private registry, so pulls come from ECR and are controlled by ECR access policies.",
+      "difficulty": "Hard",
+      "tags": [
+        "ECR",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "ssm-private-instances",
+      "prompt": "Linux and Windows instances sit in private subnets with no public IP addresses. Auditors require IAM-controlled shell access with session logging, and the company will not open inbound ports or run bastion hosts. Which solution fits?",
+      "choices": [
+        "EC2 Instance Connect, because it supports both Linux and Windows",
+        "A bastion host in a public subnet with port 22 open",
+        "Shared SSH key pairs stored in an S3 bucket",
+        "Systems Manager Session Manager with an instance profile for Systems Manager"
+      ],
+      "correctChoice": "Systems Manager Session Manager with an instance profile for Systems Manager",
+      "explanation": "Session Manager makes an outbound connection from the instance, so no inbound ports or bastions are needed, supports Windows and Linux, is controlled by IAM, and can log sessions. Instance Connect is Linux only and uses SSH.",
+      "difficulty": "Hard",
+      "tags": [
+        "EC2",
+        "Connectivity",
+        "Security"
+      ]
+    },
+    {
+      "id": "serial-console",
+      "prompt": "A misconfigured network setting on a Linux instance makes it unreachable over SSH and Systems Manager. The team needs interactive access to fix it. Which feature helps?",
+      "choices": [
+        "A new security group rule for port 22",
+        "The instance console screenshot",
+        "EC2 Serial Console",
+        "EC2 Instance Connect"
+      ],
+      "correctChoice": "EC2 Serial Console",
+      "explanation": "The EC2 Serial Console gives a serial connection that works even when the network or SSH is misconfigured. A console screenshot is view-only, and Instance Connect still depends on networking.",
+      "difficulty": "Hard",
+      "tags": [
+        "EC2",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "fleet-manager-rdp",
+      "prompt": "Windows administrators want to open a graphical remote desktop session to instances from a web browser, with access controlled through AWS rather than distributing RDP clients and passwords. Which feature fits?",
+      "choices": [
+        "Fleet Manager Remote Desktop",
+        "Session Manager with a Bash shell",
+        "EC2 Serial Console",
+        "EC2 Instance Connect"
+      ],
+      "correctChoice": "Fleet Manager Remote Desktop",
+      "explanation": "Fleet Manager Remote Desktop provides an RDP connection to Windows instances in the browser. Instance Connect is for Linux, and Session Manager offers shell sessions (PowerShell for Windows) rather than a graphical desktop.",
+      "difficulty": "Hard",
+      "tags": [
+        "EC2",
+        "Connectivity"
+      ]
+    },
+    {
+      "id": "ami-uefi-secure-boot",
+      "prompt": "A compliance policy requires that instances verify the integrity of the boot chain using secure boot. Which AMI setting is required?",
+      "choices": [
+        "An instance store root device",
+        "A boot mode of UEFI",
+        "Paravirtualisation (PV) virtualisation",
+        "A boot mode of Legacy BIOS"
+      ],
+      "correctChoice": "A boot mode of UEFI",
+      "explanation": "UEFI supports secure boot, faster start-up and drives over 2 TB, while Legacy BIOS does not support secure boot and is only for legacy cases.",
+      "difficulty": "Hard",
+      "tags": [
+        "EC2",
+        "AMI",
+        "Security"
+      ]
+    },
+    {
+      "id": "ami-deregister-snapshots",
+      "prompt": "A team deregisters many old AMIs to cut costs, but its EBS storage bill barely drops. What is the most likely reason?",
+      "choices": [
+        "Deregistered AMIs keep running instances until the next reboot",
+        "Deregistered AMIs are billed like Reserved Instances",
+        "Snapshots are deleted but still billed for 30 days",
+        "Deregistering an AMI does not delete its EBS snapshots"
+      ],
+      "correctChoice": "Deregistering an AMI does not delete its EBS snapshots",
+      "explanation": "Deregistering an AMI only stops new launches from it. The EBS snapshots that back the AMI persist and continue to incur storage charges until deleted.",
+      "difficulty": "Hard",
+      "tags": [
+        "EC2",
+        "AMI",
+        "Cost"
+      ]
+    },
+    {
+      "id": "ami-disable",
+      "prompt": "A vulnerability is found in a widely used internal AMI. The security team wants to immediately stop it from launching new instances, but may need to reuse it after a fix is validated. What is the best action?",
+      "choices": [
+        "Deregister the AMI and delete its snapshots",
+        "Disable the AMI, which can be re-enabled later",
+        "Deprecate the AMI, which blocks launches immediately",
+        "Share the AMI publicly so others can review it"
+      ],
+      "correctChoice": "Disable the AMI, which can be re-enabled later",
+      "explanation": "Disabling an AMI prevents it from being used to launch instances and can be reversed. Deprecation only marks a date after which it is no longer shown or allowed, and deregistering is a more permanent action.",
+      "difficulty": "Hard",
+      "tags": [
+        "EC2",
+        "AMI",
+        "Security"
+      ]
+    },
+    {
+      "id": "alb-acm-https",
+      "prompt": "A company serves a custom domain over HTTPS from instances behind an Application Load Balancer. It wants to avoid installing and renewing certificates on each instance. What is the best approach?",
+      "choices": [
+        "Install the certificate on every instance and use a Network Load Balancer",
+        "Use a Gateway Load Balancer to terminate TLS",
+        "Store the certificate in user data for each instance",
+        "Attach an AWS Certificate Manager certificate to the ALB's HTTPS listener"
+      ],
+      "correctChoice": "Attach an AWS Certificate Manager certificate to the ALB's HTTPS listener",
+      "explanation": "ACM certificates can be attached to ALB listeners, so TLS terminates at the load balancer and certificate management is centralised and automated.",
+      "difficulty": "Hard",
+      "tags": [
+        "ELB",
+        "Security"
+      ]
+    }
+  ]
+}
